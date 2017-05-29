@@ -1,0 +1,146 @@
+//
+//  TableViewShower.m
+//  CloudOCR
+//
+//  Created by yiqiao on 2017/5/26.
+//  Copyright © 2017年 yiqiaoyiqiaoyiqiao. All rights reserved.
+//
+
+#import "TableViewShower.h"
+#import "CardTableViewCell.h"
+#import "UITableView+SlideMenuControllerOC.h"
+#import "BooksOp.h"
+#import "constants.h"
+#import "ViewController.h"
+#import "UIColor+SlideMenuControllerOC.h"
+#import "CardKey.h"
+#import "OcrTableViewController.h"
+
+@implementation TableViewShower
+
+@synthesize OcrClass = _OcrClass;
+@synthesize Owner = _Owner;
+@synthesize CardDict = _CardDict;
+@synthesize Keys = _Keys;
+@synthesize KeyName = _KeyName;
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+    return  [NSArray arrayWithArray: self.Keys];
+}
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
+    NSString *key = [self.Keys objectAtIndex:index];
+    NSLog(@"sectionForSectionIndexTitle %@",key);
+    if (key == UITableViewIndexSearch) {
+        [tableView setContentOffset:CGPointZero animated:NO];
+        return NSNotFound;
+    }
+    return index;
+}
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.Keys.count;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSString* keyStr = [self.Keys objectAtIndex:section];
+    return ((NSMutableArray*)[self.CardDict objectForKey:keyStr]).count;
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 22;
+}
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UILabel * view = [[UILabel alloc] init];
+    view.backgroundColor = SECTIONBKCOLOR;
+    view.font = [UIFont systemFontOfSize:14.0f];
+    view.frame = CGRectMake(0, 0, tableView.frame.size.width, 22);
+    view.textColor = [UIColor colorFromHexString:@"689F38"];
+    view.textAlignment = NSTextAlignmentLeft;
+    view.text = [NSString stringWithFormat:@"  %@",[self.Keys objectAtIndex:section]];
+    return view;
+}
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewCellEditingStyleDelete;
+}
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete){
+        [tableView reloadData];
+    }
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    OcrCard* ocrdata = [self GetCard:indexPath];
+    [self.Owner OnSelectOcrCard:ocrdata];
+}
+-(void)Setup:(UITableView*) tableView
+{
+    self.tableView = tableView;
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.tableView.sectionIndexColor = [UIColor colorFromHexString:@"689F38"];
+
+    self.Keys = [[NSMutableArray alloc] init];
+    self.CardDict = [OcrCard TransHeadedDict:[OcrCard Load:self.OcrClass] ForKey:self.KeyName ResultHeadKeys:self.Keys];
+    
+    [self.tableView reloadData];
+}
+-(OcrCard*)GetCard:(NSIndexPath *)indexPath
+{
+    if (!self.Keys || !self.CardDict){
+        return nil;
+    }
+    return [[self.CardDict objectForKey:[self.Keys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+}
+-(void)InsertOcrCard:(OcrCard*)newCard
+{
+    NSString* chKey = [OcrCard GetHeadKey:[newCard.CardDetail objectForKey:self.KeyName]];
+    for (NSString* key in self.Keys){
+        if ([key isEqualToString:chKey]){
+            [[self.CardDict objectForKey:chKey] addObject:newCard];
+            if (self.tableView){
+                [self.tableView reloadData];
+            }
+            return;
+        }
+    }
+    [self.Keys addObject:chKey];
+    [[self.CardDict objectForKey:chKey] addObject:newCard];
+    [OcrCard SortHeadKeys:self.Keys];
+    if (self.tableView){
+        [self.tableView reloadData];
+    }
+}
+-(void)UpdateOcrCard:(OcrCard*)newCard
+{
+    for (NSString* key in [self.CardDict allKeys]){
+        NSMutableArray* array = [self.CardDict objectForKey:key];
+        for (int idx = 0; idx < array.count; idx++){
+            OcrCard* oldCard = [array objectAtIndex:idx];
+            if (oldCard.CardId == newCard.CardId){
+                [array replaceObjectAtIndex:idx withObject:newCard];
+                if (self.tableView){
+                    [self.tableView reloadData];
+                }
+                return;
+            }
+        }
+    }
+}
+-(void)FreshOcrCard:(int)cardId Operator:(int)op
+{
+    OcrCard* newCard = [OcrCard LoadOne:cardId];
+    if (!newCard){
+        NSLog(@"not load new card");
+        return;
+    }
+    if (op == 1){
+        [self InsertOcrCard:newCard];
+        return;
+    }
+    if (op == 2){
+        [self UpdateOcrCard:newCard];
+        return;
+    }
+}
+@end
