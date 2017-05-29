@@ -67,22 +67,7 @@
 {
     if (editingStyle == UITableViewCellEditingStyleDelete){
         OcrCard* ocrdata = [self GetCard:indexPath];
-        if (ocrdata && [ocrdata Delete]){
-            for (NSString* key in [self.CardDict allKeys]){
-                NSMutableArray *value = [self.CardDict objectForKey:key];
-                for (OcrCard* deldata in value){
-                    if ([deldata isEqual:ocrdata] ){
-                        [value removeObject:deldata];
-                        if (value.count == 0){
-                            [self.CardDict removeObjectForKey:key];
-                            [self.Keys removeObject:key];
-                        }
-                        [tableView reloadData];
-                        return;
-                    }
-                }
-            }
-        }
+        [self DeleteOcrCard:ocrdata];
     }
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -120,7 +105,9 @@
             return;
         }
     }
+    //新key
     [self.Keys addObject:chKey];
+    [self.CardDict setValue:[[NSMutableArray alloc] init] forKey:chKey];
     [[self.CardDict objectForKey:chKey] addObject:newCard];
     [OcrCard SortHeadKeys:self.Keys];
     if (self.tableView){
@@ -139,6 +126,25 @@
                     [self.tableView reloadData];
                 }
                 return;
+            }
+        }
+    }
+}
+-(void)DeleteOcrCard:(OcrCard*)ocrdata
+{
+    if (ocrdata && [ocrdata Delete]){
+        for (NSString* key in [self.CardDict allKeys]){
+            NSMutableArray *value = [self.CardDict objectForKey:key];
+            for (OcrCard* deldata in value){
+                if ([deldata isEqual:ocrdata] ){
+                    [value removeObject:deldata];
+                    if (value.count == 0){
+                        [self.CardDict removeObjectForKey:key];
+                        [self.Keys removeObject:key];
+                    }
+                    [self.tableView reloadData];
+                    return;
+                }
             }
         }
     }
