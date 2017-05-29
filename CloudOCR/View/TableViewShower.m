@@ -66,7 +66,23 @@
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete){
-        [tableView reloadData];
+        OcrCard* ocrdata = [self GetCard:indexPath];
+        if (ocrdata && [ocrdata Delete]){
+            for (NSString* key in [self.CardDict allKeys]){
+                NSMutableArray *value = [self.CardDict objectForKey:key];
+                for (OcrCard* deldata in value){
+                    if ([deldata isEqual:ocrdata] ){
+                        [value removeObject:deldata];
+                        if (value.count == 0){
+                            [self.CardDict removeObjectForKey:key];
+                            [self.Keys removeObject:key];
+                        }
+                        [tableView reloadData];
+                        return;
+                    }
+                }
+            }
+        }
     }
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

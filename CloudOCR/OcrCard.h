@@ -33,5 +33,6 @@
 +(NSMutableDictionary*)TransHeadedDict:(NSMutableArray*)lst ForKey:(NSString*)key ResultHeadKeys:(NSMutableArray*)keyLst;
 +(NSString*)GetHeadKey:(NSString*)value;
 +(void)SortHeadKeys:(NSMutableArray*)keyLst;
+-(BOOL)isEqual:(id)object;
 
 @end

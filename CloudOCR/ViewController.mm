@@ -113,6 +113,7 @@
 {
     [super viewWillAppear:animated];
     [self registerKeyboardNotify];
+    [self removeGestures];
 }
 -(void)viewWillDisappear:(BOOL)animated
 {

@@ -210,4 +210,12 @@
     
     return dict;
 }
+-(BOOL)isEqual:(id)object
+{
+    if ([object isKindOfClass:[OcrCard class]]){
+        OcrCard* other = (OcrCard*)object;
+        return other.CardId==self.CardId;
+    }
+    return FALSE;
+}
 @end

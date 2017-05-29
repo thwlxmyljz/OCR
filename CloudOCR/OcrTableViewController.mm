@@ -137,8 +137,8 @@ HexMOcr* mOcr = nil;
 -(void)viewWillLayoutSubviews
 {
     NSLog(@"OcrTableViewController viewWillLayoutSubviews");
-    self.tableView.frame = CGRectMake(0, 100, self.view.frame.size.width, self.view.frame.size.height-100);
-    self.panel.center = CGPointMake(self.view.frame.size.width/2,self.view.frame.size.height-_panel.frame.size.height*2);
+    self.tableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-44);
+    self.panel.center = CGPointMake(self.view.frame.size.width/2,self.view.frame.size.height-_panel.frame.size.height/2);
 }
 #pragma makr - SlideMenuControllerDelegate
 -(void)leftWillOpen {
@@ -185,21 +185,7 @@ HexMOcr* mOcr = nil;
         [self.CurShower Setup:self.tableView];
     }
 }
-#pragma mark - Table view data source
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 0.0;
-}
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 0;
-}
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return nil;
-}
 -(void) OnSelectOcrCard:(OcrCard*)card
 {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -213,7 +199,23 @@ HexMOcr* mOcr = nil;
     
     [self.navigationController pushViewController:v animated:TRUE];
 }
-
+/*
+ #pragma mark - Table view data source
+ -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+ return 0.0;
+ }
+ - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+ return 0;
+ }
+ 
+ - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+ return 0;
+ }
+ 
+ - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+ return nil;
+ }
+ */
 /*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {

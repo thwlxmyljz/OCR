@@ -14,4 +14,6 @@
 
 -(void)removeNavigationBarItem;
 
+-(void)removeGestures;
+
 @end
