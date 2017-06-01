@@ -25,7 +25,7 @@
 -(void)Setup:(UITableView*) tableView
 {
     [tableView registerCellNib:[BankTableCell class]];
-    self.KeyName = BANDCARD_KEY_NAME;
+    self.KeyName = BANKCARD_KEY_BANKNAME_CH;
     self.OcrClass = Class_Personal_BankCard;
     
     [super Setup:tableView];
@@ -42,8 +42,8 @@
     
     OcrCard* ocrdata = [self GetCard:indexPath];
     data.image = ocrdata.CardImg;
-    data.BankName = @"test";
-    data.BankNo = @"test111111";
+    data.BankName = [ocrdata.CardDetail objectForKey:BANKCARD_KEY_BANKNAME_CH];
+    data.BankNo = [ocrdata.CardDetail objectForKey:BANKCARD_KEY_CARDNO_CH];
     
     [cell setData:data];
     return cell;

@@ -36,20 +36,21 @@
     [super awakeFromNib];
     
     self.lblName.font = [UIFont italicSystemFontOfSize:15];
-    self.lblName.textColor = [UIColor colorFromHexString:@"#000000"];
+    self.lblName.textColor = [UIColor colorFromHexString:@"#9E9E00"];
     self.lblName.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.lblSex.font = [UIFont italicSystemFontOfSize:13.5];
-    self.lblSex.textColor = [UIColor colorFromHexString:@"#000000"];
+    self.lblSex.font = [UIFont italicSystemFontOfSize:13];
+    self.lblSex.textColor = [UIColor colorFromHexString:@"#888888"];
     self.lblSex.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.lblMz.font = [UIFont italicSystemFontOfSize:13.5];
-    self.lblMz.textColor = [UIColor colorFromHexString:@"#000000"];
+    self.lblMz.font = [UIFont italicSystemFontOfSize:13];
+    self.lblMz.textColor = [UIColor colorFromHexString:@"#888888"];
     self.lblMz.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.lblCardNo.font = [UIFont italicSystemFontOfSize:15];
     self.lblCardNo.textColor = [UIColor colorFromHexString:@"#9E9E00"];
     self.lblCardNo.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.lblAddress.font = [UIFont italicSystemFontOfSize:14];
-    self.lblAddress.textColor = [UIColor colorFromHexString:@"#000000"];
-    self.lblAddress.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.lblAddress.textColor = [UIColor colorFromHexString:@"#888888"];
+    self.lblAddress.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin;
+    self.lblAddress.contentInset = UIEdgeInsetsMake(-10, -4, 0, 0);
 }
 
 +(CGFloat)height {

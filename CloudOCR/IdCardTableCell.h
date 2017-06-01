@@ -27,7 +27,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblName;
 @property (weak, nonatomic) IBOutlet UILabel *lblSex;
 @property (weak, nonatomic) IBOutlet UILabel *lblCardNo;
-@property (weak, nonatomic) IBOutlet UILabel *lblAddress;
+@property (weak, nonatomic) IBOutlet UITextView *lblAddress;
 @property (weak, nonatomic) IBOutlet UILabel *lblMz;
 
 @end

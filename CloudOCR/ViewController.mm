@@ -20,7 +20,7 @@
 #import "UIViewController+SlideMenuControllerOC.h"
 
 @interface ViewController()  <UINavigationControllerDelegate,UIImagePickerControllerDelegate,
-                                UITableViewDataSource,UITableViewDelegate,HexOcrBankCardCallback,HexOcrIdCardCallback>
+                                UITableViewDataSource,UITableViewDelegate>
 {
     //触发键盘的UITextField
     UITextField_CardCell* _keyInputField;
@@ -32,8 +32,6 @@
     NSMutableDictionary* _modifyDict;
     //等待框
     GCDiscreetNotificationView *notificationView;
-    
-    CGPoint _tableContentOrigin;
 }
 @end
 
@@ -286,6 +284,11 @@
             [_showKeys addObject:IDCARD_KEY_ADDRESS];
             break;
         case Class_Personal_BankCard:
+            [_showKeys addObject:BANDCARD_KEY_BANKCODE_CH];
+            [_showKeys addObject:BANKCARD_KEY_BANKNAME_CH];
+            [_showKeys addObject:BANKCARD_KEY_CARDNAME_CH];
+            [_showKeys addObject:BANKCARD_KEY_CARDNO_CH];
+            [_showKeys addObject:BANKCARD_KEY_CARDTYPE_CH];
             break;
         default:
             break;

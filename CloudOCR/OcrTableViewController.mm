@@ -15,6 +15,7 @@
 #import "BooksOp.h"
 #import "UIColor+SlideMenuControllerOC.h"
 #import "constants.h"
+#import "CardKey.h"
 
 @interface OcrTableViewController () <UITableViewDataSource,UITableViewDelegate,
                 SlideMenuControllerDelegate,LeftMenuProtocol,UINavigationControllerDelegate,UIImagePickerControllerDelegate,HexOcrBankCardCallback,HexOcrIdCardCallback>
@@ -334,7 +335,25 @@ HexMOcr* mOcr = nil;
 - (void)bankCardOcrEnd:(int)result resultImage:(UIImage *)image resultDictionary:(NSDictionary *)ocrResult fullCardImage:(UIImage *) fullImage{
     self.imageView.image = fullImage;
     
-    [self showResult:ocrResult];
+    NSMutableDictionary* newDict = [[NSMutableDictionary alloc] init];
+    for (NSString* key in ocrResult){
+        if ([key isEqualToString:BANDCARD_KEY_BANKCODE]){
+            [newDict setValue: [ocrResult valueForKey:key]  forKey:BANDCARD_KEY_BANKCODE_CH];
+        }
+        else if ([key isEqualToString:BANKCARD_KEY_BANKNAME]){
+            [newDict setValue: [ocrResult valueForKey:key]  forKey:BANKCARD_KEY_BANKNAME_CH];
+        }
+        else if ([key isEqualToString:BANKCARD_KEY_CARDNAME]){
+            [newDict setValue: [ocrResult valueForKey:key]  forKey:BANKCARD_KEY_CARDNAME_CH];
+        }
+        else if ([key isEqualToString:BANKCARD_KEY_CARDNO]){
+            [newDict setValue: [ocrResult valueForKey:key]  forKey:BANKCARD_KEY_CARDNO_CH];
+        }
+        else if ([key isEqualToString:BANKCARD_KEY_CARDTYPE]){
+            [newDict setValue: [ocrResult valueForKey:key]  forKey:BANKCARD_KEY_CARDTYPE_CH];
+        }
+    }
+    [self showResult:newDict];
 }
 
 //从相册选择
@@ -381,17 +400,20 @@ HexMOcr* mOcr = nil;
     
 }
 
--(void) showResult:(NSDictionary*) ocrResult{
+-(void) showResult:(NSDictionary*) ocrResult
+{
+    self.dicResult = [ocrResult copy];
+    /*
     NSMutableString* resultText= [NSMutableString string];
     [resultText appendString:@"识别结果:\n"];
-    self.dicResult = [ocrResult copy];
+    
     for (NSString *key in ocrResult.keyEnumerator) {
         NSString* value= [ocrResult valueForKey:key];
         
         [resultText appendFormat:@"%@=%@\n",key,value];
     }
     self.txtResult.text=resultText;
-    
+    */
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ViewController *v = (ViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ViewController"];
     v.OcrAction = EMOcrAction_Photo;

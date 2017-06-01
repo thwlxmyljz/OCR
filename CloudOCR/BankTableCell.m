@@ -29,7 +29,7 @@
 }
 
 +(CGFloat)height {
-    return 100;
+    return 60;
 }
 
 -(void)setData:(id)data {
