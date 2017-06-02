@@ -116,8 +116,8 @@
 		41495F271ED3D247008DE054 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		41495F291ED3D247008DE054 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		41495F2A1ED3D247008DE054 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		41495F2C1ED3D247008DE054 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		41495F2D1ED3D247008DE054 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
+		41495F2C1ED3D247008DE054 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = CloudOCR/ViewController.h; sourceTree = SOURCE_ROOT; };
+		41495F2D1ED3D247008DE054 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = ViewController.mm; path = CloudOCR/ViewController.mm; sourceTree = SOURCE_ROOT; };
 		41495F301ED3D247008DE054 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		41495F321ED3D247008DE054 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		41495F351ED3D247008DE054 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -208,8 +208,8 @@
 		4173C8AF1ED55639000A0C33 /* IdCardTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdCardTableCell.h; sourceTree = "<group>"; };
 		4173C8B01ED55639000A0C33 /* IdCardTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IdCardTableCell.m; sourceTree = "<group>"; };
 		4173C8B21ED55658000A0C33 /* IdCardTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IdCardTableCell.xib; sourceTree = "<group>"; };
-		4173C8B71ED567BA000A0C33 /* OcrTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OcrTableViewController.h; sourceTree = "<group>"; };
-		4173C8B81ED567BA000A0C33 /* OcrTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OcrTableViewController.mm; sourceTree = "<group>"; };
+		4173C8B71ED567BA000A0C33 /* OcrTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OcrTableViewController.h; path = ../OcrTableViewController.h; sourceTree = "<group>"; };
+		4173C8B81ED567BA000A0C33 /* OcrTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = OcrTableViewController.mm; path = ../OcrTableViewController.mm; sourceTree = "<group>"; };
 		4173C8BA1ED584D4000A0C33 /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		4173C8BC1ED584DD000A0C33 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		4173C8BE1ED584F1000A0C33 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -223,9 +223,9 @@
 		41BF5D001ED6B4380010C8C7 /* OcrCard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OcrCard.m; sourceTree = "<group>"; };
 		41BF5D021ED6DCC90010C8C7 /* camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = camera.png; path = pic/camera.png; sourceTree = "<group>"; };
 		41BF5D031ED6DCC90010C8C7 /* photo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = photo.png; path = pic/photo.png; sourceTree = "<group>"; };
-		41BF5D0E1ED7C6A20010C8C7 /* CardTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CardTableViewCell.h; path = View/CardTableViewCell.h; sourceTree = "<group>"; };
-		41BF5D0F1ED7C6A20010C8C7 /* CardTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CardTableViewCell.m; path = View/CardTableViewCell.m; sourceTree = "<group>"; };
-		41BF5D111ED7C6B80010C8C7 /* CardTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CardTableViewCell.xib; path = View/CardTableViewCell.xib; sourceTree = "<group>"; };
+		41BF5D0E1ED7C6A20010C8C7 /* CardTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardTableViewCell.h; sourceTree = "<group>"; };
+		41BF5D0F1ED7C6A20010C8C7 /* CardTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardTableViewCell.m; sourceTree = "<group>"; };
+		41BF5D111ED7C6B80010C8C7 /* CardTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CardTableViewCell.xib; sourceTree = "<group>"; };
 		41CC96921ED81AD300926708 /* Chk2Asi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chk2Asi.h; sourceTree = "<group>"; };
 		41CC96931ED81AD300926708 /* Chk2Asi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Chk2Asi.m; sourceTree = "<group>"; };
 		41CC96951ED8366700926708 /* CardKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CardKey.h; path = View/CardKey.h; sourceTree = "<group>"; };
@@ -306,13 +306,6 @@
 				41495F431ED3D49F008DE054 /* LeftViewController.m */,
 				41495F461ED3D49F008DE054 /* RightViewController.h */,
 				41495F471ED3D49F008DE054 /* RightViewController.m */,
-				4173C8B71ED567BA000A0C33 /* OcrTableViewController.h */,
-				4173C8B81ED567BA000A0C33 /* OcrTableViewController.mm */,
-				41BF5D0E1ED7C6A20010C8C7 /* CardTableViewCell.h */,
-				41BF5D0F1ED7C6A20010C8C7 /* CardTableViewCell.m */,
-				41BF5D111ED7C6B80010C8C7 /* CardTableViewCell.xib */,
-				41495F2C1ED3D247008DE054 /* ViewController.h */,
-				41495F2D1ED3D247008DE054 /* ViewController.mm */,
 				41CC96921ED81AD300926708 /* Chk2Asi.h */,
 				41CC96931ED81AD300926708 /* Chk2Asi.m */,
 				41BF5CFC1ED67D540010C8C7 /* BooksOp.h */,
@@ -410,6 +403,13 @@
 				41495FDF1ED523B5008DE054 /* ImageHeaderView.h */,
 				41495FE01ED523B5008DE054 /* ImageHeaderView.m */,
 				41495FE11ED523B5008DE054 /* ImageHeaderView.xib */,
+				4173C8B71ED567BA000A0C33 /* OcrTableViewController.h */,
+				4173C8B81ED567BA000A0C33 /* OcrTableViewController.mm */,
+				41BF5D0E1ED7C6A20010C8C7 /* CardTableViewCell.h */,
+				41BF5D0F1ED7C6A20010C8C7 /* CardTableViewCell.m */,
+				41BF5D111ED7C6B80010C8C7 /* CardTableViewCell.xib */,
+				41495F2C1ED3D247008DE054 /* ViewController.h */,
+				41495F2D1ED3D247008DE054 /* ViewController.mm */,
 				41CC96981ED83DD300926708 /* TableViewShower.h */,
 				41CC96991ED83DD300926708 /* TableViewShower.m */,
 			);
@@ -551,7 +551,6 @@
 				TargetAttributes = {
 					41495F221ED3D247008DE054 = {
 						CreatedOnToolsVersion = 7.2.1;
-						DevelopmentTeam = TNSDHYXXLH;
 					};
 				};
 			};
@@ -792,8 +791,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = TNSDHYXXLH;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/CloudOCR/sdk/inc",
@@ -807,9 +804,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yiqiao.CloudOCR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "3b99bb7f-9d0a-40cf-be1a-400079f010e8";
-				PROVISIONING_PROFILE_SPECIFIER = tanghongwen1;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Debug;
@@ -818,8 +813,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = 64EV5NTF2V;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/CloudOCR/sdk/inc",
@@ -833,8 +826,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yiqiao.CloudOCR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tanghongwen1;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;

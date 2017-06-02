@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -14,22 +15,66 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pJW-x1-JU2">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pJW-x1-JU2">
                         <rect key="frame" x="8" y="11" width="96" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="96" id="e1U-tT-58P"/>
+                            <constraint firstAttribute="height" constant="21" id="ske-Fb-GUR"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="ske-Fb-GUR"/>
+                            </mask>
+                        </variation>
                     </label>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="osG-Ef-Iax" customClass="UITextField_CardCell">
-                        <rect key="frame" x="121" y="7" width="199" height="30"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MYr-mU-JZQ">
+                        <rect key="frame" x="112" y="1" width="1" height="40"/>
+                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="1" id="e3x-ZN-BvV"/>
+                            <constraint firstAttribute="height" constant="40" id="nOz-8Y-EQh"/>
+                        </constraints>
+                    </imageView>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="osG-Ef-Iax" customClass="UITextField_CardCell">
+                        <rect key="frame" x="121" y="13" width="199" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="30" id="rgF-tW-XuL"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits"/>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="rgF-tW-XuL"/>
+                            </mask>
+                        </variation>
                     </textField>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MYr-mU-JZQ">
-                        <rect key="frame" x="112" y="1" width="1" height="40"/>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                    </imageView>
                 </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottomMargin" secondItem="pJW-x1-JU2" secondAttribute="bottom" constant="3" id="BHk-px-7c7"/>
+                    <constraint firstItem="MYr-mU-JZQ" firstAttribute="leading" secondItem="pJW-x1-JU2" secondAttribute="trailing" constant="8" id="BSA-rT-z00"/>
+                    <constraint firstItem="MYr-mU-JZQ" firstAttribute="centerY" secondItem="5OO-u7-jx8" secondAttribute="centerY" id="BXF-mw-Q09"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="osG-Ef-Iax" secondAttribute="bottom" constant="-2" id="Eg3-YH-CTo"/>
+                    <constraint firstItem="osG-Ef-Iax" firstAttribute="leading" secondItem="MYr-mU-JZQ" secondAttribute="trailing" constant="8" id="Gjp-61-GN6"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="osG-Ef-Iax" secondAttribute="trailing" constant="-8" id="Kb1-Jz-8y6"/>
+                    <constraint firstItem="pJW-x1-JU2" firstAttribute="top" secondItem="5OO-u7-jx8" secondAttribute="topMargin" constant="3" id="Vfa-tQ-ubS"/>
+                    <constraint firstItem="pJW-x1-JU2" firstAttribute="centerY" secondItem="5OO-u7-jx8" secondAttribute="centerY" id="hKv-Vk-K2l"/>
+                    <constraint firstItem="osG-Ef-Iax" firstAttribute="centerY" secondItem="5OO-u7-jx8" secondAttribute="centerY" id="jIM-Lb-rhK"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="osG-Ef-Iax" secondAttribute="trailing" id="qyS-v4-ZFW"/>
+                    <constraint firstItem="pJW-x1-JU2" firstAttribute="leading" secondItem="5OO-u7-jx8" secondAttribute="leadingMargin" id="yBw-SX-lna"/>
+                    <constraint firstItem="osG-Ef-Iax" firstAttribute="leading" secondItem="MYr-mU-JZQ" secondAttribute="trailing" constant="8" id="zlK-Iy-FSt"/>
+                </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="BHk-px-7c7"/>
+                        <exclude reference="Vfa-tQ-ubS"/>
+                        <exclude reference="Eg3-YH-CTo"/>
+                        <exclude reference="Gjp-61-GN6"/>
+                        <exclude reference="qyS-v4-ZFW"/>
+                    </mask>
+                </variation>
             </tableViewCellContentView>
             <connections>
                 <outlet property="edtValue" destination="osG-Ef-Iax" id="dKJ-Hr-5KL"/>

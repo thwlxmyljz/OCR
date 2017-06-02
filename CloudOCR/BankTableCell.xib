@@ -15,7 +15,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aCO-7s-ogx">
-                        <rect key="frame" x="4" y="4" width="60" height="50"/>
+                        <rect key="frame" x="8" y="4" width="60" height="50"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0R9-N3-xAi">
                         <rect key="frame" x="111" y="7" width="185" height="21"/>
@@ -48,7 +48,7 @@
                 <outlet property="cardBankNo" destination="Yek-0x-KxS" id="pEV-y8-cGz"/>
                 <outlet property="imgView" destination="aCO-7s-ogx" id="c11-Ob-0Ld"/>
             </connections>
-            <point key="canvasLocation" x="268" y="-13"/>
+            <point key="canvasLocation" x="111" y="-63"/>
         </tableViewCell>
     </objects>
 </document>

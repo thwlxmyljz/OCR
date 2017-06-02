@@ -137,9 +137,6 @@ HexMOcr* mOcr = nil;
 }
 -(void)viewWillLayoutSubviews
 {
-    NSLog(@"OcrTableViewController viewWillLayoutSubviews");
-    self.tableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-44);
-    self.panel.center = CGPointMake(self.view.frame.size.width/2,self.view.frame.size.height-_panel.frame.size.height/2);
 }
 #pragma makr - SlideMenuControllerDelegate
 -(void)leftWillOpen {
@@ -293,10 +290,12 @@ HexMOcr* mOcr = nil;
 }
 - (void) scanIdCard
 {
+    /*
     static int n = 0;
     n++;
     FormType formType= (n%2==1) ? FormType::IdCard2_Front : FormType::IdCard2_Back;
-    
+    */
+    FormType formType = FormType::IdCard2_Front;
     if (nil == self.tipView){
         //设置提示图片
         self.tipView=[[UIImageView alloc] init];

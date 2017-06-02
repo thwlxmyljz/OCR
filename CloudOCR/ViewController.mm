@@ -70,9 +70,9 @@
     [recognizer4 setDirection:(UISwipeGestureRecognizerDirectionDown)];
     [self.tableView addGestureRecognizer:recognizer4];
     
+    _modifyDict = [[NSMutableDictionary alloc] init];
     //修改已有识别记录
     if (self.ModifyCard){
-        _modifyDict = [[NSMutableDictionary alloc] init];
         [self setup:self.tableView Image:self.ModifyCard.CardImg OcrDict:self.ModifyCard.CardDetail];
     }
     else{
@@ -150,6 +150,9 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!self.ModifyCard){
             //新建
+            for (NSString* key in [_modifyDict allKeys]){
+                [_orgDict setObject:[_modifyDict objectForKey:key] forKey:key];
+            }
             OcrCard* card = [[OcrCard alloc] init];
             card.OcrClass = self.OcrClass;
             card.CardId = [BooksOp Instance].CardID;

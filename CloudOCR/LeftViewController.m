@@ -15,6 +15,8 @@
 #import "BooksOp.h"
 #import "constants.h"
 #import "UIColor+SlideMenuControllerOC.h"
+#import "ImageHeaderView.h"
+#import "UIView+SlideMenuController.h"
 
 @interface LeftViewController ()
 {
@@ -25,6 +27,9 @@
     
     NSMutableDictionary* _tableData;
 }
+
+@property (retain, nonatomic) ImageHeaderView *imageHeaderView;
+
 @end
 
 NSString* g_OcrClass[] = {@"个人证件",@"金融票据",@"商业票据"};
@@ -41,8 +46,11 @@ NSString* g_OcrClass[] = {@"个人证件",@"金融票据",@"商业票据"};
     [_tableData setObject:[OcrType Financials] forKey:g_OcrClass[1]];
     [_tableData setObject:[OcrType Commercials] forKey:g_OcrClass[2]];
     
-    _headView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headshow4"]];
-    [self.view addSubview:_headView];
+    //_headView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headshow4"]];
+    //[self.view addSubview:_headView];
+    
+    self.imageHeaderView = (ImageHeaderView *)[ImageHeaderView loadNib];
+    [self.view addSubview:self.imageHeaderView];
     
     self.tableView.separatorColor = [UIColor colorWithRed:224/255.0 green:224/255.0 blue:224/255.0 alpha:1];
     [_tableView registerCellClass:[BaseTableViewCell class]];
@@ -55,7 +63,7 @@ NSString* g_OcrClass[] = {@"个人证件",@"金融票据",@"商业票据"};
 
 -(void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    _headView.frame = CGRectMake(0, 0, self.view.frame.size.width, 100);
+    self.imageHeaderView.frame = CGRectMake(0, 0, self.view.frame.size.width, 100);
     [self.view layoutIfNeeded];
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

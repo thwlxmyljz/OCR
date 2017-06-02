@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -71,13 +72,21 @@
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" editable="NO" text="address" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8ZQ-sc-9Rz">
+                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" text="address" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8ZQ-sc-9Rz">
                         <rect key="frame" x="110" y="75" width="207" height="38"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="38" id="qn9-dS-7En"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                     </textView>
                 </subviews>
+                <constraints>
+                    <constraint firstItem="8ZQ-sc-9Rz" firstAttribute="leading" secondItem="G9X-Kc-0XK" secondAttribute="leadingMargin" constant="102" id="ODZ-x5-y56"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="8ZQ-sc-9Rz" secondAttribute="trailing" constant="-5" id="sgB-4N-wxP"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="8ZQ-sc-9Rz" secondAttribute="bottom" constant="-2" id="xST-qT-sJ2"/>
+                </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="imgView" destination="rg9-4Q-Rcv" id="Ip1-z2-34a"/>
