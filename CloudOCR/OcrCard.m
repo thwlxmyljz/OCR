@@ -19,7 +19,7 @@
 @synthesize CardLinkId = _CardLinkId;
 @synthesize CardPri = _CardPri;
 
-//mb_card(ID INTEGER PRIMARY KEY, USERID INTEGER, USERNAME TEXT, CARDTYPE INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, CARDPRI BLOB,CARDDETAIL BLOB)
+//mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDTYPE INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, CARDPRI BLOB,CARDDETAIL BLOB)
 
 -(BOOL)Insert
 {
@@ -32,7 +32,7 @@
     sqlite3_stmt * statement;
     if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
     {
-        sqlite3_bind_int(statement, 1, [BooksOp Instance].UserId);
+        sqlite3_bind_text(statement, 1, [[BooksOp Instance].UserId UTF8String], -1, NULL);
         sqlite3_bind_text(statement, 2, [[BooksOp Instance].UserName UTF8String], -1, NULL);
         sqlite3_bind_int(statement, 3, self.OcrClass);
         sqlite3_bind_int(statement, 4, self.CardId);

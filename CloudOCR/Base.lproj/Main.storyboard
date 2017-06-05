@@ -49,7 +49,51 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rho-Rp-t7g" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="821" y="-598"/>
+            <point key="canvasLocation" x="821" y="-586"/>
+        </scene>
+        <!--Image Preview View Controller-->
+        <scene sceneID="sNK-cn-hjR">
+            <objects>
+                <viewController storyboardIdentifier="ImagePreviewViewController" id="70E-rs-nUv" customClass="ImagePreviewViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Odz-OH-gRn"/>
+                        <viewControllerLayoutGuide type="bottom" id="5Am-dx-pNv"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="mmi-dY-vYW">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8Ry-8F-PXj">
+                                <rect key="frame" x="45" y="94" width="500" height="300"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="8Ry-8F-PXj" firstAttribute="top" secondItem="mmi-dY-vYW" secondAttribute="topMargin" id="GQj-dF-yoe"/>
+                            <constraint firstItem="8Ry-8F-PXj" firstAttribute="centerY" secondItem="mmi-dY-vYW" secondAttribute="centerY" id="SPe-pB-K73"/>
+                            <constraint firstItem="8Ry-8F-PXj" firstAttribute="centerX" secondItem="mmi-dY-vYW" secondAttribute="centerX" id="bGK-E7-yTu"/>
+                            <constraint firstItem="8Ry-8F-PXj" firstAttribute="leading" secondItem="mmi-dY-vYW" secondAttribute="leadingMargin" constant="-20" id="cJg-vL-zoH"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="8Ry-8F-PXj" secondAttribute="trailing" constant="-20" id="gwj-KT-hvN"/>
+                            <constraint firstItem="5Am-dx-pNv" firstAttribute="top" secondItem="8Ry-8F-PXj" secondAttribute="bottom" id="r31-IG-FRl"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="GQj-dF-yoe"/>
+                                <exclude reference="SPe-pB-K73"/>
+                                <exclude reference="bGK-E7-yTu"/>
+                                <exclude reference="cJg-vL-zoH"/>
+                                <exclude reference="gwj-KT-hvN"/>
+                                <exclude reference="r31-IG-FRl"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <connections>
+                        <outlet property="imgView" destination="8Ry-8F-PXj" id="pPQ-Sn-pQA"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9Cj-cS-fsK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1550" y="-586"/>
         </scene>
         <!--ocr类型选取-->
         <scene sceneID="vEW-zZ-5Xn">

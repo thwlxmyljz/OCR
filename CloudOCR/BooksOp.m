@@ -53,11 +53,10 @@ static BooksOp* OneMe = nil;
         [self execsql:@"CREATE TABLE IF NOT EXISTS mb_sys(ID INTEGER PRIMARY KEY, VAR TEXT, VARVALUE INTEGER, CHARVALUE TEXT)"];
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (1,'CURCLASS',100,'0')"];//当前识别类型,100默认身份证
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (2,'CARDID',1,'0')"];//每次识别数据保存的本地唯一标示
-        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID INTEGER, USERNAME TEXT, CARDTYPE INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, CARDPRI BLOB,CARDDETAIL BLOB)"];//识别的card存储
+        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDTYPE INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, CARDPRI BLOB,CARDDETAIL BLOB)"];//识别的card存储
         [self execsql_noerror:@"CREATE INDEX IF NOT EXISTS mb_card_type ON mb_card(CARDTYPE)"];
         /*
          //升级语句
-        [self execsql_noerror:@"alter table mb_order add column REMARK TEXT NULL default NULL"];//订单记录加入remark字段记录订单消息组合
         */
         
         self.CardID = [self GetSysVarInt:@"CARDID"];
@@ -876,5 +875,10 @@ static BooksOp* OneMe = nil;
     }
 }
 
-
++(NSString *)UUID
+{
+    CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
+    CFStringRef cfstring = CFUUIDCreateString(kCFAllocatorDefault, uuid);
+    return [NSString stringWithFormat:@"%@", cfstring];
+}
 @end

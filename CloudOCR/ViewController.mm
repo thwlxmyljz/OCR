@@ -18,6 +18,7 @@
 #import "NotificationView.h"
 #import "NSNotificationAdditions.h"
 #import "UIViewController+SlideMenuControllerOC.h"
+#import "ImagePreviewViewController.h"
 
 @interface ViewController()  <UINavigationControllerDelegate,UIImagePickerControllerDelegate,
                                 UITableViewDataSource,UITableViewDelegate>
@@ -30,6 +31,7 @@
     NSMutableArray* _showKeys;
     //保存编辑过的数据
     NSMutableDictionary* _modifyDict;
+    UIImage* _showImg;
     //等待框
     GCDiscreetNotificationView *notificationView;
 }
@@ -84,11 +86,17 @@
     tableView.delegate = self;
     tableView.dataSource = self;
     
+    _showImg = img;
+    
     UIView* headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREENW, 100)];
     headView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
     UIImageView* imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 120, 80)];
-    imgView.image = img;
+    imgView.image = _showImg;
     [headView addSubview:imgView];
+    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleHeadViewTapped:)];
+    [imgView addGestureRecognizer:recognizer];
+    imgView.userInteractionEnabled = TRUE;
     imgView.center = CGPointMake(SCREENW/2, 100/2);
     
     tableView.tableHeaderView = headView;
@@ -123,6 +131,15 @@
 - (void)viewTapped:(id)nouse
 {
     [UIView TTIsKeyboardVisible];
+}
+-(void)handleHeadViewTapped:(UITapGestureRecognizer*)tapGr
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ImagePreviewViewController *v = (ImagePreviewViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ImagePreviewViewController"];
+    v.img = _showImg;
+    UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithTitle:@"返回" style:UIBarButtonItemStyleDone target:self action:nil];
+    self.navigationItem.backBarButtonItem = backItem;
+    [self.navigationController pushViewController:v animated:TRUE];
 }
 -(void)OnBack:(id)sender
 {

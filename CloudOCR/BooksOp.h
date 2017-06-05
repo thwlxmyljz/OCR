@@ -17,7 +17,7 @@
 
 @property (nonatomic,assign,getter=getCardID) NSInteger CardID;
 @property (nonatomic,assign) NSInteger CurClass;
-@property (nonatomic,assign) NSInteger UserId;
+@property (nonatomic,assign) NSString* UserId;
 @property (nonatomic,strong) NSString* UserName;
 
 - (void)initializeDatabase;
@@ -71,4 +71,7 @@
 + (void) scrollTableViewToBottom:(UITableView*)tableView Animated:(BOOL)animated;
 
 +(void)displayError:(NSString *)error withTitle:(NSString *)title;
+
++(NSString *)UUID;
+
 @end
