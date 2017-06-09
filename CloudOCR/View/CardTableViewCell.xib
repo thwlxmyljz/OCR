@@ -16,7 +16,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pJW-x1-JU2">
-                        <rect key="frame" x="8" y="11" width="96" height="21"/>
+                        <rect key="frame" x="12" y="11" width="96" height="21"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="96" id="e1U-tT-58P"/>
                             <constraint firstAttribute="height" constant="21" id="ske-Fb-GUR"/>
@@ -31,53 +31,75 @@
                         </variation>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MYr-mU-JZQ">
-                        <rect key="frame" x="112" y="1" width="1" height="40"/>
+                        <rect key="frame" x="108" y="1" width="1" height="40"/>
                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="1" id="e3x-ZN-BvV"/>
                             <constraint firstAttribute="height" constant="40" id="nOz-8Y-EQh"/>
                         </constraints>
-                    </imageView>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="osG-Ef-Iax" customClass="UITextField_CardCell">
-                        <rect key="frame" x="121" y="13" width="199" height="17"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="30" id="rgF-tW-XuL"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                        <textInputTraits key="textInputTraits"/>
                         <variation key="default">
                             <mask key="constraints">
-                                <exclude reference="rgF-tW-XuL"/>
+                                <exclude reference="nOz-8Y-EQh"/>
                             </mask>
                         </variation>
-                    </textField>
+                    </imageView>
+                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V8Y-hH-sgj" customClass="UITextView_CardCell">
+                        <rect key="frame" x="117" y="0.0" width="195" height="44"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                    </textView>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="centerY" secondItem="5OO-u7-jx8" secondAttribute="centerY" id="1Cv-h6-2Nh"/>
+                    <constraint firstItem="pJW-x1-JU2" firstAttribute="top" secondItem="5OO-u7-jx8" secondAttribute="topMargin" constant="3" id="84d-Fx-UfL"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="top" secondItem="5OO-u7-jx8" secondAttribute="topMargin" id="875-FJ-Z3G"/>
                     <constraint firstAttribute="bottomMargin" secondItem="pJW-x1-JU2" secondAttribute="bottom" constant="3" id="BHk-px-7c7"/>
-                    <constraint firstItem="MYr-mU-JZQ" firstAttribute="leading" secondItem="pJW-x1-JU2" secondAttribute="trailing" constant="8" id="BSA-rT-z00"/>
+                    <constraint firstItem="MYr-mU-JZQ" firstAttribute="leading" secondItem="pJW-x1-JU2" secondAttribute="trailing" id="BSA-rT-z00"/>
                     <constraint firstItem="MYr-mU-JZQ" firstAttribute="centerY" secondItem="5OO-u7-jx8" secondAttribute="centerY" id="BXF-mw-Q09"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="osG-Ef-Iax" secondAttribute="bottom" constant="-2" id="Eg3-YH-CTo"/>
-                    <constraint firstItem="osG-Ef-Iax" firstAttribute="leading" secondItem="MYr-mU-JZQ" secondAttribute="trailing" constant="8" id="Gjp-61-GN6"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="osG-Ef-Iax" secondAttribute="trailing" constant="-8" id="Kb1-Jz-8y6"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="top" secondItem="5OO-u7-jx8" secondAttribute="topMargin" id="Cd9-Zb-dB7"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="V8Y-hH-sgj" secondAttribute="bottom" constant="-5" id="CmW-Da-iUA"/>
+                    <constraint firstItem="MYr-mU-JZQ" firstAttribute="top" secondItem="5OO-u7-jx8" secondAttribute="topMargin" constant="-7" id="ISL-IU-ngV"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="leading" secondItem="MYr-mU-JZQ" secondAttribute="trailing" constant="8" id="KT7-YW-2hg"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="MYr-mU-JZQ" secondAttribute="bottom" constant="-6" id="N6x-v4-0pG"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="trailing" secondItem="5OO-u7-jx8" secondAttribute="trailingMargin" id="Oan-F1-eAS"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="top" secondItem="5OO-u7-jx8" secondAttribute="topMargin" constant="-8" id="T3Y-gv-3xY"/>
+                    <constraint firstItem="pJW-x1-JU2" firstAttribute="centerY" secondItem="5OO-u7-jx8" secondAttribute="centerY" id="VN3-yi-hsx"/>
                     <constraint firstItem="pJW-x1-JU2" firstAttribute="top" secondItem="5OO-u7-jx8" secondAttribute="topMargin" constant="3" id="Vfa-tQ-ubS"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="pJW-x1-JU2" secondAttribute="bottom" constant="3" id="WML-2I-7bU"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="leading" secondItem="MYr-mU-JZQ" secondAttribute="trailing" constant="8" id="aDH-UJ-YQ2"/>
                     <constraint firstItem="pJW-x1-JU2" firstAttribute="centerY" secondItem="5OO-u7-jx8" secondAttribute="centerY" id="hKv-Vk-K2l"/>
-                    <constraint firstItem="osG-Ef-Iax" firstAttribute="centerY" secondItem="5OO-u7-jx8" secondAttribute="centerY" id="jIM-Lb-rhK"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="osG-Ef-Iax" secondAttribute="trailing" id="qyS-v4-ZFW"/>
-                    <constraint firstItem="pJW-x1-JU2" firstAttribute="leading" secondItem="5OO-u7-jx8" secondAttribute="leadingMargin" id="yBw-SX-lna"/>
-                    <constraint firstItem="osG-Ef-Iax" firstAttribute="leading" secondItem="MYr-mU-JZQ" secondAttribute="trailing" constant="8" id="zlK-Iy-FSt"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="V8Y-hH-sgj" secondAttribute="bottom" id="q07-l5-wCu"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="trailing" secondItem="5OO-u7-jx8" secondAttribute="trailingMargin" id="rYi-XC-MeZ"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="top" secondItem="5OO-u7-jx8" secondAttribute="topMargin" id="rvc-yU-qXD"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="centerY" secondItem="5OO-u7-jx8" secondAttribute="centerY" id="sPb-yo-mf0"/>
+                    <constraint firstItem="V8Y-hH-sgj" firstAttribute="bottom" secondItem="5OO-u7-jx8" secondAttribute="bottomMargin" constant="5" id="tS7-Y9-owU"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="V8Y-hH-sgj" secondAttribute="bottom" constant="-9" id="ujx-u4-qid"/>
+                    <constraint firstItem="pJW-x1-JU2" firstAttribute="leading" secondItem="5OO-u7-jx8" secondAttribute="leadingMargin" constant="4" id="yBw-SX-lna"/>
                 </constraints>
                 <variation key="default">
                     <mask key="constraints">
+                        <exclude reference="84d-Fx-UfL"/>
                         <exclude reference="BHk-px-7c7"/>
                         <exclude reference="Vfa-tQ-ubS"/>
-                        <exclude reference="Eg3-YH-CTo"/>
-                        <exclude reference="Gjp-61-GN6"/>
-                        <exclude reference="qyS-v4-ZFW"/>
+                        <exclude reference="WML-2I-7bU"/>
+                        <exclude reference="hKv-Vk-K2l"/>
+                        <exclude reference="BXF-mw-Q09"/>
+                        <exclude reference="1Cv-h6-2Nh"/>
+                        <exclude reference="875-FJ-Z3G"/>
+                        <exclude reference="Cd9-Zb-dB7"/>
+                        <exclude reference="CmW-Da-iUA"/>
+                        <exclude reference="aDH-UJ-YQ2"/>
+                        <exclude reference="q07-l5-wCu"/>
+                        <exclude reference="rYi-XC-MeZ"/>
+                        <exclude reference="rvc-yU-qXD"/>
+                        <exclude reference="sPb-yo-mf0"/>
+                        <exclude reference="tS7-Y9-owU"/>
                     </mask>
                 </variation>
             </tableViewCellContentView>
             <connections>
-                <outlet property="edtValue" destination="osG-Ef-Iax" id="dKJ-Hr-5KL"/>
+                <outlet property="edtValue" destination="V8Y-hH-sgj" id="XdF-oR-nps"/>
                 <outlet property="lblCaption" destination="pJW-x1-JU2" id="gqE-sq-14L"/>
             </connections>
             <point key="canvasLocation" x="249" y="201"/>

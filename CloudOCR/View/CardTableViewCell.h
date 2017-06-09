@@ -17,7 +17,7 @@
 
 @end
 
-@interface UITextField_CardCell : UITextField
+@interface UITextView_CardCell : UITextView
 
 @property (nonatomic,strong) NSString* key;
 
@@ -26,6 +26,8 @@
 @interface CardTableViewCell : BaseTableViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *lblCaption;
-@property (weak, nonatomic) IBOutlet UITextField_CardCell *edtValue;
+@property (weak, nonatomic) IBOutlet UITextView_CardCell *edtValue;
+
++(CGFloat) heightForData:(id) data;
 
 @end

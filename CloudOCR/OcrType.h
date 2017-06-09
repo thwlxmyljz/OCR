@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 typedef enum{
+    Class_Normal=0,
     //下面的分类值不要修改，会保存到数据库
     Class_Personal_IdCard=100 ,
     Class_Personal_BankCard=101,

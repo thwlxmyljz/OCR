@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, EMOcrAction) {
     EMOcrAction_Camera
 };
 
-@interface ViewController : UIViewController <UITextFieldDelegate>
+@interface ViewController : UIViewController <UITextViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 

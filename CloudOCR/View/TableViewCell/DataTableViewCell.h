@@ -14,6 +14,13 @@
 
 @property (retain, nonatomic) UIImage* image;
 @property (retain, nonatomic) NSString *text;
+@property (retain, nonatomic) NSString *caption;
+@property (retain, nonatomic) NSString *text2;
+@property (retain, nonatomic) NSString *caption2;
+@property (retain, nonatomic) NSString *text3;
+@property (retain, nonatomic) NSString *caption3;
+
+-(void)loadData:(NSDictionary*)dict;
 
 @end
 
@@ -22,5 +29,7 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *dataImage;
 @property (weak, nonatomic) IBOutlet UILabel *dataText;
+@property (weak, nonatomic) IBOutlet UILabel *dataText2;
+@property (weak, nonatomic) IBOutlet UILabel *dataText3;
 
 @end

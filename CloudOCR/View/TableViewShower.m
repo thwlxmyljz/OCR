@@ -15,6 +15,7 @@
 #import "UIColor+SlideMenuControllerOC.h"
 #import "CardKey.h"
 #import "OcrTableViewController.h"
+#import "DataTableViewCell.h"
 
 @implementation TableViewShower
 
@@ -77,6 +78,15 @@
     OcrCard* ocrdata = [self GetCard:indexPath];
     [self.Owner OnSelectOcrCard:ocrdata];
 }
+-(void)BaseUp:(UITableView*) tableView WithClass:(EMOcrClass)clas WithKeyName:(NSString*)keyName
+{
+    [tableView registerCellNib:[DataTableViewCell class]];
+    self.OcrClass = clas;
+    self.KeyName = keyName;
+    
+    [self Setup:tableView];
+    
+}
 -(void)Setup:(UITableView*) tableView
 {
     self.tableView = tableView;
@@ -89,6 +99,28 @@
     
     [self.tableView reloadData];
 }
+
+#pragma mark - Table view data source
+
+
+#pragma mark - Table view data source
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return  [DataTableViewCell height];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    DataTableViewCell *cell = (DataTableViewCell *)[tableView dequeueReusableCellWithIdentifier:[DataTableViewCell identifier]];
+    DataTableViewCellData *data = [DataTableViewCellData new];
+    
+    OcrCard* ocrdata = [self GetCard:indexPath];
+    data.image = ocrdata.CardImg;
+    [data loadData:ocrdata.CardDetail];
+    
+    [cell setData:data];
+    return cell;
+}
+
+
 -(OcrCard*)GetCard:(NSIndexPath *)indexPath
 {
     if (!self.Keys || !self.CardDict){

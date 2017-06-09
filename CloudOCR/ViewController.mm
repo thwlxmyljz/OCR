@@ -19,19 +19,22 @@
 #import "NSNotificationAdditions.h"
 #import "UIViewController+SlideMenuControllerOC.h"
 #import "ImagePreviewViewController.h"
+#import "WSOperator.h"
 
 @interface ViewController()  <UINavigationControllerDelegate,UIImagePickerControllerDelegate,
                                 UITableViewDataSource,UITableViewDelegate>
 {
-    //触发键盘的UITextField
-    UITextField_CardCell* _keyInputField;
+    //触发键盘的UITextView
+    UITextView_CardCell* _keyInputField;
     //卡片信息字典
     NSMutableDictionary* _orgDict;
     //卡片按key序显示在tableview
     NSMutableArray* _showKeys;
     //保存编辑过的数据
     NSMutableDictionary* _modifyDict;
-    UIImage* _showImg;
+    //新识别的本地信息
+    int _CardId;
+    NSString* _SvrFileName;
     //等待框
     GCDiscreetNotificationView *notificationView;
 }
@@ -51,7 +54,7 @@
     [super viewDidLoad];
     
     self.tableView.frame = self.view.frame;
-
+    self.navigationItem.title = @"识别结果";
     UIBarButtonItem *navSave = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStylePlain target:self action:@selector(OnSave)];
     //self.navigationItem.rightBarButtonItems = @[navSave];
     self.navigationItem.rightBarButtonItem = navSave;
@@ -75,39 +78,78 @@
     _modifyDict = [[NSMutableDictionary alloc] init];
     //修改已有识别记录
     if (self.ModifyCard){
-        [self setup:self.tableView Image:self.ModifyCard.CardImg OcrDict:self.ModifyCard.CardDetail];
+        self.OcrImage = self.ModifyCard.CardImg;
+        self.OcrData = self.ModifyCard.CardDetail;
     }
-    else{
-        [self setup:self.tableView Image:self.OcrImage OcrDict:self.OcrData];
-    }
+    [self setup];
 }
--(void)setup:(UITableView *)tableView Image:(UIImage *)img OcrDict:(NSDictionary *)ocrDict
+-(void)showData
 {
-    tableView.delegate = self;
-    tableView.dataSource = self;
-    
-    _showImg = img;
-    
+    RMNOTIFYVIEW
+    _orgDict = [[NSMutableDictionary alloc] initWithDictionary:self.OcrData];
+    [self createKeys];
+    [self.tableView reloadData];
+}
+-(void)setup
+{
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+
     UIView* headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREENW, 100)];
     headView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     UIImageView* imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 120, 80)];
-    imgView.image = _showImg;
+    imgView.image = self.OcrImage;
     [headView addSubview:imgView];
     UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleHeadViewTapped:)];
     [imgView addGestureRecognizer:recognizer];
     imgView.userInteractionEnabled = TRUE;
     imgView.center = CGPointMake(SCREENW/2, 100/2);
     
-    tableView.tableHeaderView = headView;
-    [tableView registerCellNib:[CardTableViewCell class]];
+    self.tableView.tableHeaderView = headView;
+    [self.tableView registerCellNib:[CardTableViewCell class]];
     
-    _orgDict = [[NSMutableDictionary alloc] initWithDictionary:ocrDict];
-    [self createKeys];
-    
-    [tableView reloadData];
+    if (self.OcrData){
+        //已识别数据
+        [self showData];
+    }
+    else{
+        //未识别图片，上传到服务器识别
+        if (!notificationView){
+            notificationView = [[GCDiscreetNotificationView alloc] initWithText:@"正在识别..."
+                                                                   showActivity:TRUE
+                                                             inPresentationMode:GCDiscreetNotificationViewPresentationModeTop
+                                                                         inView:self.tableView];
+        }
+        [notificationView showAnimated];
+        
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self creatSvrOcrUpInfo];
+            
+            NSString *svrId = [WSOperator uploadOCR:@"GENERAL_FORM" OcrImg:self.OcrImage SvrType:@"addFile" SvrFileName:_SvrFileName];
+            NSLog(@"%@",svrId);
+            if ([svrId isEqualToString:@""]){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    RMNOTIFYVIEW
+                    [BooksOp displayError:@"无法连接服务器" withTitle:@""];
+                });
+            }
+            else{
+                //上传图片成功，下载识别结果
+                [NSThread sleepForTimeInterval:5.0f];
+                self.OcrData = [WSOperator downloadOCR_XML:svrId];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showData];
+                });
+            }
+        });
+    }
 }
-
+-(void)creatSvrOcrUpInfo
+{
+    _CardId = [BooksOp Instance].CardID;
+    _SvrFileName = [NSString stringWithFormat:@"%d.jpg",_CardId];
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -136,7 +178,7 @@
 {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ImagePreviewViewController *v = (ImagePreviewViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ImagePreviewViewController"];
-    v.img = _showImg;
+    v.img = self.OcrImage;
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithTitle:@"返回" style:UIBarButtonItemStyleDone target:self action:nil];
     self.navigationItem.backBarButtonItem = backItem;
     [self.navigationController pushViewController:v animated:TRUE];
@@ -145,21 +187,23 @@
 {
     [self.navigationController popViewControllerAnimated:FALSE];
 }
+
 -(void)OnSave
 {
     self.navigationItem.rightBarButtonItem.enabled = FALSE;
     //先失去焦点，让输入控件都得到输入值
     [UIView TTIsKeyboardVisible];
-/*
+
     if (!notificationView){
         notificationView = [[GCDiscreetNotificationView alloc] initWithText:@"保存..."
                                                                showActivity:TRUE
                                                          inPresentationMode:GCDiscreetNotificationViewPresentationModeTop
-                                                                     inView:self.tableView.tableHeaderView];
+                                                                     inView:self.tableView];
     }
  
     [notificationView showAnimated];
- */
+    [BooksOp scrollTableViewToTop:self.tableView Animated:FALSE];
+ 
     [self performSelector:@selector(realSave) withObject:nil afterDelay:0.1f];
 }
 -(void)realSave
@@ -174,9 +218,9 @@
             card.OcrClass = self.OcrClass;
             card.CardId = [BooksOp Instance].CardID;
             card.CardLinkId = @"";
-            card.CardPri = _orgDict;
             card.CardDetail = _orgDict;
             card.CardImg = self.OcrImage;
+            card.CardSvrImg = self.OcrImage;
             if ([card Insert]){
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
                                                                                   userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -200,7 +244,6 @@
                     [_orgDict setObject:[_modifyDict objectForKey:key] forKey:key];
                 }
                 self.ModifyCard.CardDetail = _orgDict;
-                self.ModifyCard.CardPri = _orgDict;
                 if ([self.ModifyCard Update]){
                     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
                                                                                       userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -276,16 +319,21 @@
 }
 
 #pragma mark - textfield delegate
-
-- (void)textFieldDidBeginEditing:(UITextField *)textField
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
-    _keyInputField = (UITextField_CardCell*)textField;
+    _keyInputField = (UITextView_CardCell*)textView;
+    return TRUE;
 }
--(void)textFieldDidEndEditing:(UITextField *)textField
+- (void)textViewDidBeginEditing:(UITextView *)textView
 {
-    _keyInputField = nil;
-    UITextField_CardCell* field = (UITextField_CardCell*)textField;
-    [_modifyDict setValue:textField.text forKey:field.key];
+    _keyInputField = (UITextView_CardCell*)textView;
+}
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    if (textView == _keyInputField)
+        _keyInputField = nil;
+    UITextView_CardCell* field = (UITextView_CardCell*)textView;
+    [_modifyDict setValue:textView.text forKey:field.key];
 }
 
 #pragma mark - Table view data source
@@ -311,6 +359,10 @@
             [_showKeys addObject:BANKCARD_KEY_CARDTYPE_CH];
             break;
         default:
+            for (NSString* key in [self.OcrData allKeys]){
+                [_showKeys addObject:key];
+                NSLog(@"add showkey:%@",key);
+            }
             break;
     }
 }
@@ -321,10 +373,21 @@
 //获取到某个indexPath的cell的起始y坐标
 -(CGFloat)getCellTopY:(NSIndexPath *)indexPath
 {
-    return self.tableView.tableHeaderView.frame.size.height+(indexPath.section+1)*[ViewController SectionHeight]+(indexPath.row)*[CardTableViewCell height];
+    CGFloat ff = self.tableView.tableHeaderView.frame.size.height+(indexPath.section+1)*[ViewController SectionHeight];
+    for (int i = 0; i < indexPath.row; i++){
+        CardTableViewCellData *data = [CardTableViewCellData new];
+        data.key = [_showKeys objectAtIndex:i];
+        data.value = [_orgDict objectForKey:data.key];
+        ff +=  [CardTableViewCell heightForData:data];
+    }
+    return ff;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return  [CardTableViewCell height];
+    
+    CardTableViewCellData *data = [CardTableViewCellData new];
+    data.key = [_showKeys objectAtIndex:indexPath.row];
+    data.value = [_orgDict objectForKey:data.key];
+    return  [CardTableViewCell heightForData:data];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -341,13 +404,14 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     CardTableViewCell *cell = (CardTableViewCell *)[tableView dequeueReusableCellWithIdentifier:[CardTableViewCell identifier]];
+    cell.edtValue.tag = [self getCellTopY:indexPath];//设置topY
+    cell.edtValue.delegate = self;
+    
     CardTableViewCellData *data = [CardTableViewCellData new];
     data.key = [_showKeys objectAtIndex:indexPath.row];
     data.value = [_orgDict objectForKey:data.key];
-    
     [cell setData:data];
-    cell.edtValue.delegate = self;
-    cell.edtValue.tag = [self getCellTopY:indexPath];//设置topY
+    
     return cell;
 }
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section

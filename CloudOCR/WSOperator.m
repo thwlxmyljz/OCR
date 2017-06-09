@@ -167,7 +167,10 @@
 }
 #pragma mark - web service function
 #pragma mark - upload Ocr
-+ (NSString*)uploadOCR:(NSString*)ocrType OcrImg:(UIImage*)ocrImg SvrType:(NSString*)svrType
+/*
+ 返回uuid
+ */
++ (NSString*)uploadOCR:(NSString*)ocrType OcrImg:(UIImage*)ocrImg SvrType:(NSString*)svrType SvrFileName:(NSString*)svrFileName
 {
     NSError *error=nil;
     NSString* path = [NSString stringWithFormat:@"%@/%@",SERVER_OCR,svrType];
@@ -223,9 +226,9 @@
     ////添加分界线，换行
     [body appendFormat:@"%@\r\n",MPboundary];
     //声明pic字段，文件名为boris.png
-    [body appendFormat:@"Content-Disposition: form-data; name=\"image\"; filename=\"%@.jpg\"\r\n",uuid];
+    [body appendFormat:@"Content-Disposition: form-data; name=\"files\"; filename=\"%@\"\r\n",svrFileName];
     //声明上传文件的格式
-    [body appendFormat:@"Content-Type: image/jpeg\r\n\r\n"];
+    [body appendFormat:@"Content-Type: multipart/form-data\r\n\r\n"];
     
     //声明结束符：--AaB03x--
     NSString *end=[[NSString alloc]initWithFormat:@"\r\n%@",endMPboundary];
@@ -255,12 +258,80 @@
     if([urlResponese statusCode] >=200&&[urlResponese statusCode]<300)
     {
         NSLog(@"uploadHeadPicImg ok(result:%@)",result);
-        return uuid;
+        return result;
     }
     else
     {
         NSLog(@"uploadHeadPicImg failed(status code:%d)",(int)[urlResponese statusCode]);
         return @"";
     }
+}
++ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId
+{
+    NSError *error=nil;
+    NSURLResponse* respond = nil;
+    NSString* path = [NSString stringWithFormat:@"%@/download?uuid=%@&fileType=xml",SERVER_OCR,@"09014f8a1"];
+    NSURL *url= [NSURL URLWithString:path];
+    NSURLRequest *request=[[NSURLRequest alloc] initWithURL:url];
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    NSData *xmlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
+    /*
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"xml"];
+    NSData *xmlData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingUncached error:&error];
+    */
+    if(xmlData && xmlData.length > 0 && !error)
+    {
+        if (![respond.MIMEType isEqualToString:@"text/html"])
+        {
+            xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.bytes , xmlData.length, nil, nil, (XML_PARSE_NOENT|XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING));
+            
+            if(!reader){
+                NSLog(@"failed to load soap respond xml !");
+                return nil;
+            }
+            else
+            {
+                char *temp;
+                NSString *currentTagField = nil;
+                NSString *currentTagName = nil;
+                NSString *currentTagValue = nil;
+                while (TRUE)
+                {
+                    if(!xmlTextReaderRead(reader))
+                        break;
+                    NSLog(@"========> %s",xmlTextReaderName(reader));
+                    if(xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT)
+                    {
+                        temp = (char *)xmlTextReaderConstName(reader);
+                        currentTagField = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                        NSLog(@"========> %s",temp);
+                        if([currentTagField isEqualToString:@"Field"])
+                        {
+                            NSLog(@"===> TagField: %@",currentTagField);
+                            
+                            temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)"Name");
+                            currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                            NSLog(@"===> TagName: %@",currentTagName);
+                            
+                            temp = (char *)xmlTextReaderReadString(reader);
+                            currentTagValue = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                            
+                            NSLog(@"===> TagValue: %@",currentTagValue);
+                            
+                            [dict setValue:currentTagValue forKey:currentTagName];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    NSLog(@"downloadOCR_XML(%@) over",svrId);
+    
+    return dict;
+}
++ (NSData*)downloadOCR_Img:(NSString*)svrId SvrFileName:(NSString*)svrFileName
+{
+    return nil;
 }
 @end

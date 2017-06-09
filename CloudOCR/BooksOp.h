@@ -69,7 +69,7 @@
 + (void) setExtraCellLineHidden:(UITableView *)tableView;
 + (void) scrollTableViewToTop:(UITableView*)tableView Animated:(BOOL)animated;
 + (void) scrollTableViewToBottom:(UITableView*)tableView Animated:(BOOL)animated;
-
++ (CGSize)sizeForString:(NSString *)string font:(UIFont *)font constrainedToSize:(CGSize)constrainedSize lineBreakMode:(NSLineBreakMode)lineBreakMode;
 +(void)displayError:(NSString *)error withTitle:(NSString *)title;
 
 +(NSString *)UUID;

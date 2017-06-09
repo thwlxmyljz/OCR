@@ -60,7 +60,7 @@ HexMOcr* mOcr = nil;
     
     //加载页面处理器
     self.Showers = [[NSMutableDictionary alloc] init];
-    
+
     TableViewShower* vv = nil;
     
     vv = [[IdCardTableViewShower alloc] init];
@@ -70,6 +70,11 @@ HexMOcr* mOcr = nil;
     vv = [[BankTableViewShower alloc] init];
     vv.Owner = self;
     [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%d", Class_Personal_BankCard]];
+    
+    //公共处理
+    vv = [[TableViewShower alloc] init];
+    vv.Owner = self;
+    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%d", Class_Normal]];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(freshOcr:)
@@ -124,6 +129,7 @@ HexMOcr* mOcr = nil;
         [mOcr showBankCardOcrView:self];
     }
     else{
+        //其他类型本地无法识别，拍照后调用服务器接口进行识别
         [self takePhoto];
     }
 }
@@ -173,14 +179,24 @@ HexMOcr* mOcr = nil;
 #pragma makr - LeftMenuProtocol
 -(void)changeViewController:(OcrType *)selType
 {
-    NSLog(@"change type:%@",selType.TypeName);
+    NSLog(@"change type:%@,class:%d",selType.TypeName,selType.OcrClass);
     NSString* key = [NSString stringWithFormat:@"%d",selType.OcrClass];
+    
     TableViewShower* shower = [self.Showers objectForKey:key];
-    if (shower && shower != self.CurShower){
+    if (!shower)
+        shower = [self.Showers objectForKey:[NSString stringWithFormat:@"%d",Class_Normal]];
+    if (shower){
         self.navigationItem.title = selType.TypeName;
         [BooksOp Instance].CurClass = selType.OcrClass;
         self.CurShower = shower;
-        [self.CurShower Setup:self.tableView];
+        if ([self.CurShower isMemberOfClass:[TableViewShower class]]){
+            [self.CurShower BaseUp:self.tableView WithClass:selType.OcrClass WithKeyName:@"名称"];
+            NSLog(@"normal class shower");
+        }
+        else{
+            [self.CurShower Setup:self.tableView];
+            NSLog(@"my class shower");
+        }
     }
 }
 
@@ -399,57 +415,6 @@ HexMOcr* mOcr = nil;
     
 }
 
--(void) showResult:(NSDictionary*) ocrResult
-{
-    self.dicResult = [ocrResult copy];
-    /*
-    NSMutableString* resultText= [NSMutableString string];
-    [resultText appendString:@"识别结果:\n"];
-    
-    for (NSString *key in ocrResult.keyEnumerator) {
-        NSString* value= [ocrResult valueForKey:key];
-        
-        [resultText appendFormat:@"%@=%@\n",key,value];
-    }
-    self.txtResult.text=resultText;
-    */
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    ViewController *v = (ViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ViewController"];
-    v.OcrAction = EMOcrAction_Photo;
-    v.OcrClass = (EMOcrClass) [BooksOp Instance].CurClass;
-    v.OcrImage = self.imageView.image;
-    v.OcrData = self.dicResult;
-    UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithTitle:@"取消" style:UIBarButtonItemStyleDone target:self action:nil];
-    self.navigationItem.backBarButtonItem = backItem;
-    [self.navigationController pushViewController:v animated:TRUE];
-}
-
--(void) recogImage{
-    NSMutableDictionary* ocrResult = [NSMutableDictionary dictionaryWithCapacity:8];
-    self.imageView.image = [UIImage imageWithContentsOfFile:self.imageFile];
-    NSLog(@"开始识别");
-    int nRet=[mOcr readFromFile:self.imageFile FormType:IdCard2_Front Result:ocrResult];
-    if (nRet <= 0){
-        self.txtResult.text=[NSString stringWithFormat:@"识别失败:%d",nRet];
-    }else{
-        [self showResult:ocrResult];
-    }
-}
-
-- (UIImage *)scaleToSize:(UIImage *)img size:(CGSize)size{
-    // 创建一个bitmap的context
-    // 并把它设置成为当前正在使用的context
-    UIGraphicsBeginImageContext(size);
-    // 绘制改变大小的图片
-    [img drawInRect:CGRectMake(0, 0, size.width, size.height)];
-    // 从当前context中创建一个改变大小后的图片
-    UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-    // 使当前的context出堆栈
-    UIGraphicsEndImageContext();
-    // 返回新的改变大小后的图片
-    return scaledImage;
-}
-
 -(void)setImage:(UIImage*) image{
     
     //获取Documents文件夹目录
@@ -482,8 +447,68 @@ HexMOcr* mOcr = nil;
     UIImageWriteToSavedPhotosAlbum(reSizeImage, nil, nil, nil);
     self.imageFile=filePath;
     self.imageView.image = reSizeImage;
-    [self performSelectorOnMainThread:@selector(recogImage) withObject:nil waitUntilDone:YES];
+    if (self.CurShower.OcrClass == Class_Personal_IdCard){
+        //目前ocr接口图片识别只支持身份证识别
+        [self performSelectorOnMainThread:@selector(recogImage) withObject:nil waitUntilDone:YES];
+    }
+    else{
+        //其他类型图片上传服务器识别
+        [self showResult:nil];
+    }
+}
+-(void) recogImage{
+    NSMutableDictionary* ocrResult = [NSMutableDictionary dictionaryWithCapacity:8];
+    self.imageView.image = [UIImage imageWithContentsOfFile:self.imageFile];
+    NSLog(@"开始识别");
+    int nRet=[mOcr readFromFile:self.imageFile FormType:IdCard2_Front Result:ocrResult];
+    if (nRet <= 0){
+        self.txtResult.text=[NSString stringWithFormat:@"识别失败:%d",nRet];
+    }else{
+        [self showResult:ocrResult];
+    }
 }
 
+- (UIImage *)scaleToSize:(UIImage *)img size:(CGSize)size{
+    // 创建一个bitmap的context
+    // 并把它设置成为当前正在使用的context
+    UIGraphicsBeginImageContext(size);
+    // 绘制改变大小的图片
+    [img drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    // 从当前context中创建一个改变大小后的图片
+    UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+    // 使当前的context出堆栈
+    UIGraphicsEndImageContext();
+    // 返回新的改变大小后的图片
+    return scaledImage;
+}
+
+
+-(void) showResult:(NSDictionary*) ocrResult
+{
+    if (ocrResult)
+        self.dicResult = [ocrResult copy];
+    else
+        self.dicResult = nil;
+    /*
+     NSMutableString* resultText= [NSMutableString string];
+     [resultText appendString:@"识别结果:\n"];
+     
+     for (NSString *key in ocrResult.keyEnumerator) {
+     NSString* value= [ocrResult valueForKey:key];
+     
+     [resultText appendFormat:@"%@=%@\n",key,value];
+     }
+     self.txtResult.text=resultText;
+     */
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ViewController *v = (ViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ViewController"];
+    v.OcrAction = EMOcrAction_Photo;
+    v.OcrClass = (EMOcrClass) [BooksOp Instance].CurClass;
+    v.OcrImage = self.imageView.image;
+    v.OcrData = self.dicResult;
+    UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithTitle:@"取消" style:UIBarButtonItemStyleDone target:self action:nil];
+    self.navigationItem.backBarButtonItem = backItem;
+    [self.navigationController pushViewController:v animated:TRUE];
+}
 
 @end

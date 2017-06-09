@@ -22,10 +22,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.imgView.image = self.img;
-    
-    UIBarButtonItem *navOcr = [[UIBarButtonItem alloc] initWithTitle:@"服务器识别" style:UIBarButtonItemStylePlain target:self action:@selector(OnSvrScan)];
-    //self.navigationItem.rightBarButtonItems = @[navSave];
-    self.navigationItem.rightBarButtonItem = navOcr;
+    self.imgView.contentMode = UIViewContentModeScaleAspectFit;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -33,6 +30,8 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void)viewWillLayoutSubviews{
+}
 /*
 #pragma mark - Navigation
 
@@ -42,9 +41,4 @@
     // Pass the selected object to the new view controller.
 }
 */
--(void)OnSvrScan
-{
-    NSString *result = [WSOperator uploadOCR:@"GENERAL_FORM" OcrImg:self.img SvrType:@"addFile"];
-    NSLog(@"%@",result);
-}
 @end

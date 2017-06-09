@@ -53,8 +53,8 @@ static BooksOp* OneMe = nil;
         [self execsql:@"CREATE TABLE IF NOT EXISTS mb_sys(ID INTEGER PRIMARY KEY, VAR TEXT, VARVALUE INTEGER, CHARVALUE TEXT)"];
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (1,'CURCLASS',100,'0')"];//当前识别类型,100默认身份证
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (2,'CARDID',1,'0')"];//每次识别数据保存的本地唯一标示
-        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDTYPE INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, CARDPRI BLOB,CARDDETAIL BLOB)"];//识别的card存储
-        [self execsql_noerror:@"CREATE INDEX IF NOT EXISTS mb_card_type ON mb_card(CARDTYPE)"];
+        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, SVRIMG BLOB,CARDDETAIL BLOB)"];//识别的card存储
+        [self execsql_noerror:@"CREATE INDEX IF NOT EXISTS mb_card_type ON mb_card(CARDCLASS)"];
         /*
          //升级语句
         */
@@ -745,6 +745,17 @@ static BooksOp* OneMe = nil;
             rg = [[str string] rangeOfString:selTxt options:NSCaseInsensitiveSearch range:rg];
     }
     lblChange.attributedText = str;
+}
++ (CGSize)sizeForString:(NSString *)string font:(UIFont *)font constrainedToSize:(CGSize)constrainedSize lineBreakMode:(NSLineBreakMode)lineBreakMode {
+    if ([string respondsToSelector:@selector(boundingRectWithSize:options:attributes:context:)]) {
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+        paragraphStyle.lineBreakMode = lineBreakMode;
+        NSDictionary *attributes = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paragraphStyle};
+        CGRect boundingRect = [string boundingRectWithSize:constrainedSize options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+        return CGSizeMake(ceilf(boundingRect.size.width), ceilf(boundingRect.size.height));
+    }
+    
+    return [string sizeWithFont:font constrainedToSize:constrainedSize lineBreakMode:lineBreakMode];
 }
 + (NSData *)ToJSONData:(NSDictionary*)theData{
     NSError *error = nil;

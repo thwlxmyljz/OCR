@@ -14,21 +14,24 @@
 @implementation OcrCard
 
 @synthesize CardImg = _CardImg;
+@synthesize CardSvrImg = _CardSvrImg;
 @synthesize CardDetail = _CardDetail;
 @synthesize CardId = _CardId;
 @synthesize CardLinkId = _CardLinkId;
-@synthesize CardPri = _CardPri;
 
-//mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDTYPE INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, CARDPRI BLOB,CARDDETAIL BLOB)
+//mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, SVRIMG BLOB,CARDDETAIL BLOB)
 
 -(BOOL)Insert
 {
-    NSData * imgData = UIImagePNGRepresentation(_CardImg);
-    NSData * cardPri = [BooksOp ToJSONData:self.CardPri];
-    NSData * cardDetail = [BooksOp ToJSONData:self.CardDetail];
-    if (!cardDetail || !cardPri || !imgData)
+    if (!_CardSvrImg && !_CardImg)
         return FALSE;
-    const  char * sql = "insert into mb_card (USERID,USERNAME,CARDTYPE,CARDID,LINKID,CARDIMG,CARDPRI,CARDDETAIL) values(?,?,?,?,?,?,?,?)";
+    if (!self.CardDetail)
+        return FALSE;
+    
+    
+    NSData * cardDetail = [BooksOp ToJSONData:self.CardDetail];
+    
+    const  char * sql = "insert into mb_card (USERID,USERNAME,CARDCLASS,CARDID,LINKID,CARDIMG,SVRIMG,CARDDETAIL) values(?,?,?,?,?,?,?,?)";
     sqlite3_stmt * statement;
     if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
     {
@@ -37,8 +40,21 @@
         sqlite3_bind_int(statement, 3, self.OcrClass);
         sqlite3_bind_int(statement, 4, self.CardId);
         sqlite3_bind_text(statement, 5, [self.CardLinkId UTF8String], -1, NULL);
-        sqlite3_bind_blob(statement, 6, [imgData bytes], [imgData length], NULL);
-        sqlite3_bind_blob(statement, 7, [cardPri bytes], [cardPri length], NULL);
+        if (self.CardImg){
+            NSData * imgData = UIImagePNGRepresentation(_CardImg);
+            sqlite3_bind_blob(statement, 6, [imgData bytes], [imgData length], NULL);
+        }
+        else{
+            sqlite3_bind_blob(statement, 6, NULL,0,NULL);
+        }
+        if (self.CardSvrImg){
+            NSData * imgData = UIImagePNGRepresentation(_CardSvrImg);
+            sqlite3_bind_blob(statement, 7, [imgData bytes], [imgData length], NULL);
+        }
+        else{
+            sqlite3_bind_blob(statement, 7, NULL, 0, NULL);
+        }
+        
         sqlite3_bind_blob(statement, 8, [cardDetail bytes], [cardDetail length], NULL);
         if( sqlite3_step(statement) == SQLITE_DONE){
             NSLog(@"insert ok");
@@ -51,17 +67,33 @@
 }
 -(BOOL)Update
 {
-    NSData * imgData = UIImagePNGRepresentation(_CardImg);
-    NSData * cardPri = [BooksOp ToJSONData:self.CardPri];
-    NSData * cardDetail = [BooksOp ToJSONData:self.CardDetail];
-    if (!cardDetail || !cardPri || !imgData)
+    if (!_CardSvrImg && !_CardImg)
         return FALSE;
-    const  char * sql = "update mb_card  set CARDIMG=?,CARDPRI=?,CARDDETAIL=? where CARDID=?";
+    if (!self.CardDetail)
+        return FALSE;
+    
+    const  char * sql = "update mb_card  set CARDIMG=?,SVRIMG=?,CARDDETAIL=? where CARDID=?";
     sqlite3_stmt * statement;
     if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
     {
-        sqlite3_bind_blob(statement, 1, [imgData bytes], [imgData length], NULL);
-        sqlite3_bind_blob(statement, 2, [cardPri bytes], [cardPri length], NULL);
+        
+        NSData * cardDetail = [BooksOp ToJSONData:self.CardDetail];
+        
+        if (self.CardImg){
+            NSData * imgData = UIImagePNGRepresentation(_CardImg);
+            sqlite3_bind_blob(statement, 1, [imgData bytes], [imgData length], NULL);
+        }
+        else{
+            sqlite3_bind_blob(statement, 1, NULL, 0, NULL);
+        }
+        
+        if (self.CardSvrImg){
+            NSData * imgData = UIImagePNGRepresentation(_CardSvrImg);
+            sqlite3_bind_blob(statement, 2, [imgData bytes], [imgData length], NULL);
+        }
+        else{
+            sqlite3_bind_blob(statement, 2, NULL, 0, NULL);
+        }
         sqlite3_bind_blob(statement, 3, [cardDetail bytes], [cardDetail length], NULL);
         sqlite3_bind_int(statement, 4, self.CardId);
         if( sqlite3_step(statement) == SQLITE_DONE){
@@ -116,8 +148,7 @@
     if (bytes !=0 && value != NULL)
     {
         NSData * data = [NSData dataWithBytes:value length:bytes];
-        card.CardPri = [BooksOp ToArrayOrNSDictionary:data];
-        [OcrCard printDic:card.CardPri];
+        card.CardSvrImg = [UIImage imageWithData:data];
     }
     
     bytes = sqlite3_column_bytes(statement, 5);
@@ -131,7 +162,7 @@
 +(NSMutableArray*)Load:(EMOcrClass)clas
 {
     NSMutableArray* array = [[NSMutableArray alloc] init];
-    const char * sql = "select CARDID,LINKID,CARDTYPE,CARDIMG,CARDPRI,CARDDETAIL from mb_card where CARDTYPE=?";
+    const char * sql = "select CARDID,LINKID,CARDCLASS,CARDIMG,SVRIMG,CARDDETAIL from mb_card where CARDCLASS=?";
     sqlite3_stmt * statement;
     if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
     {
@@ -148,7 +179,7 @@
 }
 +(OcrCard*)LoadOne:(int)cardId
 {
-    const char * sql = "select CARDID,LINKID,CARDTYPE,CARDIMG,CARDPRI,CARDDETAIL from mb_card where CARDID=?";
+    const char * sql = "select CARDID,LINKID,CARDCLASS,CARDIMG,SVRIMG,CARDDETAIL from mb_card where CARDID=?";
     sqlite3_stmt * statement;
     OcrCard* card = nil;
     if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)

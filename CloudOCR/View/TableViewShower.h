@@ -24,6 +24,10 @@
 @property (nonatomic,strong) UITableView* tableView;//tableView
 @property (nonatomic,strong) OcrTableViewController* Owner;//tableView controller
 
+//没有自定义的TableViewShower调用此公共
+-(void)BaseUp:(UITableView*) tableView WithClass:(EMOcrClass)clas WithKeyName:(NSString*)keyName;
+
+//派生类调用
 -(void)Setup:(UITableView*) tableView;
 
 -(void)FreshOcrCard:(int)cardId Operator:(int)op;

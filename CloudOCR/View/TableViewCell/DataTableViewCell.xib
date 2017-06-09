@@ -3,48 +3,77 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="c3H-ux-4zZ" customClass="DataTableViewCell">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="80"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="90" id="c3H-ux-4zZ" customClass="DataTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="90"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="c3H-ux-4zZ" id="eWK-b2-p7R">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="79"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="89"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ppM-43-tik">
-                        <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="80" id="osB-9J-1ls"/>
-                            <constraint firstAttribute="width" constant="80" id="wNA-oV-Ceo"/>
-                        </constraints>
-                    </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I30-9I-EnW">
-                        <rect key="frame" x="88" y="19" width="224" height="42"/>
+                        <rect key="frame" x="102" y="8" width="218" height="24"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="42" id="tMX-bK-3QC"/>
+                            <constraint firstAttribute="height" constant="24" id="tMX-bK-3QC"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4b4-w6-g4Y">
+                        <rect key="frame" x="102" y="32" width="218" height="24"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="24" id="Jlk-4O-DdH"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="f8x-sQ-662"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4lB-IK-9Pb">
+                        <rect key="frame" x="102" y="56" width="218" height="24"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="24" id="OnL-Wk-3LB"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="eKz-py-P0s"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ppM-43-tik">
+                        <rect key="frame" x="8" y="13" width="84" height="67"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="67" id="osB-9J-1ls"/>
+                            <constraint firstAttribute="width" constant="84" id="wNA-oV-Ceo"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="I30-9I-EnW" firstAttribute="leading" secondItem="ppM-43-tik" secondAttribute="trailing" constant="8" id="0sI-CM-qrq"/>
-                    <constraint firstItem="I30-9I-EnW" firstAttribute="centerY" secondItem="eWK-b2-p7R" secondAttribute="centerY" id="CC8-Ve-GEE"/>
-                    <constraint firstItem="ppM-43-tik" firstAttribute="top" secondItem="eWK-b2-p7R" secondAttribute="top" id="Ejt-ht-YfW"/>
-                    <constraint firstItem="ppM-43-tik" firstAttribute="leading" secondItem="eWK-b2-p7R" secondAttribute="leading" id="c9f-ya-sBc"/>
-                    <constraint firstAttribute="trailing" secondItem="I30-9I-EnW" secondAttribute="trailing" constant="8" id="rG9-lK-Ze8"/>
+                    <constraint firstItem="I30-9I-EnW" firstAttribute="leading" secondItem="ppM-43-tik" secondAttribute="trailing" constant="10" id="0sI-CM-qrq"/>
+                    <constraint firstItem="I30-9I-EnW" firstAttribute="centerY" secondItem="eWK-b2-p7R" secondAttribute="centerY" constant="-24.5" id="CC8-Ve-GEE"/>
+                    <constraint firstItem="ppM-43-tik" firstAttribute="top" secondItem="eWK-b2-p7R" secondAttribute="top" constant="13" id="Ejt-ht-YfW"/>
+                    <constraint firstItem="4lB-IK-9Pb" firstAttribute="leading" secondItem="ppM-43-tik" secondAttribute="trailing" constant="10" id="ErS-Dx-R06"/>
+                    <constraint firstItem="4b4-w6-g4Y" firstAttribute="leading" secondItem="ppM-43-tik" secondAttribute="trailing" constant="10" id="I43-9M-bSO"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="4lB-IK-9Pb" secondAttribute="trailing" constant="-8" id="JME-EX-HfI"/>
+                    <constraint firstItem="4b4-w6-g4Y" firstAttribute="top" secondItem="I30-9I-EnW" secondAttribute="bottom" id="N1n-Hf-fFP"/>
+                    <constraint firstItem="4lB-IK-9Pb" firstAttribute="top" secondItem="4b4-w6-g4Y" secondAttribute="bottom" id="TJz-p1-Ohb"/>
+                    <constraint firstItem="ppM-43-tik" firstAttribute="leading" secondItem="eWK-b2-p7R" secondAttribute="leading" constant="8" id="c9f-ya-sBc"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="4b4-w6-g4Y" secondAttribute="trailing" constant="-8" id="dJA-qf-YPD"/>
+                    <constraint firstAttribute="trailing" secondItem="I30-9I-EnW" secondAttribute="trailing" id="rG9-lK-Ze8"/>
                 </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <connections>
                 <outlet property="dataImage" destination="ppM-43-tik" id="AMk-Xx-3zq"/>
                 <outlet property="dataText" destination="I30-9I-EnW" id="GnW-Po-dfb"/>
+                <outlet property="dataText2" destination="4b4-w6-g4Y" id="GUL-hq-5Dg"/>
+                <outlet property="dataText3" destination="4lB-IK-9Pb" id="qZp-rC-YdN"/>
             </connections>
-            <point key="canvasLocation" x="249" y="183"/>
+            <point key="canvasLocation" x="249" y="168"/>
         </tableViewCell>
     </objects>
 </document>

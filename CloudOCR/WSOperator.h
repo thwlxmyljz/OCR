@@ -25,6 +25,10 @@
 +(NSString*)parseWSRespond:(NSString*)respondString withTag:(NSString*)tag;
 +(BOOL)parseResultString:(NSString*)result;
 
-+ (NSString*)uploadOCR:(NSString*)ocrType OcrImg:(UIImage*)ocrImg SvrType:(NSString*)svrType;
-
+/*
+ 返回服务器流水svrId
+ */
++ (NSString*)uploadOCR:(NSString*)ocrType OcrImg:(UIImage*)ocrImg SvrType:(NSString*)svrType SvrFileName:(NSString*)svrFileName;
++ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId;
++ (NSData*)downloadOCR_Img:(NSString*)svrId SvrFileName:(NSString*)svrFileName;
 @end

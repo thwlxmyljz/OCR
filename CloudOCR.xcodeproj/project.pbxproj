@@ -124,6 +124,7 @@
 		41ECB9B91EE533E80064C158 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 41ECB9B81EE533E80064C158 /* MobileCoreServices.framework */; };
 		41ECB9BB1EE533F80064C158 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 41ECB9BA1EE533F80064C158 /* CoreGraphics.framework */; };
 		41ECB9BD1EE5342D0064C158 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 41ECB9BC1EE5342D0064C158 /* libz.tbd */; };
+		41ECB9BF1EEA3A700064C158 /* demo.xml in Resources */ = {isa = PBXBuildFile; fileRef = 41ECB9BE1EEA3A700064C158 /* demo.xml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -171,9 +172,9 @@
 		41495FDB1ED523B5008DE054 /* UIView+SlideMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SlideMenuController.m"; sourceTree = "<group>"; };
 		41495FDC1ED523B5008DE054 /* UIViewController+SlideMenuControllerOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+SlideMenuControllerOC.h"; sourceTree = "<group>"; };
 		41495FDD1ED523B5008DE054 /* UIViewController+SlideMenuControllerOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+SlideMenuControllerOC.m"; sourceTree = "<group>"; };
-		41495FDF1ED523B5008DE054 /* ImageHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageHeaderView.h; sourceTree = "<group>"; };
-		41495FE01ED523B5008DE054 /* ImageHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageHeaderView.m; sourceTree = "<group>"; };
-		41495FE11ED523B5008DE054 /* ImageHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageHeaderView.xib; sourceTree = "<group>"; };
+		41495FDF1ED523B5008DE054 /* ImageHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageHeaderView.h; path = View/ImageHeaderView.h; sourceTree = "<group>"; };
+		41495FE01ED523B5008DE054 /* ImageHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImageHeaderView.m; path = View/ImageHeaderView.m; sourceTree = "<group>"; };
+		41495FE11ED523B5008DE054 /* ImageHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ImageHeaderView.xib; path = View/ImageHeaderView.xib; sourceTree = "<group>"; };
 		41495FE31ED523B5008DE054 /* BaseTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseTableViewCell.h; sourceTree = "<group>"; };
 		41495FE41ED523B5008DE054 /* BaseTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseTableViewCell.m; sourceTree = "<group>"; };
 		41495FE51ED523B5008DE054 /* DataTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataTableViewCell.h; sourceTree = "<group>"; };
@@ -294,6 +295,7 @@
 		41ECB9B81EE533E80064C158 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		41ECB9BA1EE533F80064C158 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		41ECB9BC1EE5342D0064C158 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		41ECB9BE1EEA3A700064C158 /* demo.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = demo.xml; path = pic/demo.xml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -356,6 +358,9 @@
 				41495FAF1ED44D46008DE054 /* pic */,
 				41495F3E1ED3D2B0008DE054 /* SlideMenuController.h */,
 				41495F3F1ED3D2B0008DE054 /* SlideMenuController.m */,
+				41495FDF1ED523B5008DE054 /* ImageHeaderView.h */,
+				41495FE01ED523B5008DE054 /* ImageHeaderView.m */,
+				41495FE11ED523B5008DE054 /* ImageHeaderView.xib */,
 				41495F421ED3D49F008DE054 /* LeftViewController.h */,
 				41495F431ED3D49F008DE054 /* LeftViewController.m */,
 				41495F461ED3D49F008DE054 /* RightViewController.h */,
@@ -399,6 +404,7 @@
 		41495FAF1ED44D46008DE054 /* pic */ = {
 			isa = PBXGroup;
 			children = (
+				41ECB9BE1EEA3A700064C158 /* demo.xml */,
 				41CC96AD1ED915A900926708 /* trash.png */,
 				41CC96AE1ED915A900926708 /* trash@2x.png */,
 				41CC96AF1ED915A900926708 /* trash@3x.png */,
@@ -453,21 +459,18 @@
 		41495FDE1ED523B5008DE054 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				4173C8B71ED567BA000A0C33 /* OcrTableViewController.h */,
+				4173C8B81ED567BA000A0C33 /* OcrTableViewController.mm */,
+				41CC96981ED83DD300926708 /* TableViewShower.h */,
+				41CC96991ED83DD300926708 /* TableViewShower.m */,
 				41495FE21ED523B5008DE054 /* TableViewCell */,
 				4173C8AB1ED555C3000A0C33 /* IdCard */,
 				4173C8A01ED52AA8000A0C33 /* Bank */,
-				41495FDF1ED523B5008DE054 /* ImageHeaderView.h */,
-				41495FE01ED523B5008DE054 /* ImageHeaderView.m */,
-				41495FE11ED523B5008DE054 /* ImageHeaderView.xib */,
-				4173C8B71ED567BA000A0C33 /* OcrTableViewController.h */,
-				4173C8B81ED567BA000A0C33 /* OcrTableViewController.mm */,
 				41BF5D0E1ED7C6A20010C8C7 /* CardTableViewCell.h */,
 				41BF5D0F1ED7C6A20010C8C7 /* CardTableViewCell.m */,
 				41BF5D111ED7C6B80010C8C7 /* CardTableViewCell.xib */,
 				41495F2C1ED3D247008DE054 /* ViewController.h */,
 				41495F2D1ED3D247008DE054 /* ViewController.mm */,
-				41CC96981ED83DD300926708 /* TableViewShower.h */,
-				41CC96991ED83DD300926708 /* TableViewShower.m */,
 				41ECB9901EE4FE490064C158 /* ImagePreviewViewController.h */,
 				41ECB9911EE4FE490064C158 /* ImagePreviewViewController.m */,
 			);
@@ -700,6 +703,7 @@
 				41495F331ED3D247008DE054 /* Assets.xcassets in Resources */,
 				414960321ED523CD008DE054 /* Special.txt in Resources */,
 				414960281ED523CD008DE054 /* IDCardDevice.dat in Resources */,
+				41ECB9BF1EEA3A700064C158 /* demo.xml in Resources */,
 				414960361ED523CD008DE054 /* THOCR_PDA.lib in Resources */,
 				41CC96B01ED915A900926708 /* trash.png in Resources */,
 				41BF5D121ED7C6B80010C8C7 /* CardTableViewCell.xib in Resources */,

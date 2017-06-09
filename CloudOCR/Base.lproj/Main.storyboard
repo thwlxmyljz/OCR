@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -63,32 +64,45 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8Ry-8F-PXj">
-                                <rect key="frame" x="45" y="94" width="500" height="300"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fZi-FW-czb">
+                                <rect key="frame" x="26" y="50" width="546" height="391"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="fZi-FW-czb" secondAttribute="height" multiplier="2:1" constant="-236" id="75l-un-mKH"/>
+                                    <constraint firstAttribute="width" secondItem="fZi-FW-czb" secondAttribute="height" multiplier="273:64" id="aRL-Go-FQ9"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="aRL-Go-FQ9"/>
+                                    </mask>
+                                </variation>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="8Ry-8F-PXj" firstAttribute="top" secondItem="mmi-dY-vYW" secondAttribute="topMargin" id="GQj-dF-yoe"/>
-                            <constraint firstItem="8Ry-8F-PXj" firstAttribute="centerY" secondItem="mmi-dY-vYW" secondAttribute="centerY" id="SPe-pB-K73"/>
-                            <constraint firstItem="8Ry-8F-PXj" firstAttribute="centerX" secondItem="mmi-dY-vYW" secondAttribute="centerX" id="bGK-E7-yTu"/>
-                            <constraint firstItem="8Ry-8F-PXj" firstAttribute="leading" secondItem="mmi-dY-vYW" secondAttribute="leadingMargin" constant="-20" id="cJg-vL-zoH"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="8Ry-8F-PXj" secondAttribute="trailing" constant="-20" id="gwj-KT-hvN"/>
-                            <constraint firstItem="5Am-dx-pNv" firstAttribute="top" secondItem="8Ry-8F-PXj" secondAttribute="bottom" id="r31-IG-FRl"/>
+                            <constraint firstItem="fZi-FW-czb" firstAttribute="top" secondItem="Odz-OH-gRn" secondAttribute="bottom" constant="30" id="2dc-WS-9oN"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="fZi-FW-czb" secondAttribute="trailing" constant="19" id="2gq-ie-bhf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="fZi-FW-czb" secondAttribute="trailing" id="HcV-CG-GNm"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="fZi-FW-czb" secondAttribute="trailing" id="LTG-dK-H6X"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="fZi-FW-czb" secondAttribute="trailing" constant="149" id="Upc-SV-O5y"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="fZi-FW-czb" secondAttribute="trailing" constant="8" id="Zms-oC-AnL"/>
+                            <constraint firstItem="fZi-FW-czb" firstAttribute="top" secondItem="Odz-OH-gRn" secondAttribute="bottom" constant="42" id="shh-cH-eVT"/>
+                            <constraint firstItem="fZi-FW-czb" firstAttribute="leading" secondItem="mmi-dY-vYW" secondAttribute="leadingMargin" constant="6" id="tkx-Gy-Qf4"/>
+                            <constraint firstItem="fZi-FW-czb" firstAttribute="leading" secondItem="mmi-dY-vYW" secondAttribute="leadingMargin" constant="171" id="u0Q-aU-eWa"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
-                                <exclude reference="GQj-dF-yoe"/>
-                                <exclude reference="SPe-pB-K73"/>
-                                <exclude reference="bGK-E7-yTu"/>
-                                <exclude reference="cJg-vL-zoH"/>
-                                <exclude reference="gwj-KT-hvN"/>
-                                <exclude reference="r31-IG-FRl"/>
+                                <exclude reference="2gq-ie-bhf"/>
+                                <exclude reference="HcV-CG-GNm"/>
+                                <exclude reference="LTG-dK-H6X"/>
+                                <exclude reference="Upc-SV-O5y"/>
+                                <exclude reference="shh-cH-eVT"/>
+                                <exclude reference="u0Q-aU-eWa"/>
                             </mask>
                         </variation>
                     </view>
                     <connections>
-                        <outlet property="imgView" destination="8Ry-8F-PXj" id="pPQ-Sn-pQA"/>
+                        <outlet property="imgView" destination="fZi-FW-czb" id="yqD-Y8-646"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Cj-cS-fsK" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -125,8 +139,6 @@
                             <constraint firstItem="gHq-Cb-q8T" firstAttribute="leading" secondItem="LSo-F4-tnD" secondAttribute="leading" id="rtQ-rV-4RQ"/>
                         </constraints>
                     </view>
-                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="600" height="600"/>
                     <connections>
                         <outlet property="tableView" destination="gHq-Cb-q8T" id="uXU-lG-rXa"/>
                     </connections>
@@ -167,7 +179,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fMQ-Fw-XmB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="821" y="-1288"/>
+            <point key="canvasLocation" x="820.5" y="-1288.5"/>
         </scene>
         <!--ocr历史记录-->
         <scene sceneID="6aj-BX-jeQ">
@@ -202,17 +214,6 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TNp-Rj-XmY">
                                 <rect key="frame" x="0.0" y="552" width="600" height="48"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LwY-aa-Guy">
-                                        <rect key="frame" x="283" y="11" width="34" height="25"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="34" id="2pc-0w-NYt"/>
-                                            <constraint firstAttribute="height" constant="25" id="GZM-v5-jNs"/>
-                                        </constraints>
-                                        <state key="normal" image="folder.png"/>
-                                        <connections>
-                                            <action selector="localPhoto:" destination="gBQ-6U-8Jz" eventType="touchUpInside" id="rE8-31-r0M"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WJV-ly-4gX">
                                         <rect key="frame" x="357" y="12" width="24" height="24"/>
                                         <constraints>
@@ -243,6 +244,17 @@
                                         <state key="normal" image="trash.png"/>
                                         <connections>
                                             <action selector="trashOcr:" destination="gBQ-6U-8Jz" eventType="touchUpInside" id="gRI-mk-iQV"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LwY-aa-Guy">
+                                        <rect key="frame" x="283" y="11" width="34" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="34" id="2pc-0w-NYt"/>
+                                            <constraint firstAttribute="height" constant="25" id="GZM-v5-jNs"/>
+                                        </constraints>
+                                        <state key="normal" image="folder.png"/>
+                                        <connections>
+                                            <action selector="localPhoto:" destination="gBQ-6U-8Jz" eventType="touchUpInside" id="rE8-31-r0M"/>
                                         </connections>
                                     </button>
                                 </subviews>
