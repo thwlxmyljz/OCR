@@ -24,7 +24,8 @@ typedef NS_ENUM(NSInteger, EMOcrAction) {
 @property (nonatomic,assign) EMOcrAction OcrAction;
 @property (nonatomic,assign) EMOcrClass OcrClass;
 @property (nonatomic,strong) UIImage*   OcrImage;
-@property (nonatomic,strong) NSMutableDictionary* OcrData;
+@property (nonatomic,strong) NSMutableDictionary* OcrData;//本地数据字典表示
+@property (nonatomic,strong) NSData* OcrXml;//服务器xml数据
 
 //编辑调用
 @property (nonatomic,strong) OcrCard* ModifyCard;

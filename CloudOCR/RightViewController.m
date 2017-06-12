@@ -7,7 +7,11 @@
 //
 
 #import "RightViewController.h"
+#import "BooksOp.h"
 
 @implementation RightViewController
+-(void)viewDidLoad {
+    [super viewDidLoad];
 
+}
 @end

@@ -16,6 +16,7 @@
 #import "UIColor+SlideMenuControllerOC.h"
 #import "constants.h"
 #import "CardKey.h"
+#import "UIView+Toast.h"
 
 @interface OcrTableViewController () <UITableViewDataSource,UITableViewDelegate,
                 SlideMenuControllerDelegate,LeftMenuProtocol,UINavigationControllerDelegate,UIImagePickerControllerDelegate,HexOcrBankCardCallback,HexOcrIdCardCallback>
@@ -404,13 +405,27 @@ HexMOcr* mOcr = nil;
 
 #pragma Delegate method UIImagePickerControllerDelegate
 //图像选取器的委托方法，选完图片后回调该方法
-- (void) imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary*)info
+- (void) imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info
 {
-    UIImage* image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    UIImage* tempImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+    UIGraphicsBeginImageContext(tempImage.size);
+    [tempImage drawInRect:CGRectMake(0, 0, tempImage.size.width, tempImage.size.height)];
+    UIImage *image = [UIImage imageWithCGImage:[UIGraphicsGetImageFromCurrentImageContext() CGImage]];
+    UIGraphicsEndImageContext();
     //关闭相册界面
     [picker dismissViewControllerAnimated:YES completion:nil];
     if (image != nil) {
-        [self performSelectorInBackground:@selector(setImage:) withObject:image];
+        if (self.CurShower.OcrClass == Class_Personal_IdCard){
+            //目前ocr接口图片识别只支持身份证识别
+            [self performSelectorInBackground:@selector(setImage:) withObject:image];
+        }
+        else
+         {
+            //其他类型图片上传服务器识别
+            self.imageView.image = image;
+            [self showResult:nil];
+        }
+        
     }
     
 }
@@ -447,14 +462,9 @@ HexMOcr* mOcr = nil;
     UIImageWriteToSavedPhotosAlbum(reSizeImage, nil, nil, nil);
     self.imageFile=filePath;
     self.imageView.image = reSizeImage;
-    if (self.CurShower.OcrClass == Class_Personal_IdCard){
-        //目前ocr接口图片识别只支持身份证识别
-        [self performSelectorOnMainThread:@selector(recogImage) withObject:nil waitUntilDone:YES];
-    }
-    else{
-        //其他类型图片上传服务器识别
-        [self showResult:nil];
-    }
+
+    [self performSelectorOnMainThread:@selector(recogImage) withObject:nil waitUntilDone:YES];
+
 }
 -(void) recogImage{
     NSMutableDictionary* ocrResult = [NSMutableDictionary dictionaryWithCapacity:8];
@@ -462,7 +472,7 @@ HexMOcr* mOcr = nil;
     NSLog(@"开始识别");
     int nRet=[mOcr readFromFile:self.imageFile FormType:IdCard2_Front Result:ocrResult];
     if (nRet <= 0){
-        self.txtResult.text=[NSString stringWithFormat:@"识别失败:%d",nRet];
+        [self.view makeToast:@"识别失败"];
     }else{
         [self showResult:ocrResult];
     }
@@ -489,17 +499,7 @@ HexMOcr* mOcr = nil;
         self.dicResult = [ocrResult copy];
     else
         self.dicResult = nil;
-    /*
-     NSMutableString* resultText= [NSMutableString string];
-     [resultText appendString:@"识别结果:\n"];
-     
-     for (NSString *key in ocrResult.keyEnumerator) {
-     NSString* value= [ocrResult valueForKey:key];
-     
-     [resultText appendFormat:@"%@=%@\n",key,value];
-     }
-     self.txtResult.text=resultText;
-     */
+
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ViewController *v = (ViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ViewController"];
     v.OcrAction = EMOcrAction_Photo;

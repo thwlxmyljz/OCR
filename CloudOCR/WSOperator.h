@@ -29,6 +29,8 @@
  返回服务器流水svrId
  */
 + (NSString*)uploadOCR:(NSString*)ocrType OcrImg:(UIImage*)ocrImg SvrType:(NSString*)svrType SvrFileName:(NSString*)svrFileName;
-+ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId;
++(NSString*)updateOCR:(NSString*)svrId DocId:(NSString*)docId Value:(NSString*)value;
+
++ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId FileName:(NSString*)fileName;
 + (NSData*)downloadOCR_Img:(NSString*)svrId SvrFileName:(NSString*)svrFileName;
 @end

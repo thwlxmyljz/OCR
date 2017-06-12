@@ -189,16 +189,19 @@
 
     //得到图片的data
     NSData* data = UIImageJPEGRepresentation(ocrImg,1);
-    
+    if (data == nil)
+        return @"";
     //http body的字符串
     NSMutableString *body=[[NSMutableString alloc]init];
     
+    /*
     //添加分界线，换行
     [body appendFormat:@"%@\r\n",MPboundary];
     //添加字段名称，换2行
     [body appendFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",@"format"];
     //添加字段的值
     [body appendFormat:@"%d\r\n",4];
+    */
     
     //添加分界线，换行
     [body appendFormat:@"%@\r\n",MPboundary];
@@ -210,17 +213,16 @@
     //添加分界线，换行
     [body appendFormat:@"%@\r\n",MPboundary];
     //添加字段名称，换2行
-    [body appendFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",@"userId"];
-    //添加字段的值
-    [body appendFormat:@"%@\r\n",[BooksOp Instance].UserId];
-    
-
-    //添加分界线，换行
-    [body appendFormat:@"%@\r\n",MPboundary];
-    //添加字段名称，换2行
     [body appendFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",@"ocrType"];
     //添加字段的值
     [body appendFormat:@"%@\r\n",ocrType];
+    
+    //添加分界线，换行
+    [body appendFormat:@"%@\r\n",MPboundary];
+    //添加字段名称，换2行
+    [body appendFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",@"userId"];
+    //添加字段的值
+    [body appendFormat:@"%@\r\n",[BooksOp Instance].UserId];
     
     
     ////添加分界线，换行
@@ -266,19 +268,21 @@
         return @"";
     }
 }
-+ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId
++ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId  FileName:(NSString*)fileName
 {
     NSError *error=nil;
     NSURLResponse* respond = nil;
-    NSString* path = [NSString stringWithFormat:@"%@/download?uuid=%@&fileType=xml",SERVER_OCR,@"09014f8a1"];
+    //@"09014f8a1"
+    NSString* path = [NSString stringWithFormat:@"%@/download?uuid=%@&fileType=xml",SERVER_OCR,svrId];
     NSURL *url= [NSURL URLWithString:path];
     NSURLRequest *request=[[NSURLRequest alloc] initWithURL:url];
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    BOOL docFound = FALSE;
     NSData *xmlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
     /*
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"xml"];
     NSData *xmlData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingUncached error:&error];
     */
+    NSLog(@"%@",[NSString stringWithUTF8String:xmlData.bytes]);
     if(xmlData && xmlData.length > 0 && !error)
     {
         if (![respond.MIMEType isEqualToString:@"text/html"])
@@ -291,6 +295,7 @@
             }
             else
             {
+                NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
                 char *temp;
                 NSString *currentTagField = nil;
                 NSString *currentTagName = nil;
@@ -305,7 +310,19 @@
                         temp = (char *)xmlTextReaderConstName(reader);
                         currentTagField = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
                         NSLog(@"========> %s",temp);
-                        if([currentTagField isEqualToString:@"Field"])
+                        if([currentTagField isEqualToString:@"Doc"])
+                        {
+                            temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)"Name");
+                            currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                            NSLog(@"===> TagName: %@",currentTagName);
+                            if ([currentTagName isEqualToString:fileName]){
+                                docFound = TRUE;
+                            }
+                            else{
+                                docFound = FALSE;
+                            }
+                        }
+                        if([currentTagField isEqualToString:@"Field"] && docFound)
                         {
                             NSLog(@"===> TagField: %@",currentTagField);
                             
@@ -314,21 +331,69 @@
                             NSLog(@"===> TagName: %@",currentTagName);
                             
                             temp = (char *)xmlTextReaderReadString(reader);
-                            currentTagValue = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                            if (!temp){
+                                NSLog(@"value empty");
+                                [dict setValue:@"" forKey:currentTagName];
+                                continue;
+                            }
+                            else{
+                                currentTagValue = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
                             
-                            NSLog(@"===> TagValue: %@",currentTagValue);
+                                NSLog(@"===> TagValue: %@",currentTagValue);
                             
-                            [dict setValue:currentTagValue forKey:currentTagName];
+                                [dict setValue:currentTagValue forKey:currentTagName];
+                            }
                         }
                     }
                 }
+                
+                NSLog(@"downloadOCR_XML(%@) over",svrId);
+                [dict setValue:xmlData forKey:@"xmldata"];
+                return dict;
             }
         }
     }
     
-    NSLog(@"downloadOCR_XML(%@) over",svrId);
+    NSLog(@"downloadOCR_XML(%@) shuold wait",svrId);
     
-    return dict;
+    return nil;
+}
++(NSString*)updateOCR:(NSString*)svrId DocId:(NSString*)docId Value:(NSString*)value
+{
+    NSError *error=nil;
+    NSString* path = [NSString stringWithFormat:@"%@/save?srcDocId=%@&objId=%@",SERVER_OCR,svrId,docId];
+    //根据url初始化request
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:path]
+                                                           cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+                                                       timeoutInterval:UPLOAD_TIMEOUT];
+
+    //声明myRequestData，用来放入http body
+    NSMutableData *myRequestData=[NSMutableData data];
+    //将body字符串转化为UTF8格式的二进制
+    [myRequestData appendData:[value dataUsingEncoding:NSUTF8StringEncoding]];
+    //设置HTTPHeader
+    NSString *content=[[NSString alloc]initWithFormat:@"text/html"];
+    [request setValue:content forHTTPHeaderField:@"Content-Type"];
+    //设置Content-Length
+    [request setValue:[NSString stringWithFormat:@"%d", (int)[myRequestData length]] forHTTPHeaderField:@"Content-Length"];
+    //设置http body
+    [request setHTTPBody:myRequestData];
+    //http method
+    [request setHTTPMethod:@"POST"];
+    
+    NSHTTPURLResponse *urlResponese = nil;
+    NSData* resultData = [NSURLConnection sendSynchronousRequest:request   returningResponse:&urlResponese error:&error];
+    NSString* result= [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
+    if([urlResponese statusCode] >=200&&[urlResponese statusCode]<300)
+    {
+        NSLog(@"updateOCR ok(result:%@)",result);
+        return result;
+    }
+    else
+    {
+        NSLog(@"updateOCR failed(status code:%d)",(int)[urlResponese statusCode]);
+        return @"";
+    }
 }
 + (NSData*)downloadOCR_Img:(NSString*)svrId SvrFileName:(NSString*)svrFileName
 {

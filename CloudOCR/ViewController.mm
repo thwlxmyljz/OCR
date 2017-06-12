@@ -33,8 +33,9 @@
     //保存编辑过的数据
     NSMutableDictionary* _modifyDict;
     //新识别的本地信息
-    int _CardId;
-    NSString* _SvrFileName;
+    int _CardId;//本地id
+    NSString* _SvrId;//服务器识别id
+    NSString* _SvrFileName;//本地文件名
     //等待框
     GCDiscreetNotificationView *notificationView;
 }
@@ -47,7 +48,7 @@
 @synthesize OcrClass = _OcrClass;
 @synthesize OcrImage = _OcrImage;
 @synthesize OcrData = _OcrData;
-
+@synthesize OcrXml = _OcrXml;
 @synthesize ModifyCard = _ModifyCard;
 
 - (void)viewDidLoad {
@@ -80,12 +81,18 @@
     if (self.ModifyCard){
         self.OcrImage = self.ModifyCard.CardImg;
         self.OcrData = self.ModifyCard.CardDetail;
+        self.OcrXml = self.ModifyCard.SvrDetail;
+        _SvrId = self.ModifyCard.CardSvrId;
     }
     [self setup];
 }
 -(void)showData
 {
     RMNOTIFYVIEW
+    if (self.OcrData.count == 0){
+        [self.view makeToast:@"没有识别到数据" duration:2.0f  position:@"center"];
+        return;
+    }
     _orgDict = [[NSMutableDictionary alloc] initWithDictionary:self.OcrData];
     [self createKeys];
     [self.tableView reloadData];
@@ -125,10 +132,10 @@
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [self creatSvrOcrUpInfo];
-            
-            NSString *svrId = [WSOperator uploadOCR:@"GENERAL_FORM" OcrImg:self.OcrImage SvrType:@"addFile" SvrFileName:_SvrFileName];
-            NSLog(@"%@",svrId);
-            if ([svrId isEqualToString:@""]){
+            //IDCARD
+            _SvrId = [WSOperator uploadOCR:@"GENERAL_FORM" OcrImg:self.OcrImage SvrType:@"addFile" SvrFileName:_SvrFileName];
+            NSLog(@"%@",_SvrId);
+            if ([_SvrId isEqualToString:@""]){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     RMNOTIFYVIEW
                     [BooksOp displayError:@"无法连接服务器" withTitle:@""];
@@ -136,8 +143,15 @@
             }
             else{
                 //上传图片成功，下载识别结果
-                [NSThread sleepForTimeInterval:5.0f];
-                self.OcrData = [WSOperator downloadOCR_XML:svrId];
+                for (int i = 0; i < 4; i++){
+                    [NSThread sleepForTimeInterval:5.0f];
+                    self.OcrData = [WSOperator downloadOCR_XML:_SvrId FileName:_SvrFileName];
+                    if (self.OcrData){
+                        self.OcrXml = [self.OcrData objectForKey:@"xmldata"];
+                        [self.OcrData removeObjectForKey:@"xmldata"];
+                        break;
+                    }
+                }
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self showData];
                 });
@@ -148,7 +162,7 @@
 -(void)creatSvrOcrUpInfo
 {
     _CardId = [BooksOp Instance].CardID;
-    _SvrFileName = [NSString stringWithFormat:@"%d.jpg",_CardId];
+    _SvrFileName = [OcrCard GetFileName:_CardId];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -216,11 +230,13 @@
             }
             OcrCard* card = [[OcrCard alloc] init];
             card.OcrClass = self.OcrClass;
-            card.CardId = [BooksOp Instance].CardID;
-            card.CardLinkId = @"";
+            card.CardId = _CardId;
+            card.CardSvrId = _SvrId?_SvrId:@"";
             card.CardDetail = _orgDict;
+            card.ModifyDetail = _modifyDict;
             card.CardImg = self.OcrImage;
             card.CardSvrImg = self.OcrImage;
+            card.SvrDetail = self.OcrXml;
             if ([card Insert]){
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
                                                                                   userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -244,7 +260,8 @@
                     [_orgDict setObject:[_modifyDict objectForKey:key] forKey:key];
                 }
                 self.ModifyCard.CardDetail = _orgDict;
-                if ([self.ModifyCard Update]){
+                self.ModifyCard.ModifyDetail = _modifyDict;
+                if ([self.ModifyCard Update_noImg]){
                     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
                                                                                       userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                                                 [NSNumber numberWithInt:self.ModifyCard.CardId], @"cardid",[NSNumber numberWithInt:2/*刷新卡片*/], @"op",

@@ -133,7 +133,7 @@
     NSString* chKey = [OcrCard GetHeadKey:[newCard.CardDetail objectForKey:self.KeyName]];
     for (NSString* key in self.Keys){
         if ([key isEqualToString:chKey]){
-            [[self.CardDict objectForKey:chKey] addObject:newCard];
+            [[self.CardDict objectForKey:chKey] insertObject:newCard atIndex:0];
             if (self.tableView){
                 [self.tableView reloadData];
             }
@@ -143,7 +143,7 @@
     //新key
     [self.Keys addObject:chKey];
     [self.CardDict setValue:[[NSMutableArray alloc] init] forKey:chKey];
-    [[self.CardDict objectForKey:chKey] addObject:newCard];
+    [[self.CardDict objectForKey:chKey] insertObject:newCard atIndex:0];
     [OcrCard SortHeadKeys:self.Keys];
     if (self.tableView){
         [self.tableView reloadData];
