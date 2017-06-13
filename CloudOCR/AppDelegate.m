@@ -14,6 +14,8 @@
 #import "UIColor+SlideMenuControllerOC.h"
 #import "BooksOp.h"
 #import "ViewController.h"
+#import "constants.h"
+#import "YQSlideMenuController.h"
 
 @interface AppDelegate ()
 
@@ -33,8 +35,9 @@
     leftViewController.mainViewControler = nvc;
     leftViewController.delegate = mainViewController;
     
-    SlideMenuController *slideMenuController = [[SlideMenuController alloc] initWithMainViewController:nvc leftMenuViewController:leftViewController rightMenuViewController:rightViewController];
+    YQSlideMenuController *slideMenuController = [[YQSlideMenuController alloc] initWithMainViewController:nvc leftMenuViewController:leftViewController rightMenuViewController:rightViewController];
     [slideMenuController changeLeftViewWidth:160];
+    [slideMenuController changeRightViewWidth:SCREEN_WIDTH-20];//20要和storyboard的tableView的left约束一致
     slideMenuController.automaticallyAdjustsScrollViewInsets = YES;
     slideMenuController.delegate = mainViewController;
     self.window.backgroundColor = [UIColor colorWithRed:236.0 green:238.0 blue:241.0 alpha:1.0];

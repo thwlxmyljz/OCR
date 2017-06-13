@@ -38,6 +38,8 @@
     NSString* _SvrFileName;//本地文件名
     //等待框
     GCDiscreetNotificationView *notificationView;
+    //图片显示
+    UIView* _headView;
 }
 @end
 
@@ -56,9 +58,6 @@
     
     self.tableView.frame = self.view.frame;
     self.navigationItem.title = @"识别结果";
-    UIBarButtonItem *navSave = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStylePlain target:self action:@selector(OnSave)];
-    //self.navigationItem.rightBarButtonItems = @[navSave];
-    self.navigationItem.rightBarButtonItem = navSave;
     
     [BooksOp setExtraCellLineHidden:self.tableView];
     
@@ -83,6 +82,7 @@
         self.OcrData = self.ModifyCard.CardDetail;
         self.OcrXml = self.ModifyCard.SvrDetail;
         _SvrId = self.ModifyCard.CardSvrId;
+        _SvrFileName = [self.ModifyCard GetFileName];
     }
     [self setup];
 }
@@ -93,6 +93,14 @@
         [self.view makeToast:@"没有识别到数据" duration:2.0f  position:@"center"];
         return;
     }
+    UIBarButtonItem *navSave = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStylePlain target:self action:@selector(OnSave)];
+    self.navigationItem.rightBarButtonItem = navSave;
+    
+    UIImageView* imgView = [_headView viewWithTag:1000];
+    if (imgView){
+        imgView.image = self.OcrImage;
+        [imgView setNeedsDisplay];
+    }
     _orgDict = [[NSMutableDictionary alloc] initWithDictionary:self.OcrData];
     [self createKeys];
     [self.tableView reloadData];
@@ -102,18 +110,19 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
 
-    UIView* headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREENW, 100)];
-    headView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    _headView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREENW, 100)];
+    _headView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     UIImageView* imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 120, 80)];
     imgView.image = self.OcrImage;
-    [headView addSubview:imgView];
+    imgView.tag = 1000;
+    [_headView addSubview:imgView];
     UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleHeadViewTapped:)];
     [imgView addGestureRecognizer:recognizer];
     imgView.userInteractionEnabled = TRUE;
     imgView.center = CGPointMake(SCREENW/2, 100/2);
     
-    self.tableView.tableHeaderView = headView;
+    self.tableView.tableHeaderView = _headView;
     [self.tableView registerCellNib:[CardTableViewCell class]];
     
     if (self.OcrData){
@@ -131,8 +140,9 @@
         [notificationView showAnimated];
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            //生产文件名和本地识别id
             [self creatSvrOcrUpInfo];
-            //IDCARD
+            //上传识别
             _SvrId = [WSOperator uploadOCR:@"GENERAL_FORM" OcrImg:self.OcrImage SvrType:@"addFile" SvrFileName:_SvrFileName];
             NSLog(@"%@",_SvrId);
             if ([_SvrId isEqualToString:@""]){
@@ -149,6 +159,11 @@
                     if (self.OcrData){
                         self.OcrXml = [self.OcrData objectForKey:@"xmldata"];
                         [self.OcrData removeObjectForKey:@"xmldata"];
+                        //下载识别处理过后的图片
+                        NSData* svrImg = [WSOperator downloadOCR_Img:_SvrId SvrFileName:_SvrFileName];
+                        if (svrImg){
+                            self.OcrImage = [UIImage imageWithData:svrImg];
+                        }
                         break;
                     }
                 }
@@ -184,15 +199,22 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)viewTapped:(id)nouse
+- (void)viewTapped:(UITapGestureRecognizer *)recognizer
 {
     [UIView TTIsKeyboardVisible];
 }
 -(void)handleHeadViewTapped:(UITapGestureRecognizer*)tapGr
 {
+    [self showPictureWithClickKey:nil];
+}
+-(void)showPictureWithClickKey:(NSString*)clickKey
+{
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ImagePreviewViewController *v = (ImagePreviewViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ImagePreviewViewController"];
-    v.img = self.OcrImage;
+    v.OcrImage = self.OcrImage;
+    v.OcrXml = self.OcrXml;
+    v.OcrFileName = _SvrFileName;
+    v.ClickKey = clickKey;
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithTitle:@"返回" style:UIBarButtonItemStyleDone target:self action:nil];
     self.navigationItem.backBarButtonItem = backItem;
     [self.navigationController pushViewController:v animated:TRUE];
@@ -247,6 +269,7 @@
             }
             else{
                 RMNOTIFYVIEW
+                self.navigationItem.rightBarButtonItem.enabled = TRUE;
                 [BooksOp displayError:@"保存失败" withTitle:@""];
             }
         }
@@ -270,6 +293,7 @@
                 }
                 else{
                     RMNOTIFYVIEW
+                    self.navigationItem.rightBarButtonItem.enabled = TRUE;
                     [BooksOp displayError:@"保存失败" withTitle:@""];
                 }
             }
@@ -317,7 +341,7 @@
                          else{
                              //显示键盘
                              CGFloat keyboardHeight = keyboardRect.size.height;
-                             CGFloat curCellTopY = _keyInputField.tag;//当前点击的cell的topY
+                             CGFloat curCellTopY = _keyInputField.topY;//当前点击的cell的topY
                              CGFloat curCellBottomY = curCellTopY+rowHeight;
                              CGFloat screeHeight = SCREEN_HEIGHT-STATUS_BASE_HEIGHT-NAV_HEIGHT;
                              if (curCellBottomY + keyboardHeight > screeHeight-rowHeight){
@@ -421,8 +445,13 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     CardTableViewCell *cell = (CardTableViewCell *)[tableView dequeueReusableCellWithIdentifier:[CardTableViewCell identifier]];
-    cell.edtValue.tag = [self getCellTopY:indexPath];//设置topY
+    cell.edtValue.topY = [self getCellTopY:indexPath];//设置topY
     cell.edtValue.delegate = self;
+    
+    UITapGestureRecognizer *tapGr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(captionTapped:)];
+    tapGr.cancelsTouchesInView = NO;
+    [cell.lblCaption setUserInteractionEnabled:TRUE];
+    [cell.lblCaption addGestureRecognizer:tapGr];
     
     CardTableViewCellData *data = [CardTableViewCellData new];
     data.key = [_showKeys objectAtIndex:indexPath.row];
@@ -442,6 +471,12 @@
     return view;
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:TRUE];
 }
-
+- (void)captionTapped:(UITapGestureRecognizer *)recognizer
+{
+    [UIView TTIsKeyboardVisible];
+    UILabel *lblCaption=(UILabel*)recognizer.view;
+    [self showPictureWithClickKey:lblCaption.text];
+}
 @end

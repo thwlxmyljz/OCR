@@ -23,12 +23,12 @@ typedef NS_ENUM(NSInteger, EMOcrAction) {
 //新建调用
 @property (nonatomic,assign) EMOcrAction OcrAction;
 @property (nonatomic,assign) EMOcrClass OcrClass;
-@property (nonatomic,strong) UIImage*   OcrImage;
+@property (nonatomic,strong) UIImage*   OcrImage;//识别图
 @property (nonatomic,strong) NSMutableDictionary* OcrData;//本地数据字典表示
 @property (nonatomic,strong) NSData* OcrXml;//服务器xml数据
 
 //编辑调用
-@property (nonatomic,strong) OcrCard* ModifyCard;
+@property (nonatomic,strong) OcrCard* ModifyCard;//当前编辑的卡片
 
 -(void)OnBack:(id)sender;
 

@@ -268,6 +268,30 @@
         return @"";
     }
 }
++ (NSData*)downloadOCR_Img:(NSString*)svrId SvrFileName:(NSString*)svrFileName
+{
+    NSError *error = nil;
+    NSURLResponse* respond = nil;
+    NSString* path = nil;
+    path = [NSString stringWithFormat:@"%@/downloadadjustjpg?uuid=%@&filename=%@",SERVER_OCR,svrId,svrFileName];
+    NSURL *url= [NSURL URLWithString:path];
+    NSURLRequest *request=[[NSURLRequest alloc] initWithURL:url];
+    NSData *imgData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
+    if (error)
+    {
+        return nil;
+    }
+    if(imgData && imgData.length > 0 && !error)
+    {
+        if (![respond.MIMEType isEqualToString:@"text/html"])
+        {
+            //包含文件数据
+            return imgData;
+        }
+
+    }
+    return nil;
+}
 + (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId  FileName:(NSString*)fileName
 {
     NSError *error=nil;
@@ -395,8 +419,5 @@
         return @"";
     }
 }
-+ (NSData*)downloadOCR_Img:(NSString*)svrId SvrFileName:(NSString*)svrFileName
-{
-    return nil;
-}
+
 @end

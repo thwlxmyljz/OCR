@@ -84,9 +84,8 @@
     }
     return FALSE;
 }
--(NSMutableDictionary*)getXmlKeyId:(NSData*)xmlData
++(NSMutableDictionary*)_getXmlKeyAttr:(NSData*)xmlData forDocFileName:(NSString*)docName forAttr:(NSString*)attrName
 {
-    NSString* docName = [self GetFileName];
     xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.bytes , xmlData.length, nil, nil, (XML_PARSE_NOENT|XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING));
     
     if(!reader){
@@ -136,7 +135,7 @@
                         currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
                         NSLog(@"===> TagName: %@",currentTagName);
                         
-                        temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)"FieldId");
+                        temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)[attrName UTF8String]);
                         NSString *idTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
                         NSLog(@"===> idTagName: %@",idTagName);
                         
@@ -149,6 +148,16 @@
         
     }
     return nil;
+}
++(NSMutableDictionary*)getXmlKeyId:(NSData*)xmlData forDocFileName:(NSString*)docName
+{
+    //FieldId="Field_3"
+    return [OcrCard _getXmlKeyAttr:xmlData forDocFileName:docName forAttr:@"FieldId"];
+}
++(NSMutableDictionary*)getXmlKeyRect:(NSData*)xmlData forDocFileName:(NSString*)docName
+{
+    //Rect="683, 224, 197, 33"
+    return [OcrCard _getXmlKeyAttr:xmlData forDocFileName:docName forAttr:@"Rect"];
 }
 -(BOOL)Update
 {
@@ -194,7 +203,7 @@
             sqlite3_finalize(statement);
             //服务器更新
             if (self.ModifyDetail != nil){
-                NSMutableDictionary* keyIdDic = [self getXmlKeyId:self.SvrDetail];
+                NSMutableDictionary* keyIdDic = [OcrCard getXmlKeyId:self.SvrDetail forDocFileName:[self GetFileName]];
                 if (keyIdDic){
                     NSString* svrId = self.CardSvrId;
                     NSString* objId = [keyIdDic objectForKey:@"ObjectId"];
@@ -240,7 +249,7 @@
             sqlite3_finalize(statement);
             //服务器更新
             if (self.ModifyDetail != nil){
-                NSMutableDictionary* keyIdDic = [self getXmlKeyId:self.SvrDetail];
+                NSMutableDictionary* keyIdDic = [OcrCard getXmlKeyId:self.SvrDetail forDocFileName:[self GetFileName]];
                 if (keyIdDic){
                     NSString* svrId = self.CardSvrId;
                     NSString* objId = [keyIdDic objectForKey:@"ObjectId"];

@@ -39,6 +39,11 @@
 +(NSString*)GetHeadKey:(NSString*)value;
 +(void)SortHeadKeys:(NSMutableArray*)keyLst;
 
+//获取xml文档某图片文件的识别Name和FieldId对应关系
++(NSMutableDictionary*)getXmlKeyId:(NSData*)xmlData forDocFileName:(NSString*)docName;
+//获取xml文档某图片文件的识别Name和Rect对应关系
++(NSMutableDictionary*)getXmlKeyRect:(NSData*)xmlData forDocFileName:(NSString*)docName;
+
 -(BOOL)isEqual:(id)object;
 -(BOOL)Update_noImg;
 

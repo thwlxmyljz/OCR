@@ -30,7 +30,11 @@
 //派生类调用
 -(void)Setup:(UITableView*) tableView;
 
+//释放数据
+-(void)UnloadData;
+
 -(void)FreshOcrCard:(int)cardId Operator:(int)op;
+
 -(OcrCard*)GetCard:(NSIndexPath *)indexPath;
 
 @end

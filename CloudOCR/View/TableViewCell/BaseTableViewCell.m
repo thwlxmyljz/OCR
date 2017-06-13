@@ -56,7 +56,7 @@
 
 -(void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
     if (highlighted) {
-        self.alpha = .4;
+        self.alpha = .7;
     } else {
         self.alpha = 1;
     }

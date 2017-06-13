@@ -17,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 -(void) OnSelectOcrCard:(OcrCard*)card;
+-(void) OnSetting;
 
 +(void) initOcrEngine;
 +(void) unitOcrEngine;

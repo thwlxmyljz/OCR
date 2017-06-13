@@ -7,8 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SysViewController.h"
 
-@interface RightViewController : UIViewController
 
+@interface RightViewController : UIViewController <InputDelegate>
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @end

@@ -21,6 +21,9 @@
 @synthesize CurClass = _CurClass;
 @synthesize UserId = _UserId;
 @synthesize UserName = _UserName;
+@synthesize SvrScan = _SvrScan;
+@synthesize SvrAddr = _SvrAddr;
+@synthesize ThirdSvrAddr = _ThirdSvrAddr;
 
 static BooksOp* OneMe = nil;
 + (BooksOp*) Instance
@@ -53,14 +56,27 @@ static BooksOp* OneMe = nil;
         [self execsql:@"CREATE TABLE IF NOT EXISTS mb_sys(ID INTEGER PRIMARY KEY, VAR TEXT, VARVALUE INTEGER, CHARVALUE TEXT)"];
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (1,'CURCLASS',100,'0')"];//当前识别类型,100默认身份证
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (2,'CARDID',1,'0')"];//每次识别数据保存的本地唯一标示
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (3,'SVRSCAN',0,'0')"];//打开服务器识别
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (4,'SVR',0,'183.62.44.126:19000')"];//识别服务器
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (5,'THIRDSVR',0,'')"];//三方服务器
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (6,'USERID',0,'admin')"];//用户id
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (7,'USERNAME',0,'')"];//用户名
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (8,'USERPWD',0,'')"];//用户密码
+        
         [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, SVRIMG BLOB,CARDDETAIL BLOB,SVRDETAIL BLOB)"];//识别的card存储
-        [self execsql_noerror:@"CREATE INDEX IF NOT EXISTS mb_card_type ON mb_card(CARDCLASS)"];
+        [self execsql_noerror:@"CREATE INDEX IF NOT EXISTS mb_card_type ON mb_card(CARDCLASS)"];//索引
         /*
          //升级语句
         */
         
-        self.CardID = [self GetSysVarInt:@"CARDID"];
-        self.CurClass = [self GetSysVarInt:@"CURCLASS"];
+        _CardID = [self GetSysVarInt:@"CARDID"];
+        _CurClass = [self GetSysVarInt:@"CURCLASS"];
+        _SvrScan = [self GetSysVarInt:@"SVRSCAN"];
+        _SvrAddr = [self GetSysVarChar:@"SVR"];
+        _ThirdSvrAddr = [self GetSysVarChar:@"THIRDSVR"];
+        _UserId = [self GetSysVarChar:@"USERID"];
+        _UserName = [self GetSysVarChar:@"USERNAME"];
+        _UserPwd = [self GetSysVarChar:@"USERPWD"];
     }
     else
     {
@@ -213,6 +229,28 @@ static BooksOp* OneMe = nil;
     [self execsql:sql];
     return 0;
 }
+-(NSString*)GetSysVarChar:(NSString*)var
+{
+    NSString* sql = [NSString stringWithFormat:@"SELECT CHARVALUE FROM mb_sys WHERE VAR='%@'",var];
+    sqlite3_stmt * statement;
+    NSString* value = @"";
+    if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], [sql UTF8String], -1, &statement, NULL) == SQLITE_OK)
+    {
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            char* szvalue = (char*)sqlite3_column_text(statement, 0);
+            value = szvalue?[NSString stringWithUTF8String:szvalue]:@"";
+        }
+        sqlite3_finalize(statement);
+    }
+    return value;
+}
+- (int)  SetSysVarChar:(NSString*)var WithIValue:(NSString*)val
+{
+    NSString* sql = [NSString stringWithFormat:@"UPDATE mb_sys SET CHARVALUE='%@' WHERE VAR='%@'",val,var];
+    [self execsql:sql];
+    return 0;
+}
 -(NSInteger)getCardID
 {
     [self SetSysVarInt:@"CARDID" WithIValue:++_CardID];
@@ -224,6 +262,42 @@ static BooksOp* OneMe = nil;
     _CurClass = _clas;
     NSLog(@"setCurClass %d",_clas);
     [self SetSysVarInt:@"CURCLASS" WithIValue:_CurClass];
+}
+-(void)setSvrScan:(int)SvrScan
+{
+    _SvrScan = SvrScan;
+    NSLog(@"setSvrScan %d",_SvrScan);
+    [self SetSysVarInt:@"SVRSCAN" WithIValue:_SvrScan];
+}
+-(void)setSvrAddr:(NSString *)SvrAddr
+{
+    _SvrAddr = SvrAddr;
+    NSLog(@"setSvrAddr %@",_SvrAddr);
+    [self SetSysVarChar:@"SVR" WithIValue:_SvrAddr];
+}
+-(void)setThirdSvrAddr:(NSString *)ThirdSvrAddr
+{
+    _ThirdSvrAddr = ThirdSvrAddr;
+    NSLog(@"setSvrAddr %@",_ThirdSvrAddr);
+    [self SetSysVarChar:@"THIRDSVR" WithIValue:_ThirdSvrAddr];
+}
+-(void)setUserId:(NSString *)UserId
+{
+    _UserId = UserId;
+    NSLog(@"setUserId %@",_UserId);
+    [self SetSysVarChar:@"USERID" WithIValue:_UserId];
+}
+-(void)setUserName:(NSString *)UserName
+{
+    _UserName = UserName;
+    NSLog(@"setUserName %@",_UserName);
+    [self SetSysVarChar:@"USERNAME" WithIValue:_UserName];
+}
+-(void)setUserPwd:(NSString *)UserPwd
+{
+    _UserPwd = UserPwd;
+    NSLog(@"setUserPwd %@",_UserPwd);
+    [self SetSysVarChar:@"USERPWD" WithIValue:_UserPwd];
 }
 #pragma mark - static公共函数
 

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		410486DF1EEFD97F005C63E6 /* YQSlideMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 410486DE1EEFD97F005C63E6 /* YQSlideMenuController.m */; };
+		410486E21EEFE908005C63E6 /* SysViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 410486E11EEFE908005C63E6 /* SysViewController.m */; };
 		41495F281ED3D247008DE054 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 41495F271ED3D247008DE054 /* main.m */; };
 		41495F2B1ED3D247008DE054 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 41495F2A1ED3D247008DE054 /* AppDelegate.m */; };
 		41495F2E1ED3D247008DE054 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41495F2D1ED3D247008DE054 /* ViewController.mm */; };
@@ -128,6 +130,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		410486DD1EEFD97F005C63E6 /* YQSlideMenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YQSlideMenuController.h; sourceTree = "<group>"; };
+		410486DE1EEFD97F005C63E6 /* YQSlideMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YQSlideMenuController.m; sourceTree = "<group>"; };
+		410486E01EEFE908005C63E6 /* SysViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SysViewController.h; sourceTree = "<group>"; };
+		410486E11EEFE908005C63E6 /* SysViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SysViewController.m; sourceTree = "<group>"; };
 		41495F231ED3D247008DE054 /* CloudOCR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CloudOCR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		41495F271ED3D247008DE054 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		41495F291ED3D247008DE054 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -358,6 +364,8 @@
 				41495FAF1ED44D46008DE054 /* pic */,
 				41495F3E1ED3D2B0008DE054 /* SlideMenuController.h */,
 				41495F3F1ED3D2B0008DE054 /* SlideMenuController.m */,
+				410486DD1EEFD97F005C63E6 /* YQSlideMenuController.h */,
+				410486DE1EEFD97F005C63E6 /* YQSlideMenuController.m */,
 				41495FDF1ED523B5008DE054 /* ImageHeaderView.h */,
 				41495FE01ED523B5008DE054 /* ImageHeaderView.m */,
 				41495FE11ED523B5008DE054 /* ImageHeaderView.xib */,
@@ -365,6 +373,8 @@
 				41495F431ED3D49F008DE054 /* LeftViewController.m */,
 				41495F461ED3D49F008DE054 /* RightViewController.h */,
 				41495F471ED3D49F008DE054 /* RightViewController.m */,
+				410486E01EEFE908005C63E6 /* SysViewController.h */,
+				410486E11EEFE908005C63E6 /* SysViewController.m */,
 				41CC96921ED81AD300926708 /* Chk2Asi.h */,
 				41CC96931ED81AD300926708 /* Chk2Asi.m */,
 				41BF5CFC1ED67D540010C8C7 /* BooksOp.h */,
@@ -753,6 +763,7 @@
 				41495FEE1ED523B5008DE054 /* UIViewController+SlideMenuControllerOC.m in Sources */,
 				41ECB9B21EE527AF0064C158 /* Reachability.m in Sources */,
 				41CC96971ED8366700926708 /* CardKey.m in Sources */,
+				410486E21EEFE908005C63E6 /* SysViewController.m in Sources */,
 				41495FED1ED523B5008DE054 /* UIView+SlideMenuController.m in Sources */,
 				41BF5CFE1ED67D540010C8C7 /* BooksOp.m in Sources */,
 				41CC969A1ED83DD300926708 /* TableViewShower.m in Sources */,
@@ -779,6 +790,7 @@
 				41ECB9AA1EE527AF0064C158 /* ASIAuthenticationDialog.m in Sources */,
 				41ECB9AB1EE527AF0064C158 /* ASIDataCompressor.m in Sources */,
 				41495FCC1ED44DD2008DE054 /* BankTableCell.m in Sources */,
+				410486DF1EEFD97F005C63E6 /* YQSlideMenuController.m in Sources */,
 				41ECB9B01EE527AF0064C158 /* ASIInputStream.m in Sources */,
 				41CC96941ED81AD300926708 /* Chk2Asi.m in Sources */,
 				41495F281ED3D247008DE054 /* main.m in Sources */,
@@ -896,7 +908,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Qunxiang Chen (CZ3N524TBW)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Qunxiang Chen (CZ3N524TBW)";
 				DEVELOPMENT_TEAM = 64EV5NTF2V;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
@@ -911,7 +923,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yiqiao.CloudOCR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "c4a5ae31-d45d-467f-85c0-8905e3f8727d";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";
@@ -923,7 +935,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Qunxiang Chen (CZ3N524TBW)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Qunxiang Chen (CZ3N524TBW)";
 				DEVELOPMENT_TEAM = 64EV5NTF2V;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
@@ -938,7 +950,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yiqiao.CloudOCR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "c4a5ae31-d45d-467f-85c0-8905e3f8727d";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 armv7s arm64";

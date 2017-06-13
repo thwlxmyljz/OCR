@@ -17,6 +17,7 @@
 #import "constants.h"
 #import "CardKey.h"
 #import "UIView+Toast.h"
+#import "RightViewController.h"
 
 @interface OcrTableViewController () <UITableViewDataSource,UITableViewDelegate,
                 SlideMenuControllerDelegate,LeftMenuProtocol,UINavigationControllerDelegate,UIImagePickerControllerDelegate,HexOcrBankCardCallback,HexOcrIdCardCallback>
@@ -189,6 +190,10 @@ HexMOcr* mOcr = nil;
     if (shower){
         self.navigationItem.title = selType.TypeName;
         [BooksOp Instance].CurClass = selType.OcrClass;
+        //释放上一个显示对象的数据
+        if (self.CurShower){
+            [self.CurShower UnloadData];
+        }
         self.CurShower = shower;
         if ([self.CurShower isMemberOfClass:[TableViewShower class]]){
             [self.CurShower BaseUp:self.tableView WithClass:selType.OcrClass WithKeyName:@"名称"];
@@ -416,7 +421,7 @@ HexMOcr* mOcr = nil;
     [picker dismissViewControllerAnimated:YES completion:nil];
     if (image != nil) {
         if (self.CurShower.OcrClass == Class_Personal_IdCard){
-            //目前ocr接口图片识别只支持身份证识别
+            //目前本地ocr接口图片识别只支持身份证识别
             [self performSelectorInBackground:@selector(setImage:) withObject:image];
         }
         else

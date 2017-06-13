@@ -34,9 +34,9 @@
     
     self.lblCaption.font = [UIFont italicSystemFontOfSize:14];
     self.lblCaption.textColor = [UIColor colorFromHexString:@"#689F38"];
+    self.lblCaption.highlightedTextColor = [UIColor colorFromHexString:@"#689F38"];
+    
     self.edtValue.font = [UIFont italicSystemFontOfSize:14];
-    self.edtValue.textColor = [UIColor blackColor];
-    //self.edtValue.backgroundColor = [UIColor greenColor];
 }
 +(CGFloat) height
 {

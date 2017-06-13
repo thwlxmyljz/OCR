@@ -99,7 +99,11 @@
     
     [self.tableView reloadData];
 }
-
+-(void)UnloadData
+{
+    [self.Keys removeAllObjects];
+    [self.CardDict removeAllObjects];
+}
 #pragma mark - Table view data source
 
 

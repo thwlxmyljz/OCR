@@ -20,6 +20,7 @@
 @interface UITextView_CardCell : UITextView
 
 @property (nonatomic,strong) NSString* key;
+@property (nonatomic,assign) CGFloat topY;
 
 @end
 
