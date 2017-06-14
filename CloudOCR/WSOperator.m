@@ -388,13 +388,9 @@
     NSURLRequest *request=[[NSURLRequest alloc] initWithURL:url];
     BOOL docFound = FALSE;
     NSData *xmlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
-    /*
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"xml"];
-    NSData *xmlData = [NSData dataWithContentsOfFile:filePath options:NSDataReadingUncached error:&error];
-    */
-    NSLog(@"%@",[NSString stringWithUTF8String:xmlData.bytes]);
     if(xmlData && xmlData.length > 0 && !error)
     {
+        NSLog(@"%@",[NSString stringWithUTF8String:xmlData.bytes]);
         if (![respond.MIMEType isEqualToString:@"text/html"])
         {
             xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.bytes , xmlData.length, nil, nil, (XML_PARSE_NOENT|XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING));
@@ -507,6 +503,51 @@
 }
 + (NSArray*)pullOCR:(NSString*)svrId
 {
+    NSError *error=nil;
+    NSURLResponse* respond = nil;
+    //@"09014f8a1"
+    NSString* path = [NSString stringWithFormat:@"%@/getList?user=%@",SERVER_OCR,[BooksOp Instance].UserId];
+    NSURL *url= [NSURL URLWithString:path];
+    NSURLRequest *request=[[NSURLRequest alloc] initWithURL:url];
+    NSData *xmlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
+    
+    if(xmlData && xmlData.length > 0 && !error)
+    {
+        NSLog(@"%@",[NSString stringWithUTF8String:xmlData.bytes]);
+        if (![respond.MIMEType isEqualToString:@"text/html"])
+        {
+            xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.bytes , xmlData.length, nil, nil, (XML_PARSE_NOENT|XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING));
+            
+            if(!reader){
+                NSLog(@"failed to load soap respond xml !");
+                return nil;
+            }
+            else
+            {
+                /*
+                char *temp;
+                NSString *currentTagField = nil;
+                NSString *currentTagName = nil;
+                NSString *currentTagValue = nil;
+                while (TRUE)
+                {
+                    if(!xmlTextReaderRead(reader))
+                        break;
+                    NSLog(@"========> %s",xmlTextReaderName(reader));
+                    if(xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT)
+                    {
+                        temp = (char *)xmlTextReaderConstName(reader);
+                        currentTagField = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                        NSLog(@"========> %s",temp);
+                    }
+                }
+                 */
+            }
+        }
+    }
+    
+    NSLog(@"downloadOCR_XML(%@) shuold wait",svrId);
+    
     return nil;
 }
 @end

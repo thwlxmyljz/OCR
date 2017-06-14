@@ -18,6 +18,7 @@
 #import "CardKey.h"
 #import "UIView+Toast.h"
 #import "RightViewController.h"
+#import "WSOperator.h"
 
 @interface OcrTableViewController () <UITableViewDataSource,UITableViewDelegate,
                 SlideMenuControllerDelegate,LeftMenuProtocol,UINavigationControllerDelegate,UIImagePickerControllerDelegate,HexOcrBankCardCallback,HexOcrIdCardCallback>
@@ -112,6 +113,12 @@ HexMOcr* mOcr = nil;
             }
         }
     }
+    
+    [self performSelectorInBackground:@selector(pullNewData) withObject:nil];
+}
+-(void)pullNewData
+{
+    [WSOperator pullOCR:@""];
 }
 - (void)freshOcr:(NSNotification *)notification
 {
