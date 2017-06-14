@@ -16,8 +16,12 @@
 
 @end
 
+/*
+ 这个SysViewController要和RightViewController一致
+ */
 @interface SysViewController : UIViewController
 
+ //下面数据从RightViewController传过来
 @property (nonatomic, strong) NSString* oldValue;
 @property (nonatomic, assign) int clickSection;
 @property (nonatomic, assign) int clickRow;

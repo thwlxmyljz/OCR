@@ -62,7 +62,7 @@
         if (ff < valueSize.height)
             ff = valueSize.height+30;
     }
-    NSLog(@"heightForData:%f",ff);
+    //NSLog(@"heightForData:%f",ff);
     return ff;
 }
 

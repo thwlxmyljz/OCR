@@ -195,13 +195,15 @@ HexMOcr* mOcr = nil;
             [self.CurShower UnloadData];
         }
         self.CurShower = shower;
-        if ([self.CurShower isMemberOfClass:[TableViewShower class]]){
-            [self.CurShower BaseUp:self.tableView WithClass:selType.OcrClass WithKeyName:@"名称"];
+        if ([self.CurShower isMemberOfClass:[TableViewShower class]])
+        {
+            [self.CurShower BaseSetUp:self.tableView WithClass:selType.OcrClass];
             NSLog(@"normal class shower");
         }
-        else{
+        else
+        {
             [self.CurShower Setup:self.tableView];
-            NSLog(@"my class shower");
+            NSLog(@"inherit class shower");
         }
     }
 }
@@ -501,9 +503,9 @@ HexMOcr* mOcr = nil;
 -(void) showResult:(NSDictionary*) ocrResult
 {
     if (ocrResult)
-        self.dicResult = [ocrResult copy];
+        self.dicResult = [ocrResult copy];//本地已识别
     else
-        self.dicResult = nil;
+        self.dicResult = nil;//待服务器识别
 
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ViewController *v = (ViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ViewController"];

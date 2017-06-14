@@ -22,8 +22,7 @@
 @interface OcrCard : NSObject <DBProtocol>//OcrType <DBProtocol>
 
 @property (nonatomic, assign) EMOcrClass OcrClass;//分类
-@property (nonatomic, strong) UIImage*   CardImg;//本地图片
-@property (nonatomic, strong) UIImage*   CardSvrImg;//服务器图片
+@property (nonatomic, strong) UIImage*   CardImg;//图片
 @property (nonatomic, assign) NSInteger  CardId; //卡片id
 @property (nonatomic, strong) NSString*  CardSvrId;//卡片服务器标记id
 @property (nonatomic, strong) NSMutableDictionary* CardDetail;//识别的详细信息

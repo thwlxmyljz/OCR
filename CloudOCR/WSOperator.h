@@ -29,8 +29,25 @@
  返回服务器流水svrId
  */
 + (NSString*)uploadOCR:(NSString*)ocrType OcrImg:(UIImage*)ocrImg SvrType:(NSString*)svrType SvrFileName:(NSString*)svrFileName;
-+(NSString*)updateOCR:(NSString*)svrId DocId:(NSString*)docId Value:(NSString*)value;
-
+/*
+ 返回result字串表示成功
+ */
++ (NSString*)updateOCR:(NSString*)svrId DocId:(NSString*)docId Value:(NSString*)value;
+/*
+ 返回服务器流水svrId
+ */
++ (NSString*)insertOCR:(UIImage*)ocrImg SvrFileName:(NSString*)svrFileName Value:(NSString*)value;
+/*
+ 返回识别的（key，value）再加上（xmldata，xml文件内容)
+ */
 + (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId FileName:(NSString*)fileName;
+/*
+ 返回服务器处理后图片数据
+ */
 + (NSData*)downloadOCR_Img:(NSString*)svrId SvrFileName:(NSString*)svrFileName;
+/*
+ 返回比svrId更新的ocr识别列表
+ */
++ (NSArray*)pullOCR:(NSString*)svrId;
+
 @end

@@ -54,16 +54,16 @@ static BooksOp* OneMe = nil;
     if (sqlite3_open([path UTF8String], &database) == SQLITE_OK)
     {
         [self execsql:@"CREATE TABLE IF NOT EXISTS mb_sys(ID INTEGER PRIMARY KEY, VAR TEXT, VARVALUE INTEGER, CHARVALUE TEXT)"];
-        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (1,'CURCLASS',100,'0')"];//当前识别类型,100默认身份证
-        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (2,'CARDID',1,'0')"];//每次识别数据保存的本地唯一标示
-        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (3,'SVRSCAN',0,'0')"];//打开服务器识别
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (1,'CURCLASS',100,'')"];//当前识别类型,100默认身份证
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (2,'CARDID',1,'')"];//每次识别数据保存的本地唯一标示
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (3,'SVRSCAN',1,'')"];//同步本地识别到服务器
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (4,'SVR',0,'183.62.44.126:19000')"];//识别服务器
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (5,'THIRDSVR',0,'')"];//三方服务器
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (6,'USERID',0,'admin')"];//用户id
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (7,'USERNAME',0,'')"];//用户名
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (8,'USERPWD',0,'')"];//用户密码
         
-        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, SVRIMG BLOB,CARDDETAIL BLOB,SVRDETAIL BLOB)"];//识别的card存储
+        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, CARDDETAIL BLOB,SVRDETAIL BLOB)"];//识别的card存储
         [self execsql_noerror:@"CREATE INDEX IF NOT EXISTS mb_card_type ON mb_card(CARDCLASS)"];//索引
         /*
          //升级语句

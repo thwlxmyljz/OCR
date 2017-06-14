@@ -86,25 +86,7 @@
     }
     [self setup];
 }
--(void)showData
-{
-    RMNOTIFYVIEW
-    if (self.OcrData.count == 0){
-        [self.view makeToast:@"没有识别到数据" duration:2.0f  position:@"center"];
-        return;
-    }
-    UIBarButtonItem *navSave = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStylePlain target:self action:@selector(OnSave)];
-    self.navigationItem.rightBarButtonItem = navSave;
-    
-    UIImageView* imgView = [_headView viewWithTag:1000];
-    if (imgView){
-        imgView.image = self.OcrImage;
-        [imgView setNeedsDisplay];
-    }
-    _orgDict = [[NSMutableDictionary alloc] initWithDictionary:self.OcrData];
-    [self createKeys];
-    [self.tableView reloadData];
-}
+
 -(void)setup
 {
     self.tableView.delegate = self;
@@ -141,7 +123,7 @@
         
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             //生产文件名和本地识别id
-            [self creatSvrOcrUpInfo];
+            [self creatLocalId];
             //上传识别
             _SvrId = [WSOperator uploadOCR:@"GENERAL_FORM" OcrImg:self.OcrImage SvrType:@"addFile" SvrFileName:_SvrFileName];
             NSLog(@"%@",_SvrId);
@@ -174,10 +156,31 @@
         });
     }
 }
--(void)creatSvrOcrUpInfo
+-(void)showData
 {
-    _CardId = [BooksOp Instance].CardID;
-    _SvrFileName = [OcrCard GetFileName:_CardId];
+    RMNOTIFYVIEW
+    if (self.OcrData.count == 0){
+        [self.view makeToast:@"没有识别到数据" duration:2.0f  position:@"center"];
+        return;
+    }
+    UIBarButtonItem *navSave = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStylePlain target:self action:@selector(OnSave)];
+    self.navigationItem.rightBarButtonItem = navSave;
+    
+    UIImageView* imgView = [_headView viewWithTag:1000];
+    if (imgView){
+        imgView.image = self.OcrImage;
+        [imgView setNeedsDisplay];
+    }
+    _orgDict = [[NSMutableDictionary alloc] initWithDictionary:self.OcrData];
+    [self createKeys];
+    [self.tableView reloadData];
+}
+-(void)creatLocalId
+{
+    if (_CardId == 0){
+        _CardId = [BooksOp Instance].CardID;
+        _SvrFileName = [OcrCard GetFileName:_CardId];
+    }
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -250,6 +253,9 @@
             for (NSString* key in [_modifyDict allKeys]){
                 [_orgDict setObject:[_modifyDict objectForKey:key] forKey:key];
             }
+            //生产文件名和本地识别id
+            [self creatLocalId];
+            
             OcrCard* card = [[OcrCard alloc] init];
             card.OcrClass = self.OcrClass;
             card.CardId = _CardId;
@@ -257,7 +263,6 @@
             card.CardDetail = _orgDict;
             card.ModifyDetail = _modifyDict;
             card.CardImg = self.OcrImage;
-            card.CardSvrImg = self.OcrImage;
             card.SvrDetail = self.OcrXml;
             if ([card Insert]){
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
@@ -275,27 +280,22 @@
         }
         else{
             //修改
-            if ([_modifyDict allKeys].count == 0){
+            for (NSString* key in [_modifyDict allKeys]){
+                [_orgDict setObject:[_modifyDict objectForKey:key] forKey:key];
+            }
+            self.ModifyCard.CardDetail = _orgDict;
+            self.ModifyCard.ModifyDetail = _modifyDict;
+            if ([self.ModifyCard Update_noImg]){
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
+                                                                                  userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                            [NSNumber numberWithInt:self.ModifyCard.CardId], @"cardid",[NSNumber numberWithInt:2/*刷新卡片*/], @"op",
+                                                                                            nil]];
                 [self OnBack:nil];
             }
             else{
-                for (NSString* key in [_modifyDict allKeys]){
-                    [_orgDict setObject:[_modifyDict objectForKey:key] forKey:key];
-                }
-                self.ModifyCard.CardDetail = _orgDict;
-                self.ModifyCard.ModifyDetail = _modifyDict;
-                if ([self.ModifyCard Update_noImg]){
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
-                                                                                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                                [NSNumber numberWithInt:self.ModifyCard.CardId], @"cardid",[NSNumber numberWithInt:2/*刷新卡片*/], @"op",
-                                                                                                nil]];
-                    [self OnBack:nil];
-                }
-                else{
-                    RMNOTIFYVIEW
-                    self.navigationItem.rightBarButtonItem.enabled = TRUE;
-                    [BooksOp displayError:@"保存失败" withTitle:@""];
-                }
+                RMNOTIFYVIEW
+                self.navigationItem.rightBarButtonItem.enabled = TRUE;
+                [BooksOp displayError:@"保存失败" withTitle:@""];
             }
         }
     });

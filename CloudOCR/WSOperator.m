@@ -259,12 +259,102 @@
     NSString* result= [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
     if([urlResponese statusCode] >=200&&[urlResponese statusCode]<300)
     {
-        NSLog(@"uploadHeadPicImg ok(result:%@)",result);
+        NSLog(@"uploadOCR ok(result:%@)",result);
         return result;
     }
     else
     {
-        NSLog(@"uploadHeadPicImg failed(status code:%d)",(int)[urlResponese statusCode]);
+        NSLog(@"uploadOCR failed(status code:%d)",(int)[urlResponese statusCode]);
+        return @"";
+    }
+}
++ (NSString*)insertOCR:(UIImage*)ocrImg SvrFileName:(NSString*)svrFileName Value:(NSString*)value
+{
+    NSError *error=nil;
+    NSString* path = [NSString stringWithFormat:@"%@/uploadFilesAndResult",SERVER_OCR];
+    //分界线的标识符
+    NSString *TWITTERFON_FORM_BOUNDARY = @"AaB03x";
+    //根据url初始化request
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:path]
+                                                           cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+                                                       timeoutInterval:UPLOAD_TIMEOUT];
+    //分界线 --AaB03x
+    NSString *MPboundary=[[NSString alloc]initWithFormat:@"--%@",TWITTERFON_FORM_BOUNDARY];
+    //结束符 AaB03x--
+    NSString *endMPboundary=[[NSString alloc]initWithFormat:@"%@--",MPboundary];
+    //要上传的图片
+    
+    //得到图片的data
+    NSData* data = UIImageJPEGRepresentation(ocrImg,1);
+    if (data == nil)
+        return @"";
+    //http body的字符串
+    NSMutableString *body=[[NSMutableString alloc]init];
+    
+    /*
+     //添加分界线，换行
+     [body appendFormat:@"%@\r\n",MPboundary];
+     //添加字段名称，换2行
+     [body appendFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",@"format"];
+     //添加字段的值
+     [body appendFormat:@"%d\r\n",4];
+     */
+    
+    //添加分界线，换行
+    [body appendFormat:@"%@\r\n",MPboundary];
+    //添加字段名称，换2行
+    [body appendFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",@"userId"];
+    //添加字段的值
+    [body appendFormat:@"%@\r\n",[BooksOp Instance].UserId];
+    
+    //添加分界线，换行
+    [body appendFormat:@"%@\r\n",MPboundary];
+    //添加字段名称，换2行
+    [body appendFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",@"jsonStr"];
+    //添加字段的值
+    [body appendFormat:@"%@\r\n",value];
+    
+    
+    ////添加分界线，换行
+    [body appendFormat:@"%@\r\n",MPboundary];
+    //声明pic字段，文件名为boris.png
+    [body appendFormat:@"Content-Disposition: form-data; name=\"files\"; filename=\"%@\"\r\n",svrFileName];
+    //声明上传文件的格式
+    [body appendFormat:@"Content-Type: multipart/form-data\r\n\r\n"];
+    
+    //声明结束符：--AaB03x--
+    NSString *end=[[NSString alloc]initWithFormat:@"\r\n%@",endMPboundary];
+    //声明myRequestData，用来放入http body
+    NSMutableData *myRequestData=[NSMutableData data];
+    //将body字符串转化为UTF8格式的二进制
+    [myRequestData appendData:[body dataUsingEncoding:NSUTF8StringEncoding]];
+    //将image的data加入
+    [myRequestData appendData:data];
+    //加入结束符--AaB03x--
+    [myRequestData appendData:[end dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    //设置HTTPHeader中Content-Type的值
+    NSString *content=[[NSString alloc]initWithFormat:@"multipart/form-data; boundary=%@",TWITTERFON_FORM_BOUNDARY];
+    //设置HTTPHeader
+    [request setValue:content forHTTPHeaderField:@"Content-Type"];
+    //设置Content-Length
+    [request setValue:[NSString stringWithFormat:@"%d", (int)[myRequestData length]] forHTTPHeaderField:@"Content-Length"];
+    //设置http body
+    [request setHTTPBody:myRequestData];
+    //http method
+    [request setHTTPMethod:@"POST"];
+    
+    NSHTTPURLResponse *urlResponese = nil;
+    NSData* resultData = [NSURLConnection sendSynchronousRequest:request   returningResponse:&urlResponese error:&error];
+    NSString* result= [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
+    if([urlResponese statusCode] >=200&&[urlResponese statusCode]<300)
+    {
+        NSLog(@"insertOCR ok(result:%@)",result);
+        return result;
+    }
+    else
+    {
+        NSLog(@"insertOCR failed(status code:%d)",(int)[urlResponese statusCode]);
         return @"";
     }
 }
@@ -277,18 +367,14 @@
     NSURL *url= [NSURL URLWithString:path];
     NSURLRequest *request=[[NSURLRequest alloc] initWithURL:url];
     NSData *imgData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
-    if (error)
-    {
+    if (error){
         return nil;
     }
-    if(imgData && imgData.length > 0 && !error)
-    {
-        if (![respond.MIMEType isEqualToString:@"text/html"])
-        {
+    if(imgData && imgData.length > 0 && !error){
+        if (![respond.MIMEType isEqualToString:@"text/html"]){
             //包含文件数据
             return imgData;
         }
-
     }
     return nil;
 }
@@ -419,5 +505,8 @@
         return @"";
     }
 }
-
++ (NSArray*)pullOCR:(NSString*)svrId
+{
+    return nil;
+}
 @end

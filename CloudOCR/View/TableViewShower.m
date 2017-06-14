@@ -17,6 +17,12 @@
 #import "OcrTableViewController.h"
 #import "DataTableViewCell.h"
 
+@interface TableViewShower ()
+
+@property (nonatomic,assign) BOOL ShowSection;//是否按分组显示
+
+@end
+
 @implementation TableViewShower
 
 @synthesize OcrClass = _OcrClass;
@@ -26,11 +32,14 @@
 @synthesize KeyName = _KeyName;
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return  [NSArray arrayWithArray: self.Keys];
+    if (self.ShowSection){
+        //不分组显示，不显示索引
+        return  [NSArray arrayWithArray: self.Keys];
+    }
+    return nil;
 }
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
     NSString *key = [self.Keys objectAtIndex:index];
-    NSLog(@"sectionForSectionIndexTitle %@",key);
     if (key == UITableViewIndexSearch) {
         [tableView setContentOffset:CGPointZero animated:NO];
         return NSNotFound;
@@ -47,7 +56,11 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 22;
+    if (self.ShowSection){
+        return 22.0f;
+    }
+    //不分组显示section高度即达到隐藏效果
+    return 0.1f;
 }
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
@@ -78,11 +91,11 @@
     OcrCard* ocrdata = [self GetCard:indexPath];
     [self.Owner OnSelectOcrCard:ocrdata];
 }
--(void)BaseUp:(UITableView*) tableView WithClass:(EMOcrClass)clas WithKeyName:(NSString*)keyName
+-(void)BaseSetUp:(UITableView*) tableView WithClass:(EMOcrClass)clas
 {
     [tableView registerCellNib:[DataTableViewCell class]];
     self.OcrClass = clas;
-    self.KeyName = keyName;
+    self.KeyName = KEYNAME_NULL;
     
     [self Setup:tableView];
     
@@ -93,7 +106,13 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.sectionIndexColor = [UIColor colorFromHexString:@"689F38"];
-
+    
+    if ([self.KeyName isEqualToString:KEYNAME_NULL]){
+        self.ShowSection = FALSE;
+    }
+    else{
+        self.ShowSection = TRUE;
+    }
     self.Keys = [[NSMutableArray alloc] init];
     self.CardDict = [OcrCard TransHeadedDict:[OcrCard Load:self.OcrClass] ForKey:self.KeyName ResultHeadKeys:self.Keys];
     

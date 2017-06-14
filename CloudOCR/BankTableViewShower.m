@@ -25,7 +25,7 @@
 -(void)Setup:(UITableView*) tableView
 {
     [tableView registerCellNib:[BankTableCell class]];
-    self.KeyName = BANKCARD_KEY_BANKNAME_CH;
+    self.KeyName = KEYNAME_NULL;//BANKCARD_KEY_BANKNAME_CH;
     self.OcrClass = Class_Personal_BankCard;
     
     [super Setup:tableView];

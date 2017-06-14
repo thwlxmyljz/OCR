@@ -29,8 +29,7 @@
 {
     [tableView registerCellNib:[IdCardTableCell class]];
     self.OcrClass = Class_Personal_IdCard;
-    self.KeyName = IDCARD_KEY_NAME;
-    
+    self.KeyName = KEYNAME_NULL;//IDCARD_KEY_NAME;
     [super Setup:tableView];
 }
 

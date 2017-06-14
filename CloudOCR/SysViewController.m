@@ -63,11 +63,11 @@
         }
     }
     else if (_clickSection == 1){
-        if (_clickRow == 0){
+        if (_clickRow == 1){
             //识别服务器地址
             [BooksOp Instance].SvrAddr = newValue;
         }
-        else if (_clickRow == 1){
+        else if (_clickRow == 2){
             //三方服务器地址
             [BooksOp Instance].ThirdSvrAddr = newValue;
         }

@@ -49,9 +49,9 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0)
-        return 3;
-    else if (section == 1)
         return 2;
+    else if (section == 1)
+        return 3;
     return 0;
 }
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -86,32 +86,27 @@
     cell.textLabel.font = [UIFont systemFontOfSize:14.5 weight:-0.15];
     if (indexPath.section == 0){
         if (indexPath.row == 0){
-            //用户名
             cell.textLabel.text = @"用户名";
             cell.detailTextLabel.text = [BooksOp Instance].UserId;
         }
         else if (indexPath.row == 1){
-            //密码
             cell.textLabel.text = @"用户密码";
             cell.detailTextLabel.text = @"";
         }
-        else if (indexPath.row == 2){
-            //打开服务器识别
-            cell.textLabel.text = @"服务器识别";
+    }
+    else if (indexPath.section == 1){
+        if (indexPath.row == 0){
+            cell.textLabel.text = @"上传到云端";
             self.swSvr = [[UISwitch alloc] init];
             self.swSvr.on = [BooksOp Instance].SvrScan;
             [self.swSvr addTarget:self action:@selector(onSW:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = self.swSvr;
         }
-    }
-    else if (indexPath.section == 1){
-        if (indexPath.row == 0){
-            //识别服务器地址
-            cell.textLabel.text = @"服务器地址";
+        else if (indexPath.row == 1){
+            cell.textLabel.text = @"识别服务器";
             cell.detailTextLabel.text = [BooksOp Instance].SvrAddr;
         }
-        else if (indexPath.row == 1){
-            //三方服务器地址
+        else if (indexPath.row == 2){
             cell.textLabel.text = @"三方服务器";
             cell.detailTextLabel.text = [BooksOp Instance].ThirdSvrAddr;
         }
@@ -125,12 +120,12 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:TRUE];
-    if (indexPath.section == 0 && indexPath.row == 2){
-        //服务器识别
+    if (indexPath.section == 1 && indexPath.row == 0){
+        //上传到云端是开关控制
         return;
     }
-    _clickSection = indexPath.section;
-    _clickRow = indexPath.row;
+    _clickSection = (int)indexPath.section;
+    _clickRow = (int)indexPath.row;
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     SysViewController *v = (SysViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"SysViewController"];
