@@ -163,11 +163,10 @@ HexMOcr* mOcr = nil;
                 NSLog(@"syncOcr(%@,%@,%@) downloadOCR_Img error",svrId,docId,fileName);
                 continue;
             }
-            
-            int newCardId = [BooksOp Instance].CardID;
+
             OcrCard* card = [[OcrCard alloc] init];
             card.OcrClass = [OcrType GetClass:formtype];
-            card.CardId = newCardId;
+            card.CardId = [BooksOp Instance].CardID;
             card.CardSvrId = svrId;
             card.CardDocId = docId;
             card.CardDetail = ocrData;
@@ -175,15 +174,7 @@ HexMOcr* mOcr = nil;
             card.CardImg = [UIImage imageWithData:ocrImage];;
             card.SvrDetail = ocrXml;
         
-            if ([card Insert]){
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
-                                                                                  userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                            [NSNumber numberWithInt:card.CardId], @"cardid",
-                                                                                            [NSNumber numberWithInt:card.OcrClass], @"ocrclass",
-                                                                                            [NSNumber numberWithInt:1]/*新卡片*/, @"op",
-                                                                                            nil]];
-            }
-            NSLog(@"syncOcr(%@,%@,class:%d) ok",svrId,docId,card.OcrClass);
+            [card Insert];
         }
         
     }

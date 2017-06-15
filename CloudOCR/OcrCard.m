@@ -12,6 +12,9 @@
 #import "Chk2Asi.h"
 #import "WSOperator.h"
 #include <libxml/xmlreader.h>
+#import "constants.h"
+#import "NotificationView.h"
+#import "NSNotificationAdditions.h"
 
 @implementation OcrCard
 
@@ -90,8 +93,16 @@
         }
         
         if( sqlite3_step(statement) == SQLITE_DONE){
-            NSLog(@"insert ok");
+            NSLog(@"card insert DB ok");
             sqlite3_finalize(statement);
+            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
+                                                                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                        [NSNumber numberWithInt:self.CardId], @"cardid",
+                                                                                        [NSNumber numberWithInt:self.OcrClass], @"ocrclass",
+                                                                                        [NSNumber numberWithInt:1]/*新卡片*/, @"op",
+                                                                                        nil]];
+            
             return TRUE;
         }
         
@@ -216,7 +227,7 @@
         sqlite3_bind_int(statement, 4, self.CardId);
         
         if( sqlite3_step(statement) == SQLITE_DONE){
-            NSLog(@"update %d ok",self.CardId);
+            NSLog(@"card update DB %d ok",(int)self.CardId);
             sqlite3_finalize(statement);
             return TRUE;
         }
@@ -236,10 +247,22 @@
     
     if ([NSThread isMainThread]){
         [self _update_noImg_DB];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
+                                                                          userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                    [NSNumber numberWithInt:self.CardId], @"cardid",
+                                                                                    [NSNumber numberWithInt:self.OcrClass], @"ocrclass",
+                                                                                    [NSNumber numberWithInt:2/*刷新卡片*/], @"op",
+                                                                                    nil]];
     }
     else{
         dispatch_sync(dispatch_get_main_queue(), ^{
             [self _update_noImg_DB];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
+                                                                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                        [NSNumber numberWithInt:self.CardId], @"cardid",
+                                                                                        [NSNumber numberWithInt:self.OcrClass], @"ocrclass",
+                                                                                        [NSNumber numberWithInt:2/*刷新卡片*/], @"op",
+                                                                                        nil]];
         });
     }
     return TRUE;
@@ -265,7 +288,7 @@
         sqlite3_bind_int(statement, 3, self.CardId);
         
         if( sqlite3_step(statement) == SQLITE_DONE){
-            NSLog(@"update %d ok",self.CardId);
+            NSLog(@"card update DB %d ok",self.CardId);
             sqlite3_finalize(statement);
             return TRUE;
         }
