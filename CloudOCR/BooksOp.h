@@ -20,7 +20,7 @@
 @property (nonatomic,strong) NSString* UserId;
 @property (nonatomic,strong) NSString* UserName;
 @property (nonatomic,strong) NSString* UserPwd;
-@property (nonatomic,assign) int SvrScan;//服务器识别
+@property (nonatomic,assign) int SvrScan;//本地识别后并上传服务器
 @property (nonatomic,strong) NSString* SvrAddr;//服务器地址
 @property (nonatomic,strong) NSString* ThirdSvrAddr;//三方服务器地址
 

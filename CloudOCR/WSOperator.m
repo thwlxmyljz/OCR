@@ -11,9 +11,10 @@
 #import "ASIHttpRequest/ASIDataDecompressor.h"
 #import "ASIHttpRequest/ASIDataCompressor.h"
 #import "BooksOp.h"
+#import "OcrCard.h"
 
 #define UPLOAD_TIMEOUT 30
-#define SERVER_OCR @"http://183.62.44.126:19000/ocr"
+#define SERVER_OCR [NSString stringWithFormat:@"http://%@/ocr",[BooksOp Instance].SvrAddr]
 
 @implementation WSOperator
 
@@ -367,19 +368,20 @@
     NSURL *url= [NSURL URLWithString:path];
     NSURLRequest *request=[[NSURLRequest alloc] initWithURL:url];
     NSData *imgData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
-    if (error){
-        return nil;
-    }
     if(imgData && imgData.length > 0 && !error){
         if (![respond.MIMEType isEqualToString:@"text/html"]){
             //包含文件数据
+            NSLog(@"downloadOCR_Img(%@,%@) ok",svrId,svrFileName);
             return imgData;
         }
     }
+    NSLog(@"downloadOCR_Img(%@,%@) error",svrId,svrFileName);
     return nil;
 }
-+ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId  FileName:(NSString*)fileName
++ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId  DocKey:(NSString*)docKey DocValue:(NSString*)keyValue  Addtional:(NSMutableDictionary*)returnDict
 {
+    NSLog(@"downloadOCR_XML(%@,%@,%@)...",svrId,docKey,keyValue);
+    
     NSError *error=nil;
     NSURLResponse* respond = nil;
     //@"09014f8a1"
@@ -410,29 +412,36 @@
                 {
                     if(!xmlTextReaderRead(reader))
                         break;
-                    NSLog(@"========> %s",xmlTextReaderName(reader));
                     if(xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT)
                     {
                         temp = (char *)xmlTextReaderConstName(reader);
                         currentTagField = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
                         NSLog(@"========> %s",temp);
-                        if([currentTagField isEqualToString:@"Doc"])
+                        if([currentTagField isEqualToString:DOC])
                         {
-                            temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)"Name");
+                            temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)[docKey UTF8String]);
                             currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
                             NSLog(@"===> TagName: %@",currentTagName);
-                            if ([currentTagName isEqualToString:fileName]){
+                            if ([currentTagName isEqualToString:keyValue]){
                                 docFound = TRUE;
+                                //设置返回的docid
+                                temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_OBJECTID_C);
+                                currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                                [returnDict setValue:currentTagName forKey:DOC_OBJECTID];
+                                //设置返回的filename
+                                temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_NAME_C);
+                                currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                                [returnDict setValue:currentTagName forKey:DOC_NAME];
                             }
                             else{
                                 docFound = FALSE;
                             }
                         }
-                        if([currentTagField isEqualToString:@"Field"] && docFound)
+                        if([currentTagField isEqualToString:FIELD] && docFound)
                         {
                             NSLog(@"===> TagField: %@",currentTagField);
                             
-                            temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)"Name");
+                            temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)FIELD_NAME_C);
                             currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
                             NSLog(@"===> TagName: %@",currentTagName);
                             
@@ -454,7 +463,7 @@
                 }
                 
                 NSLog(@"downloadOCR_XML(%@) over",svrId);
-                [dict setValue:xmlData forKey:@"xmldata"];
+                [returnDict setValue:xmlData forKey:XML_MYKEY];
                 return dict;
             }
         }
@@ -463,6 +472,14 @@
     NSLog(@"downloadOCR_XML(%@) shuold wait",svrId);
     
     return nil;
+}
++ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId FileName:(NSString*)fileName Addtional:(NSMutableDictionary*)returnDict
+{
+    return [WSOperator downloadOCR_XML:svrId DocKey:DOC_NAME DocValue:fileName Addtional:returnDict];
+}
++ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId DocId:(NSString*)docId Addtional:(NSMutableDictionary*)returnDict
+{
+    return [WSOperator downloadOCR_XML:svrId DocKey:DOC_OBJECTID DocValue:docId Addtional:returnDict];
 }
 +(NSString*)updateOCR:(NSString*)svrId DocId:(NSString*)docId Value:(NSString*)value
 {
@@ -501,53 +518,32 @@
         return @"";
     }
 }
-+ (NSArray*)pullOCR:(NSString*)svrId
++ (NSArray*)downloadOCR_Last:(NSString*)svrId
 {
     NSError *error=nil;
     NSURLResponse* respond = nil;
-    //@"09014f8a1"
     NSString* path = [NSString stringWithFormat:@"%@/getList?user=%@",SERVER_OCR,[BooksOp Instance].UserId];
     NSURL *url= [NSURL URLWithString:path];
     NSURLRequest *request=[[NSURLRequest alloc] initWithURL:url];
-    NSData *xmlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
-    
-    if(xmlData && xmlData.length > 0 && !error)
+    NSData *jsonData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
+    if(jsonData && jsonData.length > 0 && !error)
     {
-        NSLog(@"%@",[NSString stringWithUTF8String:xmlData.bytes]);
         if (![respond.MIMEType isEqualToString:@"text/html"])
         {
-            xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.bytes , xmlData.length, nil, nil, (XML_PARSE_NOENT|XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING));
-            
-            if(!reader){
-                NSLog(@"failed to load soap respond xml !");
+            //NSString* json = [NSString stringWithUTF8String:jsonData.bytes];
+            NSString* json = [NSString stringWithCString:jsonData.bytes encoding:NSUTF8StringEncoding];
+            if (json.length <= 0)
+                return nil;
+            NSError* error;
+            //NSLog(@"%@",json);
+            id jsonobj = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding]  options:NSJSONReadingMutableContainers error:&error];
+            if (!jsonobj || error){
+                NSLog(@"downloadOCR_Last parse json str[%@] error.",json);
                 return nil;
             }
-            else
-            {
-                /*
-                char *temp;
-                NSString *currentTagField = nil;
-                NSString *currentTagName = nil;
-                NSString *currentTagValue = nil;
-                while (TRUE)
-                {
-                    if(!xmlTextReaderRead(reader))
-                        break;
-                    NSLog(@"========> %s",xmlTextReaderName(reader));
-                    if(xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT)
-                    {
-                        temp = (char *)xmlTextReaderConstName(reader);
-                        currentTagField = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                        NSLog(@"========> %s",temp);
-                    }
-                }
-                 */
-            }
+            return  (NSArray*)jsonobj;
         }
     }
-    
-    NSLog(@"downloadOCR_XML(%@) shuold wait",svrId);
-    
     return nil;
 }
 @end

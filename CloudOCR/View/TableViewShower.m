@@ -120,6 +120,7 @@
 }
 -(void)UnloadData
 {
+    NSLog(@"OCR shower unload data");
     [self.Keys removeAllObjects];
     [self.CardDict removeAllObjects];
 }

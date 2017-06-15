@@ -63,7 +63,7 @@ static BooksOp* OneMe = nil;
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (7,'USERNAME',0,'')"];//用户名
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (8,'USERPWD',0,'')"];//用户密码
         
-        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, CARDDETAIL BLOB,SVRDETAIL BLOB)"];//识别的card存储
+        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,DOCID TEXT,CARDIMG BLOB, CARDDETAIL BLOB,SVRDETAIL BLOB)"];//识别的card存储,LINKID,DOCID唯一标记一个图片识别
         [self execsql_noerror:@"CREATE INDEX IF NOT EXISTS mb_card_type ON mb_card(CARDCLASS)"];//索引
         /*
          //升级语句

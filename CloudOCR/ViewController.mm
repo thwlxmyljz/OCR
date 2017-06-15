@@ -35,6 +35,7 @@
     //新识别的本地信息
     int _CardId;//本地id
     NSString* _SvrId;//服务器识别id
+    NSString* _DocId;//服务器识别docid
     NSString* _SvrFileName;//本地文件名
     //等待框
     GCDiscreetNotificationView *notificationView;
@@ -134,13 +135,18 @@
                 });
             }
             else{
-                //上传图片成功，下载识别结果
-                for (int i = 0; i < 4; i++){
-                    [NSThread sleepForTimeInterval:5.0f];
-                    self.OcrData = [WSOperator downloadOCR_XML:_SvrId FileName:_SvrFileName];
+                //上传图片成功
+                for (int i = 0; i < DOWNLOAD_LOOP; i++){
+                    [NSThread sleepForTimeInterval:DOWNLOAD_SLEEP_ONE];
+                    
+                    //下载识别结果XML
+                    NSMutableDictionary* returnDict = [[NSMutableDictionary alloc] init];
+                    self.OcrData = [WSOperator downloadOCR_XML:_SvrId FileName:_SvrFileName Addtional:returnDict];
                     if (self.OcrData){
-                        self.OcrXml = [self.OcrData objectForKey:@"xmldata"];
-                        [self.OcrData removeObjectForKey:@"xmldata"];
+                        
+                        _OcrXml = [returnDict objectForKey:XML_MYKEY];
+                        _DocId = [returnDict objectForKey:DOC_OBJECTID];
+              
                         //下载识别处理过后的图片
                         NSData* svrImg = [WSOperator downloadOCR_Img:_SvrId SvrFileName:_SvrFileName];
                         if (svrImg){
@@ -247,7 +253,7 @@
 }
 -(void)realSave
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
         if (!self.ModifyCard){
             //新建
             for (NSString* key in [_modifyDict allKeys]){
@@ -260,6 +266,7 @@
             card.OcrClass = self.OcrClass;
             card.CardId = _CardId;
             card.CardSvrId = _SvrId?_SvrId:@"";
+            card.CardDocId = _DocId?_DocId:@"";
             card.CardDetail = _orgDict;
             card.ModifyDetail = _modifyDict;
             card.CardImg = self.OcrImage;
@@ -268,14 +275,19 @@
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
                                                                                   userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                                             [NSNumber numberWithInt:card.CardId], @"cardid",
+                                                                                            [NSNumber numberWithInt:card.OcrClass], @"ocrclass",
                                                                                             [NSNumber numberWithInt:1]/*新卡片*/, @"op",
                                                                                             nil]];
-                [self OnBack:nil];
+                dispatch_async(dispatch_get_main_queue() ,^{
+                    [self OnBack:nil];
+                });
             }
             else{
-                RMNOTIFYVIEW
-                self.navigationItem.rightBarButtonItem.enabled = TRUE;
-                [BooksOp displayError:@"保存失败" withTitle:@""];
+                dispatch_async(dispatch_get_main_queue() ,^{
+                    RMNOTIFYVIEW
+                    self.navigationItem.rightBarButtonItem.enabled = TRUE;
+                    [BooksOp displayError:@"保存失败" withTitle:@""];
+                });
             }
         }
         else{
@@ -288,14 +300,20 @@
             if ([self.ModifyCard Update_noImg]){
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
                                                                                   userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                            [NSNumber numberWithInt:self.ModifyCard.CardId], @"cardid",[NSNumber numberWithInt:2/*刷新卡片*/], @"op",
+                                                                                            [NSNumber numberWithInt:self.ModifyCard.CardId], @"cardid",
+                                                                                            [NSNumber numberWithInt:self.ModifyCard.OcrClass], @"ocrclass",
+                                                                                            [NSNumber numberWithInt:2/*刷新卡片*/], @"op",
                                                                                             nil]];
-                [self OnBack:nil];
+                dispatch_async(dispatch_get_main_queue() ,^{
+                    [self OnBack:nil];
+                });
             }
             else{
-                RMNOTIFYVIEW
-                self.navigationItem.rightBarButtonItem.enabled = TRUE;
-                [BooksOp displayError:@"保存失败" withTitle:@""];
+                dispatch_async(dispatch_get_main_queue() ,^{
+                    RMNOTIFYVIEW
+                    self.navigationItem.rightBarButtonItem.enabled = TRUE;
+                    [BooksOp displayError:@"保存失败" withTitle:@""];
+                });
             }
         }
     });

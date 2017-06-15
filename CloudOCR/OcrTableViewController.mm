@@ -19,6 +19,8 @@
 #import "UIView+Toast.h"
 #import "RightViewController.h"
 #import "WSOperator.h"
+#import "NotificationView.h"
+#import "NSNotificationAdditions.h"
 
 @interface OcrTableViewController () <UITableViewDataSource,UITableViewDelegate,
                 SlideMenuControllerDelegate,LeftMenuProtocol,UINavigationControllerDelegate,UIImagePickerControllerDelegate,HexOcrBankCardCallback,HexOcrIdCardCallback>
@@ -74,7 +76,7 @@ HexMOcr* mOcr = nil;
     vv.Owner = self;
     [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%d", Class_Personal_BankCard]];
     
-    //公共处理
+    //其他
     vv = [[TableViewShower alloc] init];
     vv.Owner = self;
     [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%d", Class_Normal]];
@@ -114,15 +116,83 @@ HexMOcr* mOcr = nil;
         }
     }
     
-    [self performSelectorInBackground:@selector(pullNewData) withObject:nil];
+    [self performSelectorInBackground:@selector(syncOcr) withObject:nil];
 }
--(void)pullNewData
+-(void)syncOcr
 {
-    [WSOperator pullOCR:@""];
+    //[{\"ckey\":\"\",\"createTime\":\"2017-06-13 16:41:13\",\"formtype\":\"身份证正面\",\"objectId\":\"080100004cf51\",\"ocrstatus\":\"10\",\"srcdocid\":\"090150dd1\"},{\"ckey\":\"\",\"createTime\":\"2017-06-13 16:41:13\",\"formtype\":\"身份证正面\",\"objectId\":\"080100004cf61\",\"ocrstatus\":\"10\",\"srcdocid\":\"090150dd1\"},{\"ckey\":\"\",\"createTime\":\"2017-06-07 10:35:01\",\"formtype\":\"\",\"objectId\":\"080100004bd11\",\"ocrstatus\":\"10\",\"srcdocid\":\"09014f621\"},{\"ckey\":\"\",\"createTime\":\"2017-06-05 17:16:04\",\"formtype\":\"不动产登记证\",\"objectId\":\"080100004bc91\",\"ocrstatus\":\"10\",\"srcdocid\":\"09014f4d1\"}]
+    NSArray* svrArray = [WSOperator downloadOCR_Last:@""];
+    if (!svrArray)
+        return;
+    if (svrArray.count == 0)
+        return;
+    //由于接口返回按时间递减顺序，本地需按递增顺序操作
+    NSArray* reversedArray = [[svrArray reverseObjectEnumerator] allObjects];
+    for (NSDictionary* dict in reversedArray){
+        NSString* svrId = [dict objectForKey:@"srcdocid"];
+        NSString* docId = [dict objectForKey:@"xmldocobject"];
+        //NSString* createTime = [dict objectForKey:@"createTime"];
+        NSString* formtype = [dict objectForKey:@"formtype"];
+        if (!docId){
+            NSLog(@"syncOcr(%@) no docId",svrId);
+            continue;
+        }
+        //本地没有的识别，插入进来，本地有的不管
+        __block BOOL existId = FALSE;
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            existId = ([OcrCard GetCardId:svrId DocId:docId] != 0)?TRUE:FALSE;
+        });
+        if (existId){
+            NSLog(@"syncOcr(%@,%@) already exist",svrId,docId);
+            continue;
+        }
+        
+        NSMutableDictionary* returnDict = [[NSMutableDictionary alloc] init];
+        NSMutableDictionary* ocrData = [WSOperator downloadOCR_XML:svrId DocId:docId Addtional:returnDict];
+        if (ocrData && ocrData.count > 0){
+            
+            NSData* ocrXml = [returnDict objectForKey:XML_MYKEY];
+            NSString* fileName = [returnDict objectForKey:DOC_NAME];
+            
+            if (!ocrXml || !fileName){
+                NSLog(@"syncOcr(%@,%@) XML format error",svrId,docId);
+                continue;
+            }
+            NSData* ocrImage = [WSOperator downloadOCR_Img:svrId SvrFileName:fileName];
+            if (!ocrImage){
+                NSLog(@"syncOcr(%@,%@,%@) downloadOCR_Img error",svrId,docId,fileName);
+                continue;
+            }
+            
+            int newCardId = [BooksOp Instance].CardID;
+            OcrCard* card = [[OcrCard alloc] init];
+            card.OcrClass = [OcrType GetClass:formtype];
+            card.CardId = newCardId;
+            card.CardSvrId = svrId;
+            card.CardDocId = docId;
+            card.CardDetail = ocrData;
+            card.ModifyDetail = nil;
+            card.CardImg = [UIImage imageWithData:ocrImage];;
+            card.SvrDetail = ocrXml;
+        
+            if ([card Insert]){
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
+                                                                                  userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                            [NSNumber numberWithInt:card.CardId], @"cardid",
+                                                                                            [NSNumber numberWithInt:card.OcrClass], @"ocrclass",
+                                                                                            [NSNumber numberWithInt:1]/*新卡片*/, @"op",
+                                                                                            nil]];
+            }
+            NSLog(@"syncOcr(%@,%@,class:%d) ok",svrId,docId,card.OcrClass);
+        }
+        
+    }
 }
 - (void)freshOcr:(NSNotification *)notification
 {
-    [_CurShower FreshOcrCard:[[[ notification userInfo ] objectForKey: @"cardid"] intValue] Operator:[[[ notification userInfo ] objectForKey: @"op"] intValue]];
+    if (_CurShower && _CurShower.OcrClass == [[[ notification userInfo ] objectForKey: @"ocrclass"] intValue]){
+        [_CurShower FreshOcrCard:[[[ notification userInfo ] objectForKey: @"cardid"] intValue] Operator:[[[ notification userInfo ] objectForKey: @"op"] intValue]];
+    }
 }
 - (IBAction)trashOcr:(id)sender {
     [self.tableView setEditing:!self.tableView.editing];
@@ -153,38 +223,6 @@ HexMOcr* mOcr = nil;
 -(void)viewWillLayoutSubviews
 {
 }
-#pragma makr - SlideMenuControllerDelegate
--(void)leftWillOpen {
-    NSLog(@"SlideMenuControllerDelegate: leftWillOpen");
-}
-
--(void)leftDidOpen {
-    NSLog(@"SlideMenuControllerDelegate: leftDidOpen");
-}
-
--(void)leftWillClose {
-    NSLog(@"SlideMenuControllerDelegate: leftWillClose");
-}
-
--(void)leftDidClose {
-    NSLog(@"SlideMenuControllerDelegate: leftDidClose");
-}
-
--(void)rightWillOpen {
-    NSLog(@"SlideMenuControllerDelegate: rightWillOpen");
-}
-
--(void)rightDidOpen {
-    NSLog(@"SlideMenuControllerDelegate: rightDidOpen");
-}
-
--(void)rightWillClose {
-    NSLog(@"SlideMenuControllerDelegate: rightWillClose");
-}
-
--(void)rightDidClose {
-    NSLog(@"SlideMenuControllerDelegate: rightDidClose");
-}
 #pragma makr - LeftMenuProtocol
 -(void)changeViewController:(OcrType *)selType
 {
@@ -198,7 +236,7 @@ HexMOcr* mOcr = nil;
         self.navigationItem.title = selType.TypeName;
         [BooksOp Instance].CurClass = selType.OcrClass;
         //释放上一个显示对象的数据
-        if (self.CurShower){
+        if (self.CurShower && shower != self.CurShower){
             [self.CurShower UnloadData];
         }
         self.CurShower = shower;

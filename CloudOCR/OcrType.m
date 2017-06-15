@@ -13,7 +13,48 @@
 
 @synthesize OcrClass = _OcrClass;
 @synthesize TypeName = _TypeName;
-
++(NSMutableArray*)Ocrs
+{
+    static NSMutableArray* array = nil;
+    if (!array){
+        array = [[NSMutableArray alloc] init];
+        
+        OcrType* type = nil;
+        
+        type = [[OcrType alloc] init];
+        type.OcrClass = Class_Personal_IdCard;
+        type.TypeName = @"身份证";
+        [array addObject:type];
+        
+        type = [[OcrType alloc] init];
+        type.OcrClass = Class_Personal_BankCard;
+        type.TypeName = @"银行卡";
+        [array addObject:type];
+        
+        
+        
+        type = [[OcrType alloc] init];
+        type.OcrClass = Class_Financial_Cert;
+        type.TypeName = @"营业执照";
+        [array addObject:type];
+        
+        type = [[OcrType alloc] init];
+        type.OcrClass = Class_Normal;
+        type.TypeName = @"其他";
+        [array addObject:type];
+    }
+    return array;
+}
++(EMOcrClass)GetClass:(NSString*)typeName
+{
+    NSMutableArray* arr = [OcrType Ocrs];
+    for (OcrType* ocr in arr){
+        if ([typeName containsString:ocr.TypeName]){
+            return ocr.OcrClass;
+        }
+    }
+    return Class_Normal;
+}
 +(NSMutableArray*)Personals
 {
     static NSMutableArray* array = nil;
@@ -59,7 +100,7 @@
         
         type = [[OcrType alloc] init];
         type.OcrClass = Class_Financial_Cert;
-        type.TypeName = @"企业证件";
+        type.TypeName = @"营业执照";
         [array addObject:type];
         
         type = [[OcrType alloc] init];

@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 
 typedef enum{
-    Class_Normal=0,
+    Class_Normal=0,//其他
     //下面的分类值不要修改，会保存到数据库
     Class_Personal_IdCard=100 ,
     Class_Personal_BankCard=101,
@@ -33,6 +33,11 @@ typedef enum{
 @property (nonatomic, assign) EMOcrClass OcrClass;//分类
 @property (nonatomic, strong) NSString*  TypeName;//类型名称
 
+//不分类
++(NSMutableArray*)Ocrs;
++(EMOcrClass)GetClass:(NSString*)typeName;
+
+//识别分类
 +(NSMutableArray*)Personals;
 +(NSMutableArray*)Financials;
 +(NSMutableArray*)Commercials;

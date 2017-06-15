@@ -38,9 +38,13 @@
  */
 + (NSString*)insertOCR:(UIImage*)ocrImg SvrFileName:(NSString*)svrFileName Value:(NSString*)value;
 /*
- 返回识别的（key，value）再加上（xmldata，xml文件内容)
+ 返回识别的（key，value）
  */
-+ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId FileName:(NSString*)fileName;
++ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId FileName:(NSString*)fileName Addtional:(NSMutableDictionary*)returnDict;
+/*
+ 返回识别的（key，value）
+ */
++ (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId DocId:(NSString*)docId Addtional:(NSMutableDictionary*)returnDict;
 /*
  返回服务器处理后图片数据
  */
@@ -48,6 +52,6 @@
 /*
  返回比svrId更新的ocr识别列表
  */
-+ (NSArray*)pullOCR:(NSString*)svrId;
++ (NSArray*)downloadOCR_Last:(NSString*)svrId;
 
 @end

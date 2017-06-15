@@ -32,7 +32,8 @@
 
 @end
 
-NSString* g_OcrClass[] = {@"个人证件",@"金融票据",@"商业票据"};
+//NSString* g_OcrClass[] = {@"个人证件",@"金融票据",@"商业票据"};
+NSString* g_OcrClass[] = {@"识别类型"};
 
 @implementation LeftViewController
 
@@ -41,10 +42,15 @@ NSString* g_OcrClass[] = {@"个人证件",@"金融票据",@"商业票据"};
 -(void)viewDidLoad {
     [super viewDidLoad];
     
+    [BooksOp setExtraCellLineHidden:self.tableView];
+    
     _tableData = [[NSMutableDictionary alloc] init];
+    /*
     [_tableData setObject:[OcrType Personals] forKey:g_OcrClass[0]];
     [_tableData setObject:[OcrType Financials] forKey:g_OcrClass[1]];
     [_tableData setObject:[OcrType Commercials] forKey:g_OcrClass[2]];
+    */
+    [_tableData setObject:[OcrType Ocrs] forKey:g_OcrClass[0]];
     
     //_headView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headshow4"]];
     //[self.view addSubview:_headView];
