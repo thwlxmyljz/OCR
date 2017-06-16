@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -81,12 +82,12 @@
                                 <exclude reference="KdL-U7-Peh"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="stR-gf-xFm"/>
                                 <exclude reference="N4w-Ja-zCc"/>
                                 <exclude reference="Udz-yA-9Cb"/>
                                 <exclude reference="igv-KG-7JL"/>
                                 <exclude reference="qJh-1g-rOk"/>
                                 <exclude reference="tHh-1I-ROU"/>
-                                <exclude reference="stR-gf-xFm"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -94,12 +95,12 @@
                                 <include reference="KdL-U7-Peh"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="stR-gf-xFm"/>
                                 <include reference="N4w-Ja-zCc"/>
                                 <exclude reference="Udz-yA-9Cb"/>
                                 <include reference="igv-KG-7JL"/>
                                 <include reference="qJh-1g-rOk"/>
                                 <include reference="tHh-1I-ROU"/>
-                                <include reference="stR-gf-xFm"/>
                             </mask>
                         </variation>
                     </view>
@@ -119,7 +120,7 @@
                         <viewControllerLayoutGuide type="top" id="sfB-Ml-Dvj"/>
                         <viewControllerLayoutGuide type="bottom" id="nat-PN-7iP"/>
                     </layoutGuides>
-                    <view key="view" alpha="0.89999997615814209" contentMode="scaleToFill" id="LSo-F4-tnD">
+                    <view key="view" contentMode="scaleToFill" id="LSo-F4-tnD">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -133,7 +134,7 @@
                                 </connections>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" red="0.94509803920000002" green="0.97254901959999995" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="gHq-Cb-q8T" secondAttribute="trailing" id="ELW-go-uZH"/>
                             <constraint firstItem="gHq-Cb-q8T" firstAttribute="top" secondItem="LSo-F4-tnD" secondAttribute="top" constant="100" id="IWB-qw-Yap"/>
@@ -186,12 +187,12 @@
                                 <exclude reference="uk0-TS-oNK"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="L7i-oL-sAz"/>
                                 <exclude reference="15p-9l-rny"/>
                                 <exclude reference="IB3-ZE-mmK"/>
                                 <exclude reference="NNS-z1-tzQ"/>
                                 <exclude reference="ORd-96-re2"/>
                                 <exclude reference="hHS-kS-QVa"/>
-                                <exclude reference="L7i-oL-sAz"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -199,12 +200,12 @@
                                 <include reference="uk0-TS-oNK"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="L7i-oL-sAz"/>
                                 <include reference="15p-9l-rny"/>
                                 <include reference="IB3-ZE-mmK"/>
                                 <include reference="NNS-z1-tzQ"/>
                                 <exclude reference="ORd-96-re2"/>
                                 <exclude reference="hHS-kS-QVa"/>
-                                <include reference="L7i-oL-sAz"/>
                             </mask>
                         </variation>
                     </view>
@@ -225,6 +226,7 @@
                         <viewControllerLayoutGuide type="bottom" id="gId-0E-Zdc"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="MML-IX-guI">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bKI-n2-yc9">
@@ -312,10 +314,10 @@
                                 <exclude reference="9Q1-Rv-GbI"/>
                                 <exclude reference="PMQ-IC-Ff9"/>
                                 <exclude reference="gxW-i8-xZA"/>
-                                <exclude reference="boX-AZ-WF1"/>
                                 <exclude reference="3zp-eq-gwn"/>
                                 <exclude reference="Y4o-J6-v2D"/>
                                 <exclude reference="fyn-vP-7fz"/>
+                                <exclude reference="boX-AZ-WF1"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -328,10 +330,10 @@
                                 <include reference="9Q1-Rv-GbI"/>
                                 <include reference="PMQ-IC-Ff9"/>
                                 <include reference="gxW-i8-xZA"/>
-                                <include reference="boX-AZ-WF1"/>
                                 <include reference="3zp-eq-gwn"/>
                                 <include reference="Y4o-J6-v2D"/>
                                 <include reference="fyn-vP-7fz"/>
+                                <include reference="boX-AZ-WF1"/>
                             </mask>
                         </variation>
                     </view>

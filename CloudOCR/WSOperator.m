@@ -173,6 +173,7 @@
  */
 + (NSString*)uploadOCR:(NSString*)ocrType OcrImg:(UIImage*)ocrImg SvrType:(NSString*)svrType SvrFileName:(NSString*)svrFileName
 {
+    NSLog(@"uploadOCR(%@,%@,%@)...",ocrType,svrType,svrFileName);
     NSError *error=nil;
     NSString* path = [NSString stringWithFormat:@"%@/%@",SERVER_OCR,svrType];
     NSString* uuid = [BooksOp UUID];
@@ -271,6 +272,7 @@
 }
 + (NSString*)insertOCR:(UIImage*)ocrImg SvrFileName:(NSString*)svrFileName Value:(NSString*)value
 {
+    NSLog(@"insertOCR(%@,%@)...",svrFileName,value);
     NSError *error=nil;
     NSString* path = [NSString stringWithFormat:@"%@/uploadFilesAndResult",SERVER_OCR];
     //分界线的标识符
@@ -355,12 +357,13 @@
     }
     else
     {
-        NSLog(@"insertOCR failed(status code:%d)",(int)[urlResponese statusCode]);
+        NSLog(@"insertOCR failed(json:%@,status code:%d)",value,(int)[urlResponese statusCode]);
         return @"";
     }
 }
 + (NSData*)downloadOCR_Img:(NSString*)svrId SvrFileName:(NSString*)svrFileName
 {
+    NSLog(@"downloadOCR_Img(%@,%@)...",svrId,svrFileName);
     NSError *error = nil;
     NSURLResponse* respond = nil;
     NSString* path = nil;
@@ -381,7 +384,16 @@
 + (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId  DocKey:(NSString*)docKey DocValue:(NSString*)keyValue  Addtional:(NSMutableDictionary*)returnDict
 {
     NSLog(@"downloadOCR_XML(%@,%@,%@)...",svrId,docKey,keyValue);
-    
+    /*
+     xml文档示例：
+     <Batch CompTime="Fri Jun 16 11:38:28 CST 2017" DocCount="1" Name="090153351" OcrStatus="10" WriteTime="2017-06-16 11:38:28">
+     <Doc AttachStamp="0" Form="身份证正面" FormId="" FormObjectId="" MainAttachFlag="1" Name="3.jpg" ObjectId="090153351_0">
+     <Field FieldId="Field_1" Name="姓名" Rect="">邱智勇</Field>
+     <Field FieldId="Field_2" Name="出生" Rect="">1981-05-05</Field>
+     <Field FieldId="Field_6" Name="公民身份号码" Rect="">420525198105050012</Field>
+     </Doc>
+     </Batch>
+     */
     NSError *error=nil;
     NSURLResponse* respond = nil;
     //@"09014f8a1"
@@ -392,13 +404,13 @@
     NSData *xmlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
     if(xmlData && xmlData.length > 0 && !error)
     {
-        NSLog(@"%@",[NSString stringWithUTF8String:xmlData.bytes]);
+        NSLog(@"%@",[NSString stringWithCString:xmlData.bytes encoding:NSUTF8StringEncoding]);
         if (![respond.MIMEType isEqualToString:@"text/html"])
         {
             xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.bytes , xmlData.length, nil, nil, (XML_PARSE_NOENT|XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING));
             
             if(!reader){
-                NSLog(@"failed to load soap respond xml !");
+                NSLog(@"downloadOCR_XML failed to load soap respond xml !");
                 return nil;
             }
             else
@@ -421,9 +433,10 @@
                         {
                             temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)[docKey UTF8String]);
                             currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                            NSLog(@"===> TagName: %@",currentTagName);
+                            //NSLog(@"===> TagName: %@",currentTagName);
                             if ([currentTagName isEqualToString:keyValue]){
                                 docFound = TRUE;
+                                NSLog(@"found key:%@ value:%@",docKey,currentTagName);
                                 //设置返回的docid
                                 temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_OBJECTID_C);
                                 currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
@@ -432,6 +445,10 @@
                                 temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_NAME_C);
                                 currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
                                 [returnDict setValue:currentTagName forKey:DOC_NAME];
+                                //设置返回的formname(ocrclass)
+                                temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_FORM_C);
+                                currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                                [returnDict setValue:currentTagName forKey:DOC_FORM];
                             }
                             else{
                                 docFound = FALSE;
@@ -439,24 +456,26 @@
                         }
                         if([currentTagField isEqualToString:FIELD] && docFound)
                         {
-                            NSLog(@"===> TagField: %@",currentTagField);
+                            //NSLog(@"===> TagField: %@",currentTagField);
                             
                             temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)FIELD_NAME_C);
                             currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                            NSLog(@"===> TagName: %@",currentTagName);
+                            //NSLog(@"===> TagName: %@",currentTagName);
                             
                             temp = (char *)xmlTextReaderReadString(reader);
                             if (!temp){
-                                NSLog(@"value empty");
+                                //NSLog(@"value empty");
                                 [dict setValue:@"" forKey:currentTagName];
+                                NSLog(@"new key:%@ value:%@",currentTagName,@"");
                                 continue;
                             }
                             else{
                                 currentTagValue = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                            
-                                NSLog(@"===> TagValue: %@",currentTagValue);
-                            
+                                
+                                //NSLog(@"===> TagValue: %@",currentTagValue);
+                                currentTagValue = [currentTagValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
                                 [dict setValue:currentTagValue forKey:currentTagName];
+                                NSLog(@"new key:%@ value:%@",currentTagName,currentTagValue);
                             }
                         }
                     }
@@ -481,8 +500,74 @@
 {
     return [WSOperator downloadOCR_XML:svrId DocKey:DOC_OBJECTID DocValue:docId Addtional:returnDict];
 }
++(NSMutableDictionary*)getAttrOCR_XML:(NSData*)xmlData forDocFileName:(NSString*)docName forAttr:(NSString*)attrName
+{
+    xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.bytes , xmlData.length, nil, nil, (XML_PARSE_NOENT|XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING));
+    
+    if(!reader){
+        NSLog(@"failed to load soap respond xml !");
+        return nil;
+    }
+    else
+    {
+        
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+        char *temp;
+        NSString *currentTagField = nil;
+        NSString *currentTagName = nil;
+        BOOL docFound = FALSE;
+        while (TRUE)
+        {
+            if(!xmlTextReaderRead(reader))
+                break;
+            if(xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT)
+            {
+                temp = (char *)xmlTextReaderConstName(reader);
+                currentTagField = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                NSLog(@"========> %s",temp);
+                if([currentTagField isEqualToString:DOC])
+                {
+                    temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_NAME_C);
+                    currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                    //NSLog(@"===> TagName: %@",currentTagName);
+                    if ([currentTagName isEqualToString:docName]){
+                        temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_OBJECTID_C);
+                        currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                        NSLog(@"found %@",docName);
+                        [dict setValue:currentTagName forKey:DOC_OBJECTID];
+                        docFound = TRUE;
+                    }
+                    else{
+                        docFound = FALSE;
+                    }
+                }
+                else if([currentTagField isEqualToString:FIELD])
+                {
+                    if (docFound){
+                        //NSLog(@"===> TagField: %@",currentTagField);
+                        
+                        temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)FIELD_NAME_C);
+                        currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                        //NSLog(@"===> TagName: %@",currentTagName);
+                        
+                        temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)[attrName UTF8String]);
+                        NSString *idTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
+                        //NSLog(@"===> idTagName: %@",idTagName);
+                        
+                        [dict setValue:idTagName forKey:currentTagName];
+                        NSLog(@"new key:%@ value:%@",currentTagName,idTagName);
+                    }
+                }
+            }
+        }
+        return dict;
+        
+    }
+    return nil;
+}
 +(NSString*)updateOCR:(NSString*)svrId DocId:(NSString*)docId Value:(NSString*)value
 {
+    NSLog(@"updateOCR(%@,%@,%@)...",svrId,docId,value);
     NSError *error=nil;
     NSString* path = [NSString stringWithFormat:@"%@/save?srcDocId=%@&objId=%@",SERVER_OCR,svrId,docId];
     //根据url初始化request
@@ -520,6 +605,7 @@
 }
 + (NSArray*)downloadOCR_Last:(NSString*)svrId
 {
+    NSLog(@"downloadOCR_Last(%@)...",svrId);
     NSError *error=nil;
     NSURLResponse* respond = nil;
     NSString* path = [NSString stringWithFormat:@"%@/getList?user=%@",SERVER_OCR,[BooksOp Instance].UserId];

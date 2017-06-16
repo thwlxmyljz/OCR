@@ -43,7 +43,7 @@ NSString* g_OcrClass[] = {@"识别类型"};
     [super viewDidLoad];
     
     [BooksOp setExtraCellLineHidden:self.tableView];
-    
+
     _tableData = [[NSMutableDictionary alloc] init];
     /*
     [_tableData setObject:[OcrType Personals] forKey:g_OcrClass[0]];
@@ -86,17 +86,17 @@ NSString* g_OcrClass[] = {@"识别类型"};
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 32;
+    return 1.f;
 }
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     UILabel * view = [[UILabel alloc] init];
-    view.backgroundColor = SECTIONBKCOLOR;
+    view.backgroundColor = WEB_VIEWBK_COLOR;
     view.font = [UIFont systemFontOfSize:14.0f];
     view.frame = CGRectMake(0, 0, tableView.frame.size.width, 32.0f);
     view.textColor = [UIColor colorFromHexString:@"689F38"];
     view.textAlignment = NSTextAlignmentLeft;
-    view.text = [NSString stringWithFormat:@"  %@",g_OcrClass[section]];
+    //view.text = [NSString stringWithFormat:@"  %@",g_OcrClass[section]];
     return view;
 }
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

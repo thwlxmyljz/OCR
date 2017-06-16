@@ -146,7 +146,10 @@
                         
                         _OcrXml = [returnDict objectForKey:XML_MYKEY];
                         _DocId = [returnDict objectForKey:DOC_OBJECTID];
-              
+                        /*
+                        if ([returnDict objectForKey:DOC_FORM]){
+                            _OcrClass = [OcrType GetClass:[returnDict objectForKey:DOC_FORM]];
+                        }*/
                         //下载识别处理过后的图片
                         NSData* svrImg = [WSOperator downloadOCR_Img:_SvrId SvrFileName:_SvrFileName];
                         if (svrImg){

@@ -11,7 +11,7 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="160"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="headshow4.png" translatesAutoresizingMaskIntoConstraints="NO" id="crj-Qs-Xeq">
+                <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="zlogo.png" translatesAutoresizingMaskIntoConstraints="NO" id="crj-Qs-Xeq">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="160"/>
                 </imageView>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="KsU-S4-hhE">
@@ -40,6 +40,6 @@
         </view>
     </objects>
     <resources>
-        <image name="headshow4.png" width="120" height="120"/>
+        <image name="zlogo.png" width="72" height="72"/>
     </resources>
 </document>

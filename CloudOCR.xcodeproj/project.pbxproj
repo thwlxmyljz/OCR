@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		410486DF1EEFD97F005C63E6 /* YQSlideMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 410486DE1EEFD97F005C63E6 /* YQSlideMenuController.m */; };
 		410486E21EEFE908005C63E6 /* SysViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 410486E11EEFE908005C63E6 /* SysViewController.m */; };
+		410486E41EF38AE1005C63E6 /* zlogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 410486E31EF38AE1005C63E6 /* zlogo.png */; };
 		41495F281ED3D247008DE054 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 41495F271ED3D247008DE054 /* main.m */; };
 		41495F2B1ED3D247008DE054 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 41495F2A1ED3D247008DE054 /* AppDelegate.m */; };
 		41495F2E1ED3D247008DE054 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41495F2D1ED3D247008DE054 /* ViewController.mm */; };
@@ -134,6 +135,7 @@
 		410486DE1EEFD97F005C63E6 /* YQSlideMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YQSlideMenuController.m; sourceTree = "<group>"; };
 		410486E01EEFE908005C63E6 /* SysViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SysViewController.h; sourceTree = "<group>"; };
 		410486E11EEFE908005C63E6 /* SysViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SysViewController.m; sourceTree = "<group>"; };
+		410486E31EF38AE1005C63E6 /* zlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = zlogo.png; path = pic/zlogo.png; sourceTree = "<group>"; };
 		41495F231ED3D247008DE054 /* CloudOCR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CloudOCR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		41495F271ED3D247008DE054 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		41495F291ED3D247008DE054 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -414,6 +416,7 @@
 		41495FAF1ED44D46008DE054 /* pic */ = {
 			isa = PBXGroup;
 			children = (
+				410486E31EF38AE1005C63E6 /* zlogo.png */,
 				41ECB9BE1EEA3A700064C158 /* demo.xml */,
 				41CC96AD1ED915A900926708 /* trash.png */,
 				41CC96AE1ED915A900926708 /* trash@2x.png */,
@@ -704,6 +707,7 @@
 				4149602F1ED523CD008DE054 /* pntWTPENPDA.lib in Resources */,
 				4149602C1ED523CD008DE054 /* IDKLICENSE.dat in Resources */,
 				4149603B1ED523CD008DE054 /* thocr_vl_province.lib in Resources */,
+				410486E41EF38AE1005C63E6 /* zlogo.png in Resources */,
 				41CC96B21ED915A900926708 /* trash@3x.png in Resources */,
 				41495FBB1ED44D55008DE054 /* group1@3x.png in Resources */,
 				414960231ED523CD008DE054 /* back_camera_btn@2x.png in Resources */,

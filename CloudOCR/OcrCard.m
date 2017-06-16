@@ -153,6 +153,7 @@
                     NSLog(@"sync insert downloadOCR_Img error");
                 }*/
                 NSLog(@"insertSvr ok");
+                break;
             }
             else{
                 NSLog(@"insertSvr error");
@@ -489,78 +490,15 @@
     
     return dict;
 }
-+(NSMutableDictionary*)_getXmlKeyAttr:(NSData*)xmlData forDocFileName:(NSString*)docName forAttr:(NSString*)attrName
-{
-    xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.bytes , xmlData.length, nil, nil, (XML_PARSE_NOENT|XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING));
-    
-    if(!reader){
-        NSLog(@"failed to load soap respond xml !");
-        return nil;
-    }
-    else
-    {
-        
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        char *temp;
-        NSString *currentTagField = nil;
-        NSString *currentTagName = nil;
-        BOOL docFound = FALSE;
-        while (TRUE)
-        {
-            if(!xmlTextReaderRead(reader))
-                break;
-            if(xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT)
-            {
-                temp = (char *)xmlTextReaderConstName(reader);
-                currentTagField = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                NSLog(@"========> %s",temp);
-                if([currentTagField isEqualToString:DOC])
-                {
-                    temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_NAME_C);
-                    currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                    NSLog(@"===> TagName: %@",currentTagName);
-                    if ([currentTagName isEqualToString:docName]){
-                        temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_OBJECTID_C);
-                        currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                        NSLog(@"===> TagName: %@",currentTagName);
-                        [dict setValue:currentTagName forKey:DOC_OBJECTID];
-                        docFound = TRUE;
-                    }
-                    else{
-                        docFound = FALSE;
-                    }
-                }
-                else if([currentTagField isEqualToString:FIELD])
-                {
-                    if (docFound){
-                        NSLog(@"===> TagField: %@",currentTagField);
-                        
-                        temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)FIELD_NAME_C);
-                        currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                        NSLog(@"===> TagName: %@",currentTagName);
-                        
-                        temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)[attrName UTF8String]);
-                        NSString *idTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                        NSLog(@"===> idTagName: %@",idTagName);
-                        
-                        [dict setValue:idTagName forKey:currentTagName];
-                    }
-                }
-            }
-        }
-        return dict;
-        
-    }
-    return nil;
-}
+
 +(NSMutableDictionary*)getXmlKeyId:(NSData*)xmlData forDocFileName:(NSString*)docName
 {
     //FieldId="Field_3"
-    return [OcrCard _getXmlKeyAttr:xmlData forDocFileName:docName forAttr:FIELD_ID];
+    return [WSOperator getAttrOCR_XML:xmlData forDocFileName:docName forAttr:FIELD_ID];
 }
 +(NSMutableDictionary*)getXmlKeyRect:(NSData*)xmlData forDocFileName:(NSString*)docName
 {
     //Rect="683, 224, 197, 33"
-    return [OcrCard _getXmlKeyAttr:xmlData forDocFileName:docName forAttr:FIELD_RECT];
+    return [WSOperator getAttrOCR_XML:xmlData forDocFileName:docName forAttr:FIELD_RECT];
 }
 @end

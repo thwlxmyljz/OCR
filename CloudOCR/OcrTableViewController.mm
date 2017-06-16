@@ -126,6 +126,7 @@ HexMOcr* mOcr = nil;
         return;
     if (svrArray.count == 0)
         return;
+    NSLog(@"syncOcr count:%d",svrArray.count);
     //由于接口返回按时间递减顺序，本地需按递增顺序操作
     NSArray* reversedArray = [[svrArray reverseObjectEnumerator] allObjects];
     for (NSDictionary* dict in reversedArray){
@@ -176,13 +177,16 @@ HexMOcr* mOcr = nil;
         
             [card Insert];
         }
-        
     }
+    NSLog(@"syncOcr count:%d over",svrArray.count);
 }
 - (void)freshOcr:(NSNotification *)notification
 {
-    if (_CurShower && _CurShower.OcrClass == [[[ notification userInfo ] objectForKey: @"ocrclass"] intValue]){
+    if (_CurShower.OcrClass == [[[ notification userInfo ] objectForKey: @"ocrclass"] intValue]){
         [_CurShower FreshOcrCard:[[[ notification userInfo ] objectForKey: @"cardid"] intValue] Operator:[[[ notification userInfo ] objectForKey: @"op"] intValue]];
+    }
+    else{
+        ;//self changeViewController:[OcrType ]
     }
 }
 - (IBAction)trashOcr:(id)sender {

@@ -17,6 +17,9 @@
 #define DOC_OBJECTID   @"ObjectId"
 #define DOC_OBJECTID_C  "ObjectId"
 
+#define DOC_FORM   @"Form"
+#define DOC_FORM_C  "Form"
+
 #define FIELD   @"Field"
 #define FIELD_C  "Field"
 
@@ -63,9 +66,10 @@
 +(void)SortHeadKeys:(NSMutableArray*)keyLst;
 +(int)GetCardId:(NSString*)svrId DocId:(NSString*)docId;
 
-//获取xml文档某图片文件的识别Name和FieldId对应关系
+//获取xml文档某图片文件的识别Field节点的属性Name和属性FieldId对应关系
 +(NSMutableDictionary*)getXmlKeyId:(NSData*)xmlData forDocFileName:(NSString*)docName;
-//获取xml文档某图片文件的识别Name和Rect对应关系
+
+//获取xml文档某图片文件的识别Field节点的属性Name和属性Rect对应关系
 +(NSMutableDictionary*)getXmlKeyRect:(NSData*)xmlData forDocFileName:(NSString*)docName;
 
 -(BOOL)isEqual:(id)object;

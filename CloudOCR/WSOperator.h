@@ -38,13 +38,29 @@
  */
 + (NSString*)insertOCR:(UIImage*)ocrImg SvrFileName:(NSString*)svrFileName Value:(NSString*)value;
 /*
- 返回识别的（key，value）
+ xml文档示例：
+ <Batch CompTime="Fri Jun 16 11:38:28 CST 2017" DocCount="1" Name="090153351" OcrStatus="10" WriteTime="2017-06-16 11:38:28">
+ <Doc AttachStamp="0" Form="身份证正面" FormId="" FormObjectId="" MainAttachFlag="1" Name="3.jpg" ObjectId="090153351_0">
+ <Field FieldId="Field_1" Name="姓名" Rect="">邱智勇</Field>
+ <Field FieldId="Field_2" Name="出生" Rect="">1981-05-05</Field>
+ <Field FieldId="Field_6" Name="公民身份号码" Rect="">420525198105050012</Field>
+ </Doc>
+ </Batch>
+ */
+/*
+ 返回识别的<Field FieldId="Field_5" Name="民族" Rect="">汉</Field>对于的（Name，Value）对
+  returnDict包含:Doc的Name属性,ObjectId属性，xmldata数据
  */
 + (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId FileName:(NSString*)fileName Addtional:(NSMutableDictionary*)returnDict;
 /*
- 返回识别的（key，value）
+ 返回识别的<Field FieldId="Field_5" Name="民族" Rect="">汉</Field>对于的（Name，Value）对
+ returnDict包含:Doc的Name属性,ObjectId属性，xmldata数据
  */
 + (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId DocId:(NSString*)docId Addtional:(NSMutableDictionary*)returnDict;
+/*
+ 返回xml文档的Field指定的attrName属性值对
+ */
++(NSMutableDictionary*)getAttrOCR_XML:(NSData*)xmlData forDocFileName:(NSString*)docName forAttr:(NSString*)attrName;
 /*
  返回服务器处理后图片数据
  */
