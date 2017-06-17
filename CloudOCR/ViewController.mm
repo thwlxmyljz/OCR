@@ -146,10 +146,10 @@
                         
                         _OcrXml = [returnDict objectForKey:XML_MYKEY];
                         _DocId = [returnDict objectForKey:DOC_OBJECTID];
-                        /*
+                        
                         if ([returnDict objectForKey:DOC_FORM]){
                             _OcrClass = [OcrType GetClass:[returnDict objectForKey:DOC_FORM]];
-                        }*/
+                        }
                         //下载识别处理过后的图片
                         NSData* svrImg = [WSOperator downloadOCR_Img:_SvrId SvrFileName:_SvrFileName];
                         if (svrImg){
@@ -275,6 +275,14 @@
             card.CardImg = self.OcrImage;
             card.SvrDetail = self.OcrXml;
             if ([card Insert]){
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
+                                                                                  userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                            [NSNumber numberWithInt:card.CardId], @"cardid",
+                                                                                            [NSNumber numberWithInt:card.OcrClass], @"ocrclass",
+                                                                                            [NSNumber numberWithInt:1]/*新卡片*/, @"op",
+                                                                                            nil]];
+                
+                
                 dispatch_async(dispatch_get_main_queue() ,^{
                     [self OnBack:nil];
                 });
@@ -295,6 +303,13 @@
             self.ModifyCard.CardDetail = _orgDict;
             self.ModifyCard.ModifyDetail = _modifyDict;
             if ([self.ModifyCard Update_noImg]){
+                
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
+                                                                                  userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                            [NSNumber numberWithInt:self.ModifyCard.CardId], @"cardid",
+                                                                                            [NSNumber numberWithInt:self.ModifyCard.OcrClass], @"ocrclass",
+                                                                                            [NSNumber numberWithInt:2/*刷新卡片*/], @"op",
+                                                                                            nil]];
                 dispatch_async(dispatch_get_main_queue() ,^{
                     [self OnBack:nil];
                 });

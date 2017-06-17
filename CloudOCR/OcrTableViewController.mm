@@ -70,19 +70,19 @@ HexMOcr* mOcr = nil;
     
     vv = [[IdCardTableViewShower alloc] init];
     vv.Owner = self;
-    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%d", Class_Personal_IdCard]];
+    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%lu", (unsigned long)Class_Personal_IdCard]];
     
     vv = [[BankTableViewShower alloc] init];
     vv.Owner = self;
-    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%d", Class_Personal_BankCard]];
+    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%lu", (unsigned long)Class_Personal_BankCard]];
     
     //其他
     vv = [[TableViewShower alloc] init];
     vv.Owner = self;
-    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%d", Class_Normal]];
+    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%lu", (unsigned long)Class_Normal]];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(freshOcr:)
+                                             selector:@selector(processOcrFresh:)
                                                  name:NOTIFY_OCRFRESH
                                                object:nil];
     
@@ -91,6 +91,7 @@ HexMOcr* mOcr = nil;
 -(void)initData
 {
     //初始数据
+    /*
     if (!self.CurShower){
         for (OcrType* type in [OcrType Personals]){
             if (type.OcrClass == [BooksOp Instance].CurClass){
@@ -115,7 +116,15 @@ HexMOcr* mOcr = nil;
             }
         }
     }
-    
+    */
+    if (!self.CurShower){
+        for (OcrType* type in [OcrType Ocrs]){
+            if (type.OcrClass == [BooksOp Instance].CurClass){
+                [self changeViewController:type];
+                break;
+            }
+        }
+    }
     [self performSelectorInBackground:@selector(syncOcr) withObject:nil];
 }
 -(void)syncOcr
@@ -126,7 +135,7 @@ HexMOcr* mOcr = nil;
         return;
     if (svrArray.count == 0)
         return;
-    NSLog(@"syncOcr count:%d",svrArray.count);
+    NSLog(@"syncOcr count:%lu",(unsigned long)svrArray.count);
     //由于接口返回按时间递减顺序，本地需按递增顺序操作
     NSArray* reversedArray = [[svrArray reverseObjectEnumerator] allObjects];
     for (NSDictionary* dict in reversedArray){
@@ -178,15 +187,20 @@ HexMOcr* mOcr = nil;
             [card Insert];
         }
     }
-    NSLog(@"syncOcr count:%d over",svrArray.count);
+    NSLog(@"syncOcr count:%lu over",(unsigned long)svrArray.count);
 }
-- (void)freshOcr:(NSNotification *)notification
+- (void)processOcrFresh:(NSNotification *)notification
 {
     if (_CurShower.OcrClass == [[[ notification userInfo ] objectForKey: @"ocrclass"] intValue]){
+        //当前分类新数据
         [_CurShower FreshOcrCard:[[[ notification userInfo ] objectForKey: @"cardid"] intValue] Operator:[[[ notification userInfo ] objectForKey: @"op"] intValue]];
     }
     else{
-        ;//self changeViewController:[OcrType ]
+        int ocrClass = [[[ notification userInfo ] objectForKey: @"ocrclass"] intValue];
+        OcrType* ocrType = [OcrType GetOcrType:ocrClass];
+        if (ocrType){
+            [self changeViewController:ocrType ];
+        }
     }
 }
 - (IBAction)trashOcr:(id)sender {
@@ -221,12 +235,12 @@ HexMOcr* mOcr = nil;
 #pragma makr - LeftMenuProtocol
 -(void)changeViewController:(OcrType *)selType
 {
-    NSLog(@"change type:%@,class:%d",selType.TypeName,selType.OcrClass);
-    NSString* key = [NSString stringWithFormat:@"%d",selType.OcrClass];
+    NSLog(@"change type:%@,class:%lu",selType.TypeName,(unsigned long)selType.OcrClass);
+    NSString* key = [NSString stringWithFormat:@"%lu",(unsigned long)selType.OcrClass];
     
     TableViewShower* shower = [self.Showers objectForKey:key];
     if (!shower)
-        shower = [self.Showers objectForKey:[NSString stringWithFormat:@"%d",Class_Normal]];
+        shower = [self.Showers objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)Class_Normal]];
     if (shower){
         self.navigationItem.title = selType.TypeName;
         [BooksOp Instance].CurClass = selType.OcrClass;

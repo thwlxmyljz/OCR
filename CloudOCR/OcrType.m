@@ -13,11 +13,18 @@
 
 @synthesize OcrClass = _OcrClass;
 @synthesize TypeName = _TypeName;
-+(NSMutableArray*)Ocrs
+-(id)initWith:(EMOcrClass)ocrClass Name:(NSString*)typeName
 {
-    static NSMutableArray* array = nil;
-    if (!array){
-        array = [[NSMutableArray alloc] init];
+    id my = [super init];
+    self.OcrClass = ocrClass;
+    self.TypeName = typeName;
+    return my;
+}
++(NSMutableDictionary*)Ocrs
+{
+    static NSMutableDictionary* ocrDict = nil;
+    if (!ocrDict){
+        NSMutableArray* array = [[NSMutableArray alloc] init];
         
         OcrType* type = nil;
         
@@ -42,19 +49,42 @@
         type.OcrClass = Class_Normal;
         type.TypeName = @"其他";
         [array addObject:type];
+        
+        [ocrDict setValue:array forKey:@""];
     }
-    return array;
+    return ocrDict;
 }
 +(EMOcrClass)GetClass:(NSString*)typeName
 {
-    NSMutableArray* arr = [OcrType Ocrs];
-    for (OcrType* ocr in arr){
-        if ([typeName containsString:ocr.TypeName]){
-            return ocr.OcrClass;
+    if (!typeName){
+        return Class_Normal;
+    }
+    NSMutableDictionary* dict = [OcrType Ocrs];
+    for (NSString* key in [dict allKeys]){
+        NSMutableArray* arr  = [dict objectForKey:key];
+        for (OcrType* ocr in arr){
+            if ([typeName containsString:ocr.TypeName]){
+                return ocr.OcrClass;
+            }
         }
     }
+    
     return Class_Normal;
 }
++(OcrType*)GetOcrType:(int)ocrClass
+{
+    NSMutableDictionary* dict = [OcrType Ocrs];
+    for (NSString* key in [dict allKeys]){
+        NSMutableArray* arr  = [dict objectForKey:key];
+        for (OcrType* ocr in arr){
+            if (ocrClass == ocr.OcrClass){
+                return ocr;
+            }
+        }
+    }
+    return nil;
+}
+/*
 +(NSMutableArray*)Personals
 {
     static NSMutableArray* array = nil;
@@ -143,5 +173,6 @@
     }
     return array;
 }
+ */
 @end
 

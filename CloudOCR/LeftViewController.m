@@ -25,15 +25,13 @@
     UIViewController* _bankViewController;
     UIViewController* _IdCardViewController;
     
-    NSMutableDictionary* _tableData;
+    NSMutableArray* _tableSectionKeys;
 }
 
 @property (retain, nonatomic) ImageHeaderView *imageHeaderView;
 
 @end
 
-//NSString* g_OcrClass[] = {@"个人证件",@"金融票据",@"商业票据"};
-NSString* g_OcrClass[] = {@"识别类型"};
 
 @implementation LeftViewController
 
@@ -44,17 +42,8 @@ NSString* g_OcrClass[] = {@"识别类型"};
     
     [BooksOp setExtraCellLineHidden:self.tableView];
 
-    _tableData = [[NSMutableDictionary alloc] init];
-    /*
-    [_tableData setObject:[OcrType Personals] forKey:g_OcrClass[0]];
-    [_tableData setObject:[OcrType Financials] forKey:g_OcrClass[1]];
-    [_tableData setObject:[OcrType Commercials] forKey:g_OcrClass[2]];
-    */
-    [_tableData setObject:[OcrType Ocrs] forKey:g_OcrClass[0]];
-    
-    //_headView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headshow4"]];
-    //[self.view addSubview:_headView];
-    
+    _tableSectionKeys = [NSMutableArray arrayWithArray:[[OcrType Ocrs] allKeys]];
+  
     self.imageHeaderView = (ImageHeaderView *)[ImageHeaderView loadNib];
     [self.view addSubview:self.imageHeaderView];
     
@@ -77,12 +66,12 @@ NSString* g_OcrClass[] = {@"识别类型"};
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSArray* objs = [_tableData objectForKey:g_OcrClass[section]];
-    return objs.count;
+    NSArray* ocrsForType = [[OcrType Ocrs] objectForKey:[_tableSectionKeys objectAtIndex:section]];
+    return ocrsForType.count;
 }
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return sizeof(g_OcrClass)/sizeof(NSString*);
+    return _tableSectionKeys.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
@@ -101,8 +90,8 @@ NSString* g_OcrClass[] = {@"识别类型"};
 }
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     BaseTableViewCell *cell = [[BaseTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:[BaseTableViewCell identifier]];
-    NSArray* objs = [_tableData objectForKey:g_OcrClass[indexPath.section]];
-    OcrType *ocrType = [objs objectAtIndex:indexPath.row];
+    NSArray* ocrsForType = [[OcrType Ocrs] objectForKey:[_tableSectionKeys objectAtIndex:indexPath.section]];
+    OcrType *ocrType = [ocrsForType objectAtIndex:indexPath.row];
     [cell setData:ocrType.TypeName];
     if (ocrType.OcrClass == [BooksOp Instance].CurClass){
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -117,8 +106,8 @@ NSString* g_OcrClass[] = {@"识别类型"};
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:FALSE];
     
-    NSArray* objs = [_tableData objectForKey:g_OcrClass[indexPath.section]];
-    OcrType *ocrType = [objs objectAtIndex:indexPath.row];
+    NSArray* ocrsForType = [[OcrType Ocrs] objectForKey:[_tableSectionKeys objectAtIndex:indexPath.section]];
+    OcrType *ocrType = [ocrsForType objectAtIndex:indexPath.row];
     [self.slideMenuController changeMainViewController:self.mainViewControler close:YES];
     if (self.delegate && [self.delegate respondsToSelector:@selector(changeViewController:)]){
         [self.delegate changeViewController:ocrType];

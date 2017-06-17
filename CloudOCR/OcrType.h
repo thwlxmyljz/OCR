@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-typedef enum{
+typedef NS_ENUM(NSUInteger, EMOcrClass) {
     Class_Normal=0,//其他
     //下面的分类值不要修改，会保存到数据库
     Class_Personal_IdCard=100 ,
@@ -26,21 +26,19 @@ typedef enum{
     Class_Commercial_Table=301,
     Class_Commercial_Doc=302,
     Class_Commercial_Car=303
-}EMOcrClass;
+};
 
 @interface OcrType : NSObject
 
 @property (nonatomic, assign) EMOcrClass OcrClass;//分类
 @property (nonatomic, strong) NSString*  TypeName;//类型名称
 
-//不分类
-+(NSMutableArray*)Ocrs;
-+(EMOcrClass)GetClass:(NSString*)typeName;
+-(id)initWith:(EMOcrClass)ocrClass Name:(NSString*)typeName;
 
-//识别分类
-+(NSMutableArray*)Personals;
-+(NSMutableArray*)Financials;
-+(NSMutableArray*)Commercials;
+//
++(NSMutableDictionary*)Ocrs;
++(EMOcrClass)GetClass:(NSString*)typeName;
++(OcrType*)GetOcrType:(int)ocrClass;
 
 @end
 

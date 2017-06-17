@@ -8,29 +8,30 @@
 
 #import "OcrType.h"
 
-#define DOC       @"Doc"
+#define DOC       @"Doc" //表示一个图片识别
 #define DOC_C      "Doc"
 
-#define DOC_NAME   @"Name"
+#define DOC_NAME   @"Name"//此图片识别的文件名
 #define DOC_NAME_C  "Name"
 
-#define DOC_OBJECTID   @"ObjectId"
+#define DOC_OBJECTID   @"ObjectId" //此图片识别的对象id
 #define DOC_OBJECTID_C  "ObjectId"
 
-#define DOC_FORM   @"Form"
+#define DOC_FORM   @"Form" //此图片识别的分类
 #define DOC_FORM_C  "Form"
 
-#define FIELD   @"Field"
+#define FIELD   @"Field" //此图片识别的已识别某项数据
 #define FIELD_C  "Field"
 
-#define FIELD_NAME   @"Name"
+#define FIELD_NAME   @"Name"//某项已识别数据的名称
 #define FIELD_NAME_C  "Name"
 
-#define FIELD_ID @"FieldId"
-#define FIELD_RECT @"Rect"
+#define FIELD_ID @"FieldId" //某项已识别数据的id
+#define FIELD_RECT @"Rect" //某项已识别数据在识别图上的位置
 
-#define XML_MYKEY @"xmldata999"//
+#define XML_MYKEY @"xmldata999"//xml文件数据
 
+//数据下载超时控制
 #define DOWNLOAD_LOOP 10
 #define DOWNLOAD_SLEEP_ONE 2.0f
 
@@ -54,7 +55,7 @@
 @property (nonatomic, strong) NSString*  CardDocId;//卡片服务器文档标记id，CardSvrId+CardDocId唯一标记服务器的一个图片识别
 @property (nonatomic, strong) NSMutableDictionary* CardDetail;//识别的详细信息
 @property (nonatomic, strong) NSData* SvrDetail;//服务器识别的xml结果
-@property (nonatomic, strong) NSMutableDictionary* ModifyDetail;//
+@property (nonatomic, strong) NSMutableDictionary* ModifyDetail;//被修改的数据
 
 -(NSString*) GetFileName;
 +(NSString*) GetFileName:(int)cardId;

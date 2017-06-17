@@ -96,13 +96,6 @@
             NSLog(@"card insert DB ok");
             sqlite3_finalize(statement);
             
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
-                                                                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                        [NSNumber numberWithInt:self.CardId], @"cardid",
-                                                                                        [NSNumber numberWithInt:self.OcrClass], @"ocrclass",
-                                                                                        [NSNumber numberWithInt:1]/*新卡片*/, @"op",
-                                                                                        nil]];
-            
             return TRUE;
         }
         
@@ -248,22 +241,10 @@
     
     if ([NSThread isMainThread]){
         [self _update_noImg_DB];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
-                                                                          userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                    [NSNumber numberWithInt:self.CardId], @"cardid",
-                                                                                    [NSNumber numberWithInt:self.OcrClass], @"ocrclass",
-                                                                                    [NSNumber numberWithInt:2/*刷新卡片*/], @"op",
-                                                                                    nil]];
     }
     else{
         dispatch_sync(dispatch_get_main_queue(), ^{
             [self _update_noImg_DB];
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
-                                                                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                        [NSNumber numberWithInt:self.CardId], @"cardid",
-                                                                                        [NSNumber numberWithInt:self.OcrClass], @"ocrclass",
-                                                                                        [NSNumber numberWithInt:2/*刷新卡片*/], @"op",
-                                                                                        nil]];
         });
     }
     return TRUE;
