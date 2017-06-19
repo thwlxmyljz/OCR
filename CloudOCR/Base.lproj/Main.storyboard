@@ -137,8 +137,12 @@
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="gHq-Cb-q8T" secondAttribute="trailing" id="ELW-go-uZH"/>
-                            <constraint firstItem="gHq-Cb-q8T" firstAttribute="top" secondItem="LSo-F4-tnD" secondAttribute="top" constant="100" id="IWB-qw-Yap"/>
-                            <constraint firstItem="nat-PN-7iP" firstAttribute="top" secondItem="gHq-Cb-q8T" secondAttribute="bottom" id="q64-I5-H3W"/>
+                            <constraint firstItem="gHq-Cb-q8T" firstAttribute="top" secondItem="LSo-F4-tnD" secondAttribute="top" constant="100" id="IWB-qw-Yap">
+                                <variation key="heightClass=regular-widthClass=compact" constant="60"/>
+                            </constraint>
+                            <constraint firstItem="nat-PN-7iP" firstAttribute="top" secondItem="gHq-Cb-q8T" secondAttribute="bottom" id="q64-I5-H3W">
+                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                            </constraint>
                             <constraint firstItem="gHq-Cb-q8T" firstAttribute="leading" secondItem="LSo-F4-tnD" secondAttribute="leading" id="rtQ-rV-4RQ"/>
                         </constraints>
                     </view>
@@ -148,7 +152,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KH5-4h-6pc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="147" y="-1288"/>
+            <point key="canvasLocation" x="147" y="-1288.5"/>
         </scene>
         <!--登陆信息-->
         <scene sceneID="wUK-Gh-ne8">

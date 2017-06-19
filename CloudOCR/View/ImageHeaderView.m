@@ -15,13 +15,15 @@
 
 -(void)awakeFromNib {
     [super awakeFromNib];
-    self.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.backgroundColor = [UIColor whiteColor];
+    /*
     self.profileImage.layer.cornerRadius = self.profileImage.frame.size.height / 2;
     self.profileImage.clipsToBounds = YES;
     self.profileImage.layer.borderWidth = 1;
     self.profileImage.layer.borderColor = [UIColor whiteColor].CGColor;
     [self.profileImage setRandomDownloadImage:80 height:80];
-    [self.backgroundImage setRandomDownloadImage:self.frame.size.width height:160];
+    [self.backgroundImage setRandomDownloadImage:self.frame.size.width height:60];
+     */
 }
 
 @end

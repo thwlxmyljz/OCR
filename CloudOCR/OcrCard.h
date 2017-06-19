@@ -76,4 +76,6 @@
 -(BOOL)isEqual:(id)object;
 -(BOOL)Update_noImg;
 
++(void)syncSvrCards;
+
 @end

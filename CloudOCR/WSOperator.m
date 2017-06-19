@@ -630,6 +630,39 @@
             return  (NSArray*)jsonobj;
         }
     }
+    NSLog(@"downloadOCR_Last no data");
+    return nil;
+}
++ (NSMutableArray*)downloadOCR_Types
+{
+    NSLog(@"downloadOCR_Types...");
+    NSError *error=nil;
+    NSURLResponse* respond = nil;
+    NSString* path = [NSString stringWithFormat:@"%@/getDocType?userId=%@",SERVER_OCR,[BooksOp Instance].UserId];
+    NSURL *url= [NSURL URLWithString:path];
+    NSURLRequest *request=[[NSURLRequest alloc] initWithURL:url];
+    NSData *jsonData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
+    if(jsonData && jsonData.length > 0 && !error)
+    {
+        if (![respond.MIMEType isEqualToString:@"text/html"])
+        {
+            //NSString* json = [NSString stringWithUTF8String:jsonData.bytes];
+            NSString* json = [NSString stringWithCString:jsonData.bytes encoding:NSUTF8StringEncoding];
+            if (json.length <= 0){
+                NSLog(@"downloadOCR_Types no data");
+                return nil;
+            }
+            NSError* error;
+            //NSLog(@"%@",json);
+            id jsonobj = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding]  options:NSJSONReadingMutableContainers error:&error];
+            if (!jsonobj || error){
+                NSLog(@"downloadOCR_Types parse json str[%@] error.",json);
+                return nil;
+            }
+            return  (NSMutableArray*)jsonobj;
+        }
+    }
+    NSLog(@"downloadOCR_Types no data");
     return nil;
 }
 @end

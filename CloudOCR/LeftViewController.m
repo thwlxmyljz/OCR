@@ -49,8 +49,17 @@
     
     self.tableView.separatorColor = [UIColor colorWithRed:224/255.0 green:224/255.0 blue:224/255.0 alpha:1];
     [_tableView registerCellClass:[BaseTableViewCell class]];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(processTypeFresh:)
+                                                 name:NOTIFY_TYPEFRESH
+                                               object:nil];
 }
-
+- (void)processTypeFresh:(NSNotification *)notification
+{
+    _tableSectionKeys = [NSMutableArray arrayWithArray:[[OcrType Ocrs] allKeys]];
+    [self.tableView reloadData];
+}
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.tableView reloadData];
@@ -58,7 +67,7 @@
 
 -(void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    self.imageHeaderView.frame = CGRectMake(0, 0, self.view.frame.size.width, 100);
+    //self.imageHeaderView.frame = CGRectMake(0, 0, self.view.frame.size.width, 120);
     [self.view layoutIfNeeded];
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -100,6 +109,7 @@
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.backgroundColor = [UIColor groupTableViewBackgroundColor];
     return cell;
 }
 

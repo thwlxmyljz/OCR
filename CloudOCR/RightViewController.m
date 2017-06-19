@@ -96,7 +96,7 @@
     }
     else if (indexPath.section == 1){
         if (indexPath.row == 0){
-            cell.textLabel.text = @"上传到云端";
+            cell.textLabel.text = @"识别保存到云端";
             self.swSvr = [[UISwitch alloc] init];
             self.swSvr.on = [BooksOp Instance].SvrScan;
             [self.swSvr addTarget:self action:@selector(onSW:) forControlEvents:UIControlEventValueChanged];

@@ -46,7 +46,7 @@
 
 -(void)setData:(id) data {
     //self.backgroundColor = [UIColor colorFromHexString:@"#F1F8E9"];
-    //self.textLabel.font = [UIFont italicSystemFontOfSize:16];
+    self.textLabel.font = [UIFont italicSystemFontOfSize:15.0f];
     //self.textLabel.textColor = [UIColor colorFromHexString:@"#6E6E6E"];
     //self.textLabel.textColor = [UIColor darkGrayColor];
     if([data isKindOfClass:[NSString class]]) {

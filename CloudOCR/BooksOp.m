@@ -11,6 +11,7 @@
 #import <AddressBook/AddressBook.h>
 #import <pthread.h>
 #import "constants.h"
+#import "OcrType.h"
 
 @interface BooksOp ()
 @end
@@ -59,12 +60,17 @@ static BooksOp* OneMe = nil;
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (3,'SVRSCAN',1,'')"];//同步本地识别到服务器
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (4,'SVR',0,'183.62.44.126:19000')"];//识别服务器
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (5,'THIRDSVR',0,'')"];//三方服务器
-        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (6,'USERID',0,'admin')"];//用户id
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (6,'USERID',0,'')"];//用户id
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (7,'USERNAME',0,'')"];//用户名
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (8,'USERPWD',0,'')"];//用户密码
         
         [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,DOCID TEXT,CARDIMG BLOB, CARDDETAIL BLOB,SVRDETAIL BLOB)"];//识别的card存储,LINKID,DOCID唯一标记一个图片识别
         [self execsql_noerror:@"CREATE INDEX IF NOT EXISTS mb_card_type ON mb_card(CARDCLASS)"];//索引
+        
+        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_class(ID INTEGER PRIMARY KEY, CLASS TEXT, CLASSSVRID TEXT)"];
+        //下面3项默认
+        [self execsql_noerror:@"INSERT INTO mb_class (ID,CLASS,CLASSSVRID) VALUES (100,'身份证','')"];
+        [self execsql_noerror:@"INSERT INTO mb_class (ID,CLASS,CLASSSVRID) VALUES (101,'银行卡','')"];
         /*
          //升级语句
         */
@@ -77,6 +83,8 @@ static BooksOp* OneMe = nil;
         _UserId = [self GetSysVarChar:@"USERID"];
         _UserName = [self GetSysVarChar:@"USERNAME"];
         _UserPwd = [self GetSysVarChar:@"USERPWD"];
+        //加载类型
+        [OcrType Ocrs];
     }
     else
     {

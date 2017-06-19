@@ -482,4 +482,66 @@
     //Rect="683, 224, 197, 33"
     return [WSOperator getAttrOCR_XML:xmlData forDocFileName:docName forAttr:FIELD_RECT];
 }
++(void)syncSvrCards
+{
+    //[{\"ckey\":\"\",\"createTime\":\"2017-06-13 16:41:13\",\"formtype\":\"身份证正面\",\"objectId\":\"080100004cf51\",\"ocrstatus\":\"10\",\"srcdocid\":\"090150dd1\"},{\"ckey\":\"\",\"createTime\":\"2017-06-13 16:41:13\",\"formtype\":\"身份证正面\",\"objectId\":\"080100004cf61\",\"ocrstatus\":\"10\",\"srcdocid\":\"090150dd1\"},{\"ckey\":\"\",\"createTime\":\"2017-06-07 10:35:01\",\"formtype\":\"\",\"objectId\":\"080100004bd11\",\"ocrstatus\":\"10\",\"srcdocid\":\"09014f621\"},{\"ckey\":\"\",\"createTime\":\"2017-06-05 17:16:04\",\"formtype\":\"不动产登记证\",\"objectId\":\"080100004bc91\",\"ocrstatus\":\"10\",\"srcdocid\":\"09014f4d1\"}]
+    NSArray* svrArray = [WSOperator downloadOCR_Last:@""];
+    if (!svrArray)
+        return;
+    if (svrArray.count == 0)
+        return;
+    NSLog(@"syncOcr count:%lu",(unsigned long)svrArray.count);
+    //由于接口返回按时间递减顺序，本地需按递增顺序操作
+    NSArray* reversedArray = [[svrArray reverseObjectEnumerator] allObjects];
+    for (NSDictionary* dict in reversedArray){
+        NSString* svrId = [dict objectForKey:@"srcdocid"];
+        NSString* docId = [dict objectForKey:@"xmldocobject"];
+        //NSString* createTime = [dict objectForKey:@"createTime"];
+        NSString* formtype = [dict objectForKey:@"formtype"];
+        if (!docId){
+            NSLog(@"syncOcr(%@) no docId",svrId);
+            continue;
+        }
+        //本地没有的识别，插入进来，本地有的不管
+        __block BOOL existId = FALSE;
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            existId = ([OcrCard GetCardId:svrId DocId:docId] != 0)?TRUE:FALSE;
+        });
+        if (existId){
+            NSLog(@"syncOcr(%@,%@) already exist",svrId,docId);
+            continue;
+        }
+        
+        NSMutableDictionary* returnDict = [[NSMutableDictionary alloc] init];
+        NSMutableDictionary* ocrData = [WSOperator downloadOCR_XML:svrId DocId:docId Addtional:returnDict];
+        if (ocrData && ocrData.count > 0){
+            
+            NSData* ocrXml = [returnDict objectForKey:XML_MYKEY];
+            NSString* fileName = [returnDict objectForKey:DOC_NAME];
+            
+            if (!ocrXml || !fileName){
+                NSLog(@"syncOcr(%@,%@) XML format error",svrId,docId);
+                continue;
+            }
+            NSData* ocrImage = [WSOperator downloadOCR_Img:svrId SvrFileName:fileName];
+            if (!ocrImage){
+                NSLog(@"syncOcr(%@,%@,%@) downloadOCR_Img error",svrId,docId,fileName);
+                continue;
+            }
+            
+            OcrCard* card = [[OcrCard alloc] init];
+            card.OcrClass = [OcrType GetClass:formtype];
+            card.CardId = [BooksOp Instance].CardID;
+            card.CardSvrId = svrId;
+            card.CardDocId = docId;
+            card.CardDetail = ocrData;
+            card.ModifyDetail = nil;
+            card.CardImg = [UIImage imageWithData:ocrImage];;
+            card.SvrDetail = ocrXml;
+            
+            [card Insert];
+        }
+    }
+    NSLog(@"syncOcr count:%lu over",(unsigned long)svrArray.count);
+}
 @end

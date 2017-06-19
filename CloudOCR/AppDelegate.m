@@ -36,7 +36,7 @@
     leftViewController.delegate = mainViewController;
     
     YQSlideMenuController *slideMenuController = [[YQSlideMenuController alloc] initWithMainViewController:nvc leftMenuViewController:leftViewController rightMenuViewController:rightViewController];
-    [slideMenuController changeLeftViewWidth:160];
+    [slideMenuController changeLeftViewWidth:200];
     [slideMenuController changeRightViewWidth:SCREEN_WIDTH-20];//20要和storyboard的tableView的left约束一致
     slideMenuController.automaticallyAdjustsScrollViewInsets = YES;
     slideMenuController.delegate = mainViewController;

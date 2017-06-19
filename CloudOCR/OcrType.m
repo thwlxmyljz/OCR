@@ -8,6 +8,12 @@
 
 #import "OcrType.h"
 #import "BankTableCell.h"
+#import "WSOperator.h"
+#import <sqlite3.h>
+#import "BooksOp.h"
+#import "constants.h"
+#import "NotificationView.h"
+#import "NSNotificationAdditions.h"
 
 @implementation OcrType
 
@@ -20,31 +26,37 @@
     self.TypeName = typeName;
     return my;
 }
+-(BOOL)equalWith:(NSString*)name
+{
+    if ([name containsString:@"身份证"] && [self.TypeName containsString:@"身份证"])
+        return TRUE;
+    return [self.TypeName isEqualToString:name];
+}
 +(NSMutableDictionary*)Ocrs
 {
     static NSMutableDictionary* ocrDict = nil;
     if (!ocrDict){
+        ocrDict = [[NSMutableDictionary alloc] init];
         NSMutableArray* array = [[NSMutableArray alloc] init];
-        
+        //mb_class(ID INTEGER PRIMARY KEY, CLASS TEXT, CLASSSVRID TEXT)
+        const char * sql = "select ID,CLASS from mb_class";
+        sqlite3_stmt * statement;
         OcrType* type = nil;
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Personal_IdCard;
-        type.TypeName = @"身份证";
-        [array addObject:type];
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Personal_BankCard;
-        type.TypeName = @"银行卡";
-        [array addObject:type];
-        
-        
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Financial_Cert;
-        type.TypeName = @"营业执照";
-        [array addObject:type];
-        
+        if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                type = [[OcrType alloc] init];
+                type.OcrClass = sqlite3_column_int(statement, 0);
+                char* szvalue = (char*)sqlite3_column_text(statement, 1);
+                NSString* txt = szvalue?[NSString stringWithUTF8String:szvalue]:@"";
+                type.TypeName = txt;
+                
+                [array addObject:type];
+            }
+            sqlite3_finalize(statement);
+        }
+     
         type = [[OcrType alloc] init];
         type.OcrClass = Class_Normal;
         type.TypeName = @"其他";
@@ -53,6 +65,15 @@
         [ocrDict setValue:array forKey:@""];
     }
     return ocrDict;
+}
++(void)insertType:(OcrType*)type
+{
+    NSMutableDictionary* oldDict = [OcrType Ocrs];
+    NSMutableArray* oldArray = [oldDict objectForKey:@""];
+    [oldArray insertObject:type atIndex:oldArray.count-1];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_TYPEFRESH object:nil
+                                                                      userInfo:nil];
 }
 +(EMOcrClass)GetClass:(NSString*)typeName
 {
@@ -84,95 +105,75 @@
     }
     return nil;
 }
-/*
-+(NSMutableArray*)Personals
++(void)handleSvrType:(NSString*)svrName ObjectId:(NSString*)objectId
 {
-    static NSMutableArray* array = nil;
-    if (!array){
-        array = [[NSMutableArray alloc] init];
-        
-        OcrType* type = nil;
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Personal_IdCard;
-        type.TypeName = @"身份证";
-        [array addObject:type];
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Personal_BankCard;
-        type.TypeName = @"银行卡";
-        [array addObject:type];
-        
-        
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Personal_DriverCard;
-        type.TypeName = @"驾驶证";
-        [array addObject:type];
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Personal_MyCard;
-        type.TypeName = @"名片";
-        [array addObject:type];
+    NSMutableDictionary* dict = [OcrType Ocrs];
+    for (NSString* key in dict){
+        NSMutableArray* array = [dict objectForKey:key];
+        for (OcrType* type in array){
+            if ([type equalWith:svrName]){
+                return;
+            }
+        }
     }
-    return array;
-}
-+(NSMutableArray*)Financials
-{
-    static NSMutableArray* array = nil;
-    if (!array){
-        array = [[NSMutableArray alloc] init];
+    void (^insertNewType)(NSString* name,NSString* objId) = ^(NSString* name,NSString* objId){
+        const char * sql = "select max(ID) as MID from mb_class";
+        sqlite3_stmt * statement;
+        int MaxId = 1;
+        if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            if (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                MaxId = sqlite3_column_int(statement, 0);
+                MaxId++;
+            }
+        }
+        sqlite3_finalize(statement);
+        //mb_class(ID INTEGER PRIMARY KEY, CLASS TEXT,CLASSSVRID TEXT)
+        sql = "insert into mb_class (ID,CLASS,CLASSSVRID) values(?,?,?)";
+        if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
+        {
+            sqlite3_bind_int(statement, 1, MaxId);
+            sqlite3_bind_text(statement,2, [svrName UTF8String], -1, NULL);
+            sqlite3_bind_text(statement, 3, [objectId UTF8String], -1, NULL);
+            
+            if( sqlite3_step(statement) == SQLITE_DONE){
+                NSLog(@"card insert DB ok");
+            }
+        }
+        sqlite3_finalize(statement);
         
         OcrType* type = [[OcrType alloc] init];
-        type.OcrClass = Class_Financial_Money;
-        type.TypeName = @"企业财报";
-        [array addObject:type];
+        type.OcrClass = MaxId;
+        type.TypeName = svrName;
         
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Financial_Cert;
-        type.TypeName = @"营业执照";
-        [array addObject:type];
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Financial_Bank;
-        type.TypeName = @"银行存单";
-        [array addObject:type];
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Financial_Paper;
-        type.TypeName = @"商业票据";
-        [array addObject:type];
+        [OcrType insertType:type];
+    };
+    if ([NSThread isMainThread]){
+        insertNewType(svrName,objectId);
     }
-    return array;
+    else{
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            insertNewType(svrName,objectId);
+        });
+    }
 }
-+(NSMutableArray*)Commercials
++(void)syncSvrTypes
 {
-    static NSMutableArray* array = nil;
-    if (!array){
-        array = [[NSMutableArray alloc] init];
-        
-        OcrType* type = [[OcrType alloc] init];
-        type.OcrClass = Class_Commercial_FaPiao;
-        type.TypeName = @"发票识别";
-        [array addObject:type];
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Commercial_Table;
-        type.TypeName = @"表格识别";
-        [array addObject:type];
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Commercial_Doc;
-        type.TypeName = @"文档识别";
-        [array addObject:type];
-        
-        type = [[OcrType alloc] init];
-        type.OcrClass = Class_Commercial_Car;
-        type.TypeName = @"车牌识别";
-        [array addObject:type];
+    NSArray* typeArray = [WSOperator downloadOCR_Types];
+    if (typeArray && typeArray.count > 0){
+        NSLog(@"download Ocr type, count:%lu",(unsigned long)typeArray.count);
+        for (NSDictionary * dict in typeArray){
+            NSString* newName = [dict objectForKey:@"name"];
+            NSString* newObjId = [dict objectForKey:@"objectId"];
+            if (newName && newObjId){
+                [OcrType handleSvrType:newName ObjectId:newObjId];
+            }
+            else{
+                NSLog(@"syncSvrTypes name or objectid is null");
+            }
+        }
     }
-    return array;
 }
- */
 @end
 
