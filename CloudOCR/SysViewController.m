@@ -31,13 +31,6 @@
     [BooksOp RoundBeautifulButton:self.btnCancel];
     
     self.edtValue.text = self.oldValue;
-    if (self.clickSection == 0 && (self.clickRow == 1)){
-        self.edtValue.text = [BooksOp Instance].UserPwd;
-        self.edtValue.secureTextEntry = YES;
-    }
-    else{
-        self.edtValue.secureTextEntry = NO;
-    }
     [self.edtValue becomeFirstResponder];
 }
 - (IBAction)onCancel:(id)sender {
@@ -52,17 +45,7 @@
 }
 -(void) Save:(NSString*)newValue
 {
-    if (_clickSection == 0){
-        if (_clickRow == 0){
-            //用户名
-            [BooksOp Instance].UserId = newValue;
-        }
-        else if (_clickRow == 1){
-            //密码
-            [BooksOp Instance].UserPwd = newValue;
-        }
-    }
-    else if (_clickSection == 1){
+    if (_clickSection == 1){
         if (_clickRow == 1){
             //识别服务器地址
             [BooksOp Instance].SvrAddr = newValue;

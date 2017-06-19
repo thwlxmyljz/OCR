@@ -96,6 +96,7 @@
 		41A0730B1EF7D09200110D2C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41A073091EF7D09200110D2C /* LaunchScreen.storyboard */; };
 		41A0730E1EF7D24C00110D2C /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 41A0730C1EF7D24C00110D2C /* logo.png */; };
 		41A0730F1EF7D24C00110D2C /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 41A0730D1EF7D24C00110D2C /* logo@2x.png */; };
+		41A073151EF7DB0D00110D2C /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 41A073141EF7DB0D00110D2C /* UserViewController.m */; };
 		41BF5CF91ED677C50010C8C7 /* bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 41BF5CF81ED677C50010C8C7 /* bg.jpg */; };
 		41BF5CFB1ED67CC40010C8C7 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 41BF5CFA1ED67CC40010C8C7 /* libsqlite3.0.tbd */; };
 		41BF5CFE1ED67D540010C8C7 /* BooksOp.m in Sources */ = {isa = PBXBuildFile; fileRef = 41BF5CFD1ED67D540010C8C7 /* BooksOp.m */; };
@@ -255,6 +256,8 @@
 		41A0730A1EF7D09200110D2C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		41A0730C1EF7D24C00110D2C /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		41A0730D1EF7D24C00110D2C /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
+		41A073131EF7DB0D00110D2C /* UserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserViewController.h; sourceTree = "<group>"; };
+		41A073141EF7DB0D00110D2C /* UserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserViewController.m; sourceTree = "<group>"; };
 		41BF5CF81ED677C50010C8C7 /* bg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = bg.jpg; path = pic/bg.jpg; sourceTree = "<group>"; };
 		41BF5CFA1ED67CC40010C8C7 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		41BF5CFC1ED67D540010C8C7 /* BooksOp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BooksOp.h; sourceTree = "<group>"; };
@@ -394,6 +397,8 @@
 				41495F471ED3D49F008DE054 /* RightViewController.m */,
 				410486E01EEFE908005C63E6 /* SysViewController.h */,
 				410486E11EEFE908005C63E6 /* SysViewController.m */,
+				41A073131EF7DB0D00110D2C /* UserViewController.h */,
+				41A073141EF7DB0D00110D2C /* UserViewController.m */,
 				41CC96921ED81AD300926708 /* Chk2Asi.h */,
 				41CC96931ED81AD300926708 /* Chk2Asi.m */,
 				41BF5CFC1ED67D540010C8C7 /* BooksOp.h */,
@@ -835,6 +840,7 @@
 				41ECB9AA1EE527AF0064C158 /* ASIAuthenticationDialog.m in Sources */,
 				41ECB9AB1EE527AF0064C158 /* ASIDataCompressor.m in Sources */,
 				41495FCC1ED44DD2008DE054 /* BankTableCell.m in Sources */,
+				41A073151EF7DB0D00110D2C /* UserViewController.m in Sources */,
 				410486DF1EEFD97F005C63E6 /* YQSlideMenuController.m in Sources */,
 				41ECB9B01EE527AF0064C158 /* ASIInputStream.m in Sources */,
 				41CC96941ED81AD300926708 /* Chk2Asi.m in Sources */,

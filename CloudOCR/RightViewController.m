@@ -14,6 +14,7 @@
 #import "UIViewController+SlideMenuControllerOC.h"
 #import "RightViewController.h"
 #import "SlideMenuController.h"
+#import "UserViewController.h"
 
 @interface RightViewController()
 {
@@ -49,7 +50,7 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0)
-        return 2;
+        return 1;
     else if (section == 1)
         return 3;
     return 0;
@@ -89,10 +90,6 @@
             cell.textLabel.text = @"用户名";
             cell.detailTextLabel.text = [BooksOp Instance].UserId;
         }
-        else if (indexPath.row == 1){
-            cell.textLabel.text = @"用户密码";
-            cell.detailTextLabel.text = @"";
-        }
     }
     else if (indexPath.section == 1){
         if (indexPath.row == 0){
@@ -127,12 +124,23 @@
     _clickSection = (int)indexPath.section;
     _clickRow = (int)indexPath.row;
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    SysViewController *v = (SysViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"SysViewController"];
-    UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-    v.oldValue = cell.detailTextLabel.text;
-    v.clickSection = _clickSection;
-    v.clickRow = _clickRow;
-    [self.slideMenuController changeRightViewController:v close:FALSE];
+    if (indexPath.section == 0 && indexPath.row == 0){
+        //用户设置
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        UserViewController *v = (UserViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"UserViewController"];
+        v.clickSection = _clickSection;
+        v.clickRow = _clickRow;
+        [self.slideMenuController changeRightViewController:v close:FALSE];
+    }
+    else{
+        //其他单项设置
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        SysViewController *v = (SysViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"SysViewController"];
+        UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+        v.oldValue = cell.detailTextLabel.text;
+        v.clickSection = _clickSection;
+        v.clickRow = _clickRow;
+        [self.slideMenuController changeRightViewController:v close:FALSE];
+    }
 }
 @end
