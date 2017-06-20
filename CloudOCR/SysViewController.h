@@ -16,15 +16,14 @@
 
 @end
 
-/*
- 这个SysViewController要和RightViewController一致
- */
+typedef NS_ENUM(NSInteger, EM_SysSaveType){
+    EM_SysSaveType_SvrAddr,
+    EM_SysSaveType_ThirdAddr
+};
+
 @interface SysViewController : UIViewController
 
- //下面数据从RightViewController传过来
-@property (nonatomic, strong) NSString* oldValue;
-@property (nonatomic, assign) int clickSection;
-@property (nonatomic, assign) int clickRow;
+@property (nonatomic, assign) EM_SysSaveType SaveType;
 
 @property (weak, nonatomic) IBOutlet UITextField *edtValue;
 @property (weak, nonatomic) IBOutlet UIButton *btnSave;

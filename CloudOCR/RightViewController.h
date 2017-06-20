@@ -10,7 +10,7 @@
 #import "SysViewController.h"
 
 
-@interface RightViewController : UIViewController <InputDelegate>
+@interface RightViewController : UIViewController// <InputDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 

@@ -24,15 +24,8 @@
 @synthesize CardId = _CardId;
 @synthesize CardSvrId = _CardSvrId;
 @synthesize CardDocId = _CardDocId;
+@synthesize CardFileName = _CardFileName;
 
--(NSString*) GetFileName
-{
-    return [OcrCard GetFileName:self.CardId];
-}
-+(NSString*) GetFileName:(int)cardId
-{
-    return [NSString stringWithFormat:@"%d.jpg",cardId];
-}
 -(BOOL)isEqual:(id)object
 {
     if ([object isKindOfClass:[OcrCard class]]){
@@ -49,8 +42,6 @@
         return FALSE;
     
     [self insertSvr];
-    
-    //mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,CARDIMG BLOB, SVRIMG BLOB,CARDDETAIL BLOB,SVRDETAIL BLOB)
 
     if ([NSThread isMainThread]){
         [self _insert];
@@ -65,31 +56,32 @@
 -(BOOL)_insert
 {
     NSData * cardDetail = [BooksOp ToJSONData:self.CardDetail];
-    const  char * sql = "insert into mb_card (USERID,USERNAME,CARDCLASS,CARDID,LINKID,DOCID,CARDIMG,CARDDETAIL,SVRDETAIL) values(?,?,?,?,?,?,?,?,?)";
+    const  char * sql = "insert into mb_card (USERID,USERNAME,CARDCLASS,CARDID,LINKID,DOCID,FILENAME,CARDIMG,CARDDETAIL,SVRDETAIL) values(?,?,?,?,?,?,?,?,?,?)";
     sqlite3_stmt * statement;
     if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
     {
         sqlite3_bind_text(statement, 1, [[BooksOp Instance].UserId UTF8String], -1, NULL);
         sqlite3_bind_text(statement, 2, [[BooksOp Instance].UserName UTF8String], -1, NULL);
-        sqlite3_bind_int(statement, 3, self.OcrClass);
+        sqlite3_bind_text(statement, 3, [self.OcrClass UTF8String], -1, NULL);
         sqlite3_bind_int(statement, 4, self.CardId);
         sqlite3_bind_text(statement, 5, [self.CardSvrId UTF8String], -1, NULL);
         sqlite3_bind_text(statement, 6, [self.CardDocId UTF8String], -1, NULL);
+        sqlite3_bind_text(statement, 7, [self.CardFileName UTF8String], -1, NULL);
         if (self.CardImg){
             NSData * imgData = UIImagePNGRepresentation(_CardImg);
-            sqlite3_bind_blob(statement, 7, [imgData bytes], [imgData length], NULL);
+            sqlite3_bind_blob(statement, 8, [imgData bytes], [imgData length], NULL);
         }
         else{
-            sqlite3_bind_blob(statement, 7, NULL,0,NULL);
+            sqlite3_bind_blob(statement, 8, NULL,0,NULL);
         }
         
-        sqlite3_bind_blob(statement, 8, [cardDetail bytes], [cardDetail length], NULL);
+        sqlite3_bind_blob(statement, 9, [cardDetail bytes], [cardDetail length], NULL);
         
         if (self.SvrDetail){
-            sqlite3_bind_blob(statement, 9, [self.SvrDetail bytes], [self.SvrDetail length], NULL);
+            sqlite3_bind_blob(statement, 10, [self.SvrDetail bytes], [self.SvrDetail length], NULL);
         }
         else{
-            sqlite3_bind_blob(statement, 9, NULL, 0, NULL);
+            sqlite3_bind_blob(statement, 10, NULL, 0, NULL);
         }
         
         if( sqlite3_step(statement) == SQLITE_DONE){
@@ -123,7 +115,7 @@
         return;
     }
     
-    self.CardSvrId = [WSOperator insertOCR:self.CardImg SvrFileName:[self GetFileName] Value:jsonStr];
+    self.CardSvrId = [WSOperator insertOCR:self.CardImg SvrFileName:self.CardFileName Value:jsonStr];
     
     if (![self.CardSvrId isEqualToString:@""]){
         //插入服务器成功，下载xml文件和服务器识别图
@@ -133,12 +125,12 @@
             
             [NSThread sleepForTimeInterval:DOWNLOAD_SLEEP_ONE];
         
-            NSMutableDictionary* svrOcrData = [WSOperator downloadOCR_XML:self.CardSvrId FileName:[self GetFileName] Addtional:returnDict];
+            NSMutableDictionary* svrOcrData = [WSOperator downloadOCR_XML:self.CardSvrId FileName:self.CardFileName Addtional:returnDict];
             if (svrOcrData){
                 self.SvrDetail = [returnDict objectForKey:XML_MYKEY];
                 /*
                 //下载识别处理过后的图片//目前服务器为原图
-                NSData* svrImg = [WSOperator downloadOCR_Img:self.CardSvrId SvrFileName:[self GetFileName]];
+                NSData* svrImg = [WSOperator downloadOCR_Img:self.CardSvrId SvrFileName:self.CardFileName];
                 if (svrImg){
                     self.CardImg = [UIImage imageWithData:svrImg];
                 }
@@ -156,14 +148,14 @@
 }
 -(NSString*)createInsertValueJson
 {
-    if (self.OcrClass != Class_Personal_IdCard && self.OcrClass != Class_Personal_BankCard)
+    if (![self.OcrClass isEqualToString: Class_Personal_IdCard] && ![self.OcrClass isEqualToString: Class_Personal_BankCard])
         return @"";
     //只有身份证和银行卡支持本地识别后上传插入
-    NSString* json = [NSString stringWithFormat:@"[{\"fileName\":\"%@\"",[self GetFileName]];
-    if (self.OcrClass == Class_Personal_IdCard){
+    NSString* json = [NSString stringWithFormat:@"[{\"fileName\":\"%@\"",self.CardFileName];
+    if ([self.OcrClass isEqualToString: Class_Personal_IdCard]){
         json = [json stringByAppendingString:@",\"formType\":\"身份证正面\",\"content\":["];
     }
-    else if (self.OcrClass == Class_Personal_IdCard){
+    else if ([self.OcrClass isEqualToString:Class_Personal_IdCard]){
         json = [json stringByAppendingString:@",\"formType\":\"银行卡正面\",\"content\":["];
     }
     for (NSString* key in self.CardDetail){
@@ -287,7 +279,7 @@
     }
     else{
         if (self.ModifyDetail != nil && self.ModifyDetail.count > 0){
-            NSMutableDictionary* keyIdDic = [OcrCard getXmlKeyId:self.SvrDetail forDocFileName:[self GetFileName]];
+            NSMutableDictionary* keyIdDic = [OcrCard getXmlKeyId:self.SvrDetail forDocFileName:self.CardFileName];
             if (keyIdDic){
                 NSString* svrId = self.CardSvrId;
                 NSString* objId = [keyIdDic objectForKey:DOC_OBJECTID];
@@ -341,27 +333,29 @@
 +(void)fill:(sqlite3_stmt *)statement toCard:(OcrCard*) card
 {
     card.CardId = sqlite3_column_int(statement, 0);
+    
     char* szvalue = (char*)sqlite3_column_text(statement, 1);
     NSString* linkid = szvalue?[NSString stringWithUTF8String:szvalue]:@"";
     card.CardSvrId = linkid;
+    
     szvalue = (char*)sqlite3_column_text(statement, 2);
     NSString* docid = szvalue?[NSString stringWithUTF8String:szvalue]:@"";
     card.CardDocId = docid;
-    card.OcrClass = sqlite3_column_int(statement, 3);
-    int bytes = sqlite3_column_bytes(statement, 4);
-    Byte * value = (Byte*)sqlite3_column_blob(statement, 4);
+    
+    szvalue = (char*)sqlite3_column_text(statement, 3);
+    NSString* fileName = szvalue?[NSString stringWithUTF8String:szvalue]:@"";
+    card.CardFileName = fileName;
+    
+    szvalue = (char*)sqlite3_column_text(statement, 4);
+    NSString* className = szvalue?[NSString stringWithUTF8String:szvalue]:@"";
+    card.OcrClass = className;
+    
+    int bytes = sqlite3_column_bytes(statement, 5);
+    Byte * value = (Byte*)sqlite3_column_blob(statement, 5);
     if (bytes !=0 && value != NULL)
     {
         NSData * data = [NSData dataWithBytes:value length:bytes];
         card.CardImg = [UIImage imageWithData:data];
-    }
-    
-    bytes = sqlite3_column_bytes(statement, 5);
-    value = (Byte*)sqlite3_column_blob(statement, 5);
-    if (bytes !=0 && value != NULL)
-    {
-        NSData * data = [NSData dataWithBytes:value length:bytes];
-        card.CardDetail = [BooksOp ToArrayOrNSDictionary:data];
     }
     
     bytes = sqlite3_column_bytes(statement, 6);
@@ -369,17 +363,26 @@
     if (bytes !=0 && value != NULL)
     {
         NSData * data = [NSData dataWithBytes:value length:bytes];
+        card.CardDetail = [BooksOp ToArrayOrNSDictionary:data];
+    }
+    
+    bytes = sqlite3_column_bytes(statement, 7);
+    value = (Byte*)sqlite3_column_blob(statement, 7);
+    if (bytes !=0 && value != NULL)
+    {
+        NSData * data = [NSData dataWithBytes:value length:bytes];
         card.SvrDetail = data;
     }
 }
-+(NSMutableArray*)Load:(EMOcrClass)clas
++(NSMutableArray*)Load:(NSString*)clas
 {
     NSMutableArray* array = [[NSMutableArray alloc] init];
-    const char * sql = "select CARDID,LINKID,DOCID,CARDCLASS,CARDIMG,CARDDETAIL,SVRDETAIL from mb_card where CARDCLASS=? order by ID desc";
+    const char * sql = "select CARDID,LINKID,DOCID,FILENAME,CARDCLASS,CARDIMG,CARDDETAIL,SVRDETAIL from mb_card where CARDCLASS=? and (USERID=? or USERID='') order by ID desc";
     sqlite3_stmt * statement;
     if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
     {
-        sqlite3_bind_int(statement, 1,clas);
+        sqlite3_bind_text(statement, 1, [clas UTF8String], -1, NULL);
+        sqlite3_bind_text(statement, 2, [[BooksOp Instance].UserId UTF8String], -1, NULL);
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
             OcrCard* card = [[OcrCard alloc] init];
@@ -392,7 +395,7 @@
 }
 +(OcrCard*)LoadOne:(int)cardId
 {
-    const char * sql = "select CARDID,LINKID,DOCID,CARDCLASS,CARDIMG,CARDDETAIL,SVRDETAIL from mb_card where CARDID=?";
+    const char * sql = "select CARDID,LINKID,DOCID,FILENAME,CARDCLASS,CARDIMG,CARDDETAIL,SVRDETAIL from mb_card where CARDID=?";
     sqlite3_stmt * statement;
     OcrCard* card = nil;
     if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
@@ -406,6 +409,23 @@
         sqlite3_finalize(statement);
     }
     return card;
+}
++(int)Count:(NSString*)clas
+{
+    const char * sql = "select count(*) as CNT from mb_card where CARDCLASS=? and (USERID=? or USERID='')";
+    sqlite3_stmt * statement;
+    int count = 0;
+    if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
+    {
+        sqlite3_bind_text(statement, 1, [clas UTF8String], -1, NULL);
+        sqlite3_bind_text(statement, 2, [[BooksOp Instance].UserId UTF8String], -1, NULL);
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            count = sqlite3_column_int(statement, 0);
+        }
+        sqlite3_finalize(statement);
+    }
+    return count;
 }
 +(NSString*)GetHeadKey:(NSString*)value
 {
@@ -508,7 +528,7 @@
             existId = ([OcrCard GetCardId:svrId DocId:docId] != 0)?TRUE:FALSE;
         });
         if (existId){
-            NSLog(@"syncOcr(%@,%@) already exist",svrId,docId);
+            NSLog(@"syncOcr(%@,%@,%@) already exist",svrId,docId,formtype);
             continue;
         }
         
@@ -530,16 +550,25 @@
             }
             
             OcrCard* card = [[OcrCard alloc] init];
-            card.OcrClass = [OcrType GetClass:formtype];
+            card.OcrClass = formtype;
+            NSLog(@"new OcrCard(Name:%@,ClassName:%@)",formtype,card.OcrClass);
             card.CardId = [BooksOp Instance].CardID;
             card.CardSvrId = svrId;
             card.CardDocId = docId;
             card.CardDetail = ocrData;
+            card.CardFileName = fileName;
             card.ModifyDetail = nil;
             card.CardImg = [UIImage imageWithData:ocrImage];;
             card.SvrDetail = ocrXml;
             
-            [card Insert];
+            if ([card Insert]){
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
+                                                                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                                        [NSNumber numberWithInt:card.CardId], @"cardid",
+                                                                                        [NSString stringWithString:card.OcrClass], @"ocrclass",
+                                                                                        [NSNumber numberWithInt:1]/*新卡片*/, @"op",
+                                                                                        nil]];
+            }
         }
     }
     NSLog(@"syncOcr count:%lu over",(unsigned long)svrArray.count);

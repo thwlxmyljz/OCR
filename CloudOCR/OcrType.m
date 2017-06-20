@@ -17,12 +17,10 @@
 
 @implementation OcrType
 
-@synthesize OcrClass = _OcrClass;
 @synthesize TypeName = _TypeName;
--(id)initWith:(EMOcrClass)ocrClass Name:(NSString*)typeName
+-(id)initWith:(NSString*)typeName
 {
     id my = [super init];
-    self.OcrClass = ocrClass;
     self.TypeName = typeName;
     return my;
 }
@@ -38,17 +36,28 @@
     if (!ocrDict){
         ocrDict = [[NSMutableDictionary alloc] init];
         NSMutableArray* array = [[NSMutableArray alloc] init];
-        //mb_class(ID INTEGER PRIMARY KEY, CLASS TEXT, CLASSSVRID TEXT)
-        const char * sql = "select ID,CLASS from mb_class";
-        sqlite3_stmt * statement;
         OcrType* type = nil;
+        
+        //先加2个默认值
+        type = [[OcrType alloc] init];
+        type.TypeName = Class_Personal_IdCard;
+        [array addObject:type];
+        
+        type = [[OcrType alloc] init];
+        type.TypeName = Class_Personal_BankCard;
+        [array addObject:type];
+        
+        //mb_class(USERID TEXT, CARDCLASS TEXT, SVRID TEXT)
+        const char * sql = "select CARDCLASS,SVRID from mb_class where USERID=?";
+        sqlite3_stmt * statement;
+        
         if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
         {
+            sqlite3_bind_text(statement, 1, [[BooksOp Instance].UserId UTF8String], -1, NULL);
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
                 type = [[OcrType alloc] init];
-                type.OcrClass = sqlite3_column_int(statement, 0);
-                char* szvalue = (char*)sqlite3_column_text(statement, 1);
+                char* szvalue = (char*)sqlite3_column_text(statement, 0);
                 NSString* txt = szvalue?[NSString stringWithUTF8String:szvalue]:@"";
                 type.TypeName = txt;
                 
@@ -57,8 +66,8 @@
             sqlite3_finalize(statement);
         }
      
+        //加一个其他
         type = [[OcrType alloc] init];
-        type.OcrClass = Class_Normal;
         type.TypeName = @"其他";
         [array addObject:type];
         
@@ -75,30 +84,13 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_TYPEFRESH object:nil
                                                                       userInfo:nil];
 }
-+(EMOcrClass)GetClass:(NSString*)typeName
-{
-    if (!typeName){
-        return Class_Normal;
-    }
-    NSMutableDictionary* dict = [OcrType Ocrs];
-    for (NSString* key in [dict allKeys]){
-        NSMutableArray* arr  = [dict objectForKey:key];
-        for (OcrType* ocr in arr){
-            if ([typeName containsString:ocr.TypeName]){
-                return ocr.OcrClass;
-            }
-        }
-    }
-    
-    return Class_Normal;
-}
-+(OcrType*)GetOcrType:(int)ocrClass
++(OcrType*)GetOcrType:(NSString*)typeName
 {
     NSMutableDictionary* dict = [OcrType Ocrs];
     for (NSString* key in [dict allKeys]){
         NSMutableArray* arr  = [dict objectForKey:key];
         for (OcrType* ocr in arr){
-            if (ocrClass == ocr.OcrClass){
+            if ([ocr.TypeName isEqualToString:typeName] ){
                 return ocr;
             }
         }
@@ -116,24 +108,14 @@
             }
         }
     }
+    //新类型
     void (^insertNewType)(NSString* name,NSString* objId) = ^(NSString* name,NSString* objId){
-        const char * sql = "select max(ID) as MID from mb_class";
         sqlite3_stmt * statement;
-        int MaxId = 1;
+        //mb_class(USERID TEXT, CARDCLASS TEXT, SVRID TEXT)
+        const char* sql = "insert into mb_class (USERID,CARDCLASS,SVRID) values(?,?,?)";
         if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
         {
-            if (sqlite3_step(statement) == SQLITE_ROW)
-            {
-                MaxId = sqlite3_column_int(statement, 0);
-                MaxId++;
-            }
-        }
-        sqlite3_finalize(statement);
-        //mb_class(ID INTEGER PRIMARY KEY, CLASS TEXT,CLASSSVRID TEXT)
-        sql = "insert into mb_class (ID,CLASS,CLASSSVRID) values(?,?,?)";
-        if (sqlite3_prepare_v2([[BooksOp Instance] GetDatabase], sql, -1, &statement, NULL) == SQLITE_OK)
-        {
-            sqlite3_bind_int(statement, 1, MaxId);
+            sqlite3_bind_text(statement,1, [[BooksOp Instance].UserId UTF8String], -1, NULL);
             sqlite3_bind_text(statement,2, [svrName UTF8String], -1, NULL);
             sqlite3_bind_text(statement, 3, [objectId UTF8String], -1, NULL);
             
@@ -144,9 +126,7 @@
         sqlite3_finalize(statement);
         
         OcrType* type = [[OcrType alloc] init];
-        type.OcrClass = MaxId;
         type.TypeName = svrName;
-        
         [OcrType insertType:type];
     };
     if ([NSThread isMainThread]){

@@ -378,7 +378,7 @@
             return imgData;
         }
     }
-    NSLog(@"downloadOCR_Img(%@,%@) error",svrId,svrFileName);
+    NSLog(@"downloadOCR_Img(%@,%@) request error",svrId,svrFileName);
     return nil;
 }
 + (NSMutableDictionary*)downloadOCR_XML:(NSString*)svrId  DocKey:(NSString*)docKey DocValue:(NSString*)keyValue  Addtional:(NSMutableDictionary*)returnDict
@@ -404,13 +404,12 @@
     NSData *xmlData=[NSURLConnection sendSynchronousRequest:request returningResponse:&respond error:&error];
     if(xmlData && xmlData.length > 0 && !error)
     {
-        NSLog(@"%@",[NSString stringWithCString:xmlData.bytes encoding:NSUTF8StringEncoding]);
         if (![respond.MIMEType isEqualToString:@"text/html"])
         {
             xmlTextReaderPtr reader = xmlReaderForMemory(xmlData.bytes , xmlData.length, nil, nil, (XML_PARSE_NOENT|XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING));
             
             if(!reader){
-                NSLog(@"downloadOCR_XML failed to load soap respond xml !");
+                NSLog(@"downloadOCR_XML xmlReaderForMemory(%@) error",[NSString stringWithCString:xmlData.bytes encoding:NSUTF8StringEncoding]);
                 return nil;
             }
             else
@@ -431,9 +430,12 @@
                         NSLog(@"========> %s",temp);
                         if([currentTagField isEqualToString:DOC])
                         {
+                            char* szformName = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_FORM_C);
+                            NSString* formName = [NSString stringWithCString:szformName encoding:NSUTF8StringEncoding];
+                            
                             temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)[docKey UTF8String]);
                             currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                            //NSLog(@"===> TagName: %@",currentTagName);
+                            NSLog(@"===> Doc Name: %@,Form:%@",currentTagName,formName);
                             if ([currentTagName isEqualToString:keyValue]){
                                 docFound = TRUE;
                                 NSLog(@"found key:%@ value:%@",docKey,currentTagName);
@@ -488,7 +490,7 @@
         }
     }
     
-    NSLog(@"downloadOCR_XML(%@) shuold wait",svrId);
+    NSLog(@"downloadOCR_XML(%@) request error",svrId);
     
     return nil;
 }
@@ -527,9 +529,12 @@
                 NSLog(@"========> %s",temp);
                 if([currentTagField isEqualToString:DOC])
                 {
+                    char* szformName = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_FORM_C);
+                    NSString* formName = [NSString stringWithCString:szformName encoding:NSUTF8StringEncoding];
+                    
                     temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_NAME_C);
                     currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
-                    //NSLog(@"===> TagName: %@",currentTagName);
+                    NSLog(@"===> Doc Name: %@, Form:%@",currentTagName,formName);
                     if ([currentTagName isEqualToString:docName]){
                         temp = (char* )xmlTextReaderGetAttribute(reader,(const xmlChar *)DOC_OBJECTID_C);
                         currentTagName = [NSString stringWithCString:temp encoding:NSUTF8StringEncoding];
@@ -616,21 +621,18 @@
     {
         if (![respond.MIMEType isEqualToString:@"text/html"])
         {
-            //NSString* json = [NSString stringWithUTF8String:jsonData.bytes];
-            NSString* json = [NSString stringWithCString:jsonData.bytes encoding:NSUTF8StringEncoding];
-            if (json.length <= 0)
-                return nil;
             NSError* error;
             //NSLog(@"%@",json);
-            id jsonobj = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding]  options:NSJSONReadingMutableContainers error:&error];
+            id jsonobj = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&error];
             if (!jsonobj || error){
-                NSLog(@"downloadOCR_Last parse json str[%@] error.",json);
+                NSLog(@"downloadOCR_Last parse json str[%@] error.",[NSString stringWithCString:jsonData.bytes encoding:NSUTF8StringEncoding]);
                 return nil;
             }
+            NSLog(@"downloadOCR_Last count %d",((NSArray*)jsonobj).count);
             return  (NSArray*)jsonobj;
         }
     }
-    NSLog(@"downloadOCR_Last no data");
+    NSLog(@"downloadOCR_Last request error");
     return nil;
 }
 + (NSMutableArray*)downloadOCR_Types
@@ -646,23 +648,17 @@
     {
         if (![respond.MIMEType isEqualToString:@"text/html"])
         {
-            //NSString* json = [NSString stringWithUTF8String:jsonData.bytes];
-            NSString* json = [NSString stringWithCString:jsonData.bytes encoding:NSUTF8StringEncoding];
-            if (json.length <= 0){
-                NSLog(@"downloadOCR_Types no data");
-                return nil;
-            }
             NSError* error;
-            //NSLog(@"%@",json);
-            id jsonobj = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding]  options:NSJSONReadingMutableContainers error:&error];
+            id jsonobj = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&error];
             if (!jsonobj || error){
-                NSLog(@"downloadOCR_Types parse json str[%@] error.",json);
+                NSLog(@"downloadOCR_Types parse json str[%@] error.",[NSString stringWithCString:jsonData.bytes encoding:NSUTF8StringEncoding]);
                 return nil;
             }
+            NSLog(@"downloadOCR_Types count %d",((NSMutableArray*)jsonobj).count);
             return  (NSMutableArray*)jsonobj;
         }
     }
-    NSLog(@"downloadOCR_Types no data");
+    NSLog(@"downloadOCR_Types request error");
     return nil;
 }
 @end

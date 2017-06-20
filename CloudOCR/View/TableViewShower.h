@@ -19,7 +19,7 @@
 //ocr历史记录列表显示控制
 @interface TableViewShower  : NSObject <UITableViewDataSource,UITableViewDelegate>
 
-@property (nonatomic,assign) EMOcrClass OcrClass;//显示的ocr类型
+@property (nonatomic,strong) NSString* OcrClass;//显示的ocr类型
 @property (nonatomic,strong) NSString* KeyName;//关键属性名
 @property (nonatomic,strong) UITableView* tableView;//tableView
 @property (nonatomic,strong) OcrTableViewController* Owner;//tableView controller
@@ -29,7 +29,7 @@
 
 
 //没有自定义的TableViewShower调用此公共
--(void)BaseSetUp:(UITableView*) tableView WithClass:(EMOcrClass)clas;
+-(void)BaseSetUp:(UITableView*) tableView WithClass:(NSString*)clas;
 
 //派生类调用
 -(void)Setup:(UITableView*) tableView;
@@ -37,7 +37,11 @@
 //释放数据
 -(void)UnloadData;
 
--(void)FreshOcrCard:(int)cardId Operator:(int)op;
+-(void)UpdateOcrCard:(OcrCard*)newCard;
+
+-(void)InsertOcrCard:(OcrCard*)newCard;
+
+-(void)DeleteOcrCard:(OcrCard*)ocrdata;
 
 -(OcrCard*)GetCard:(NSIndexPath *)indexPath;
 

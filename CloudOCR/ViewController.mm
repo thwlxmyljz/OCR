@@ -83,7 +83,7 @@
         self.OcrData = self.ModifyCard.CardDetail;
         self.OcrXml = self.ModifyCard.SvrDetail;
         _SvrId = self.ModifyCard.CardSvrId;
-        _SvrFileName = [self.ModifyCard GetFileName];
+        _SvrFileName = [NSString stringWithString:self.ModifyCard.CardFileName];
     }
     [self setup];
 }
@@ -148,7 +148,7 @@
                         _DocId = [returnDict objectForKey:DOC_OBJECTID];
                         
                         if ([returnDict objectForKey:DOC_FORM]){
-                            _OcrClass = [OcrType GetClass:[returnDict objectForKey:DOC_FORM]];
+                            _OcrClass = [returnDict objectForKey:DOC_FORM];
                         }
                         //下载识别处理过后的图片
                         NSData* svrImg = [WSOperator downloadOCR_Img:_SvrId SvrFileName:_SvrFileName];
@@ -188,7 +188,7 @@
 {
     if (_CardId == 0){
         _CardId = [BooksOp Instance].CardID;
-        _SvrFileName = [OcrCard GetFileName:_CardId];
+        _SvrFileName = [NSString stringWithFormat:@"%d.jpg",_CardId];;
     }
 }
 - (void)didReceiveMemoryWarning {
@@ -266,19 +266,21 @@
             [self creatLocalId];
             
             OcrCard* card = [[OcrCard alloc] init];
-            card.OcrClass = self.OcrClass;
+            card.OcrClass = _OcrClass;
             card.CardId = _CardId;
             card.CardSvrId = _SvrId?_SvrId:@"";
             card.CardDocId = _DocId?_DocId:@"";
             card.CardDetail = _orgDict;
             card.ModifyDetail = _modifyDict;
+            card.CardFileName = _SvrFileName;
             card.CardImg = self.OcrImage;
             card.SvrDetail = self.OcrXml;
             if ([card Insert]){
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
                                                                                   userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                                             [NSNumber numberWithInt:card.CardId], @"cardid",
-                                                                                            [NSNumber numberWithInt:card.OcrClass], @"ocrclass",
+                                                                                            [NSString stringWithString:card.OcrClass], @"ocrclass",
+                                                                                            [NSNumber numberWithInt:1], @"change",
                                                                                             [NSNumber numberWithInt:1]/*新卡片*/, @"op",
                                                                                             nil]];
                 
@@ -307,7 +309,7 @@
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_OCRFRESH object:nil
                                                                                   userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                                             [NSNumber numberWithInt:self.ModifyCard.CardId], @"cardid",
-                                                                                            [NSNumber numberWithInt:self.ModifyCard.OcrClass], @"ocrclass",
+                                                                                            [NSString stringWithString:self.ModifyCard.OcrClass], @"ocrclass",
                                                                                             [NSNumber numberWithInt:2/*刷新卡片*/], @"op",
                                                                                             nil]];
                 dispatch_async(dispatch_get_main_queue() ,^{
@@ -406,29 +408,27 @@
 {
     //按类型进行显示key的排序
     _showKeys = [[NSMutableArray alloc] init];
-    EMOcrClass cls = self.ModifyCard?self.ModifyCard.OcrClass:self.OcrClass;
-    switch (cls) {
-        case Class_Personal_IdCard:
-            [_showKeys addObject:IDCARD_KEY_NAME];
-            [_showKeys addObject:IDCARD_KEY_SEX];
-            [_showKeys addObject:IDCARD_KEY_MZ];
-            [_showKeys addObject:IDCARD_KEY_NO];
-            [_showKeys addObject:IDCARD_KEY_BIRTHDAY];
-            [_showKeys addObject:IDCARD_KEY_ADDRESS];
-            break;
-        case Class_Personal_BankCard:
-            [_showKeys addObject:BANDCARD_KEY_BANKCODE_CH];
-            [_showKeys addObject:BANKCARD_KEY_BANKNAME_CH];
-            [_showKeys addObject:BANKCARD_KEY_CARDNAME_CH];
-            [_showKeys addObject:BANKCARD_KEY_CARDNO_CH];
-            [_showKeys addObject:BANKCARD_KEY_CARDTYPE_CH];
-            break;
-        default:
-            for (NSString* key in [self.OcrData allKeys]){
-                [_showKeys addObject:key];
-                NSLog(@"add showkey:%@",key);
-            }
-            break;
+    NSString* clsName = self.ModifyCard?self.ModifyCard.OcrClass:self.OcrClass;
+    if ([clsName isEqualToString: Class_Personal_IdCard]){
+        [_showKeys addObject:IDCARD_KEY_NAME];
+        [_showKeys addObject:IDCARD_KEY_SEX];
+        [_showKeys addObject:IDCARD_KEY_MZ];
+        [_showKeys addObject:IDCARD_KEY_NO];
+        [_showKeys addObject:IDCARD_KEY_BIRTHDAY];
+        [_showKeys addObject:IDCARD_KEY_ADDRESS];
+    }
+    else if ([clsName isEqualToString:Class_Personal_BankCard]){
+        [_showKeys addObject:BANDCARD_KEY_BANKCODE_CH];
+        [_showKeys addObject:BANKCARD_KEY_BANKNAME_CH];
+        [_showKeys addObject:BANKCARD_KEY_CARDNAME_CH];
+        [_showKeys addObject:BANKCARD_KEY_CARDNO_CH];
+        [_showKeys addObject:BANKCARD_KEY_CARDTYPE_CH];
+    }
+    else{
+        for (NSString* key in [self.OcrData allKeys]){
+            [_showKeys addObject:key];
+            NSLog(@"add showkey:%@",key);
+        }
     }
 }
 +(CGFloat) SectionHeight

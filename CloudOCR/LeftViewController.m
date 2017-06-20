@@ -17,6 +17,8 @@
 #import "UIColor+SlideMenuControllerOC.h"
 #import "ImageHeaderView.h"
 #import "UIView+SlideMenuController.h"
+#import "OcrCard.h"
+#import "UIViewController+SlideMenuControllerOC.h"
 
 @interface LeftViewController ()
 {
@@ -63,8 +65,8 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.tableView reloadData];
+    [self addGestures];
 }
-
 -(void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     //self.imageHeaderView.frame = CGRectMake(0, 0, self.view.frame.size.width, 120);
@@ -101,8 +103,9 @@
     BaseTableViewCell *cell = [[BaseTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:[BaseTableViewCell identifier]];
     NSArray* ocrsForType = [[OcrType Ocrs] objectForKey:[_tableSectionKeys objectAtIndex:indexPath.section]];
     OcrType *ocrType = [ocrsForType objectAtIndex:indexPath.row];
-    [cell setData:ocrType.TypeName];
-    if (ocrType.OcrClass == [BooksOp Instance].CurClass){
+    int count = [OcrCard Count:ocrType.TypeName];
+    [cell setData:[NSString stringWithFormat:@"%@ (%d)",ocrType.TypeName,count]];
+    if ([ocrType.TypeName isEqualToString: [BooksOp Instance].CurClass]){
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     }
     else{

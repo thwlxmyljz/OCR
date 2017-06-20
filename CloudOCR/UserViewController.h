@@ -10,9 +10,6 @@
 
 @interface UserViewController : UIViewController
 
-@property (nonatomic, assign) int clickSection;
-@property (nonatomic, assign) int clickRow;
-
 @property (weak, nonatomic) IBOutlet UIButton *btnOk;
 @property (weak, nonatomic) IBOutlet UIButton *btnCancel;
 @property (weak, nonatomic) IBOutlet UITextField *edtUser;

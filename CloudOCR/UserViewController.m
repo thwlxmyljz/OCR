@@ -10,19 +10,24 @@
 #import "SlideMenuController.h"
 #import "BooksOp.h"
 #import "RightViewController.h"
+#import "constants.h"
+#import "NotificationView.h"
+#import "NSNotificationAdditions.h"
+#import "UIViewController+SlideMenuControllerOC.h"
 
 @interface UserViewController ()
-
+{
+    NSString* _oldUserId;
+}
 @end
 
 @implementation UserViewController
 
-@synthesize clickRow = _clickRow;
-@synthesize clickSection = _clickSection;
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    _oldUserId = [NSString stringWithString:[BooksOp Instance].UserId];
     self.edtUser.text = [BooksOp Instance].UserId;
     self.edtPwd.text = [BooksOp Instance].UserPwd;
     self.edtPwd.secureTextEntry = YES;
@@ -33,7 +38,11 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self removeGestures];
+}
 /*
 #pragma mark - Navigation
 
@@ -49,6 +58,10 @@
     [BooksOp Instance].UserId = self.edtUser.text;
     [BooksOp Instance].UserPwd = self.edtPwd.text;
     
+    if (![[BooksOp Instance].UserId isEqualToString:@""] && ![[BooksOp Instance].UserId isEqualToString:_oldUserId]){
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:NOTIFY_USERCHANGE object:nil
+                                                                          userInfo:nil];
+    }
     [self OnCancel:sender];
 }
 

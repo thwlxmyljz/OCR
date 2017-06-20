@@ -68,38 +68,45 @@ HexMOcr* mOcr = nil;
 
     TableViewShower* vv = nil;
     
+    //身份证
     vv = [[IdCardTableViewShower alloc] init];
     vv.Owner = self;
-    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%lu", (unsigned long)Class_Personal_IdCard]];
+    [self.Showers setValue:vv forKey:Class_Personal_IdCard];
     
+    //银行卡
     vv = [[BankTableViewShower alloc] init];
     vv.Owner = self;
-    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%lu", (unsigned long)Class_Personal_BankCard]];
+    [self.Showers setValue:vv forKey:Class_Personal_BankCard];
     
-    //其他
+    //公共显示
     vv = [[TableViewShower alloc] init];
     vv.Owner = self;
-    [self.Showers setValue:vv forKey:[NSString stringWithFormat:@"%lu", (unsigned long)Class_Normal]];
+    [self.Showers setValue:vv forKey:Class_Normal];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(processOcrFresh:)
                                                  name:NOTIFY_OCRFRESH
                                                object:nil];
     
-    if (!self.CurShower){
-        BOOL b = FALSE;
-        for (NSString* key in [OcrType Ocrs]){
-            for (OcrType* type in [[OcrType Ocrs] objectForKey:key]){
-                if (type.OcrClass == [BooksOp Instance].CurClass){
-                    [self changeViewController:type];
-                    b =  TRUE;
-                    break;
-                }
-            }
-            if (b)
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(processUserChange:)
+                                                 name:NOTIFY_USERCHANGE
+                                               object:nil];
+    
+    //设置初始显示页面
+    BOOL b = FALSE;
+    for (NSString* key in [OcrType Ocrs]){
+        for (OcrType* type in [[OcrType Ocrs] objectForKey:key]){
+            if ([type.TypeName isEqualToString:[BooksOp Instance].CurClass]){
+                [self changeViewController:type];
+                b =  TRUE;
                 break;
+            }
         }
+        if (b)
+            break;
     }
+    
     [self performSelectorInBackground:@selector(syncOcr) withObject:nil];
 }
 -(void)syncOcr
@@ -112,17 +119,47 @@ HexMOcr* mOcr = nil;
 }
 - (void)processOcrFresh:(NSNotification *)notification
 {
-    if (_CurShower.OcrClass == [[[ notification userInfo ] objectForKey: @"ocrclass"] intValue]){
+    if ([_CurShower.OcrClass isEqualToString: [[ notification userInfo ] objectForKey: @"ocrclass"]]){
         //当前分类新数据
-        [_CurShower FreshOcrCard:[[[ notification userInfo ] objectForKey: @"cardid"] intValue] Operator:[[[ notification userInfo ] objectForKey: @"op"] intValue]];
-    }
-    else{
-        int ocrClass = [[[ notification userInfo ] objectForKey: @"ocrclass"] intValue];
-        OcrType* ocrType = [OcrType GetOcrType:ocrClass];
-        if (ocrType){
-            [self changeViewController:ocrType ];
+        int cardId = [[[ notification userInfo ] objectForKey: @"cardid"] intValue];
+        OcrCard* newCard = [OcrCard LoadOne:cardId];
+        if (!newCard){
+            NSLog(@"not load new card");
+            return;
+        }
+        int op = [[[ notification userInfo ] objectForKey: @"op"] intValue];
+        if (op == 1){
+            [_CurShower InsertOcrCard:newCard];
+            [self freshTitle];
+            return;
+        }
+        if (op == 2){
+            [_CurShower UpdateOcrCard:newCard];
+            return;
         }
     }
+    else{
+        //数据非当前显示分类并设置切换分类，则切换到新分类显示
+        if ([[ notification userInfo ] objectForKey: @"change"] != nil){
+            OcrType* ocrType = [OcrType GetOcrType:[[ notification userInfo ] objectForKey: @"ocrclass"]];
+            if (ocrType){
+                [self changeViewController:ocrType ];
+            }
+        }
+    }
+}
+-(void)freshTitle
+{
+    OcrType* curShowType = [OcrType GetOcrType:_CurShower.OcrClass];
+    if (curShowType){
+        self.navigationItem.title = [NSString stringWithFormat:@"%@ (%d)",curShowType.TypeName,[OcrCard Count:_CurShower.OcrClass]];
+    }
+}
+-(void)processUserChange:(NSNotification*)notification
+{
+    [self.CurShower UnloadData];
+    
+    [self performSelectorInBackground:@selector(syncOcr) withObject:nil];
 }
 - (IBAction)trashOcr:(id)sender {
     [self.tableView setEditing:!self.tableView.editing];
@@ -131,10 +168,10 @@ HexMOcr* mOcr = nil;
     [self localPhoto];
 }
 - (IBAction)takePhoto:(id)sender {
-    if (self.CurShower.OcrClass == Class_Personal_IdCard){
+    if ([self.CurShower.OcrClass isEqualToString: Class_Personal_IdCard]){
         [self scanIdCard];
     }
-    else if (self.CurShower.OcrClass == Class_Personal_BankCard){
+    else if ([self.CurShower.OcrClass isEqualToString: Class_Personal_BankCard]){
         [mOcr showBankCardOcrView:self];
     }
     else{
@@ -149,38 +186,83 @@ HexMOcr* mOcr = nil;
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self setNavigationBarItem];
+    [self removeGestures];
 }
 -(void)viewWillLayoutSubviews
 {
 }
-#pragma makr - LeftMenuProtocol
+
+#pragma mark - SlideMenuControllerDelegate
+-(void)leftWillOpen {
+    NSLog(@"SlideMenuControllerDelegate: leftWillOpen");
+}
+
+-(void)leftDidOpen {
+    NSLog(@"SlideMenuControllerDelegate: leftDidOpen");
+}
+
+-(void)leftWillClose {
+    NSLog(@"SlideMenuControllerDelegate: leftWillClose");
+}
+
+-(void)leftDidClose {
+    NSLog(@"SlideMenuControllerDelegate: leftDidClose");
+    [self removeGestures];
+}
+
+-(void)rightWillOpen {
+    NSLog(@"SlideMenuControllerDelegate: rightWillOpen");
+}
+
+-(void)rightDidOpen {
+    NSLog(@"SlideMenuControllerDelegate: rightDidOpen");
+}
+
+-(void)rightWillClose {
+    NSLog(@"SlideMenuControllerDelegate: rightWillClose");
+}
+
+-(void)rightDidClose {
+    NSLog(@"SlideMenuControllerDelegate: rightDidClose");
+    [self removeGestures];
+    [UIView TTIsKeyboardVisible];
+}
+#pragma mark - LeftMenuProtocol
 -(void)changeViewController:(OcrType *)selType
 {
-    NSLog(@"change type:%@,class:%lu",selType.TypeName,(unsigned long)selType.OcrClass);
-    NSString* key = [NSString stringWithFormat:@"%lu",(unsigned long)selType.OcrClass];
-    
-    TableViewShower* shower = [self.Showers objectForKey:key];
-    if (!shower)
-        shower = [self.Showers objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)Class_Normal]];
-    if (shower){
-        self.navigationItem.title = selType.TypeName;
-        [BooksOp Instance].CurClass = selType.OcrClass;
-        //释放上一个显示对象的数据
-        if (self.CurShower && shower != self.CurShower){
-            [self.CurShower UnloadData];
-        }
-        self.CurShower = shower;
-        if ([self.CurShower isMemberOfClass:[TableViewShower class]])
-        {
-            [self.CurShower BaseSetUp:self.tableView WithClass:selType.OcrClass];
-            NSLog(@"normal class shower");
-        }
-        else
-        {
-            [self.CurShower Setup:self.tableView];
-            NSLog(@"inherit class shower");
-        }
+    NSLog(@"change type:%@",selType.TypeName);
+
+    if ([[BooksOp Instance].CurClass isEqualToString: selType.TypeName] && self.CurShower){
+        //相同类型并已显示
+        return;
     }
+    
+    TableViewShower* shower = [self.Showers objectForKey:selType.TypeName];
+    if (!shower){
+        shower = [self.Showers objectForKey:Class_Normal];
+    }
+    
+    [BooksOp Instance].CurClass = selType.TypeName;
+    if (self.CurShower){
+        [self.CurShower UnloadData];
+    }
+
+    self.CurShower = shower;
+    [self setupCurShower:selType.TypeName];
+}
+-(void)setupCurShower:(NSString*)clas
+{
+    if ([self.CurShower isMemberOfClass:[TableViewShower class]])
+    {
+        [self.CurShower BaseSetUp:self.tableView WithClass:clas];
+        NSLog(@"normal class shower");
+    }
+    else
+    {
+        [self.CurShower Setup:self.tableView];
+        NSLog(@"inherit class shower");
+    }
+    [self freshTitle];
 }
 
 -(void) OnSelectOcrCard:(OcrCard*)card
@@ -188,7 +270,7 @@ HexMOcr* mOcr = nil;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ViewController *v = (ViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ViewController"];
     v.OcrAction = EMOcrAction_Photo;
-    v.OcrClass = (EMOcrClass) [BooksOp Instance].CurClass;
+    v.OcrClass = [BooksOp Instance].CurClass;
     v.ModifyCard = card;
     
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithTitle:@"取消" style:UIBarButtonItemStyleDone target:self action:nil];
@@ -397,7 +479,7 @@ HexMOcr* mOcr = nil;
     //关闭相册界面
     [picker dismissViewControllerAnimated:YES completion:nil];
     if (image != nil) {
-        if (self.CurShower.OcrClass == Class_Personal_IdCard){
+        if ([self.CurShower.OcrClass isEqualToString: Class_Personal_IdCard]){
             //目前本地ocr接口图片识别只支持身份证识别
             [self performSelectorInBackground:@selector(setImage:) withObject:image];
         }
@@ -485,7 +567,7 @@ HexMOcr* mOcr = nil;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ViewController *v = (ViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"ViewController"];
     v.OcrAction = EMOcrAction_Photo;
-    v.OcrClass = (EMOcrClass) [BooksOp Instance].CurClass;
+    v.OcrClass = [BooksOp Instance].CurClass;
     v.OcrImage = self.imageView.image;
     v.OcrData = self.dicResult;
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithTitle:@"取消" style:UIBarButtonItemStyleDone target:self action:nil];

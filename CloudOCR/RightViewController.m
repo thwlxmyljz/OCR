@@ -17,10 +17,7 @@
 #import "UserViewController.h"
 
 @interface RightViewController()
-{
-    int _clickSection;
-    int _clickRow;
-}
+
 @property (nonatomic,strong) UISwitch* swSvr;
 
 @end
@@ -47,6 +44,7 @@
 {
     [super viewWillAppear:animated];
     [self.tableView reloadData];
+    [self addGestures];
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0)
@@ -87,7 +85,7 @@
     cell.textLabel.font = [UIFont systemFontOfSize:14.5 weight:-0.15];
     if (indexPath.section == 0){
         if (indexPath.row == 0){
-            cell.textLabel.text = @"用户名";
+            cell.textLabel.text = @"用户";
             cell.detailTextLabel.text = [BooksOp Instance].UserId;
         }
     }
@@ -118,29 +116,28 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:TRUE];
     if (indexPath.section == 1 && indexPath.row == 0){
-        //上传到云端是开关控制
+        //上传到云端开关控制
         return;
     }
-    _clickSection = (int)indexPath.section;
-    _clickRow = (int)indexPath.row;
-    
     if (indexPath.section == 0 && indexPath.row == 0){
         //用户设置
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         UserViewController *v = (UserViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"UserViewController"];
-        v.clickSection = _clickSection;
-        v.clickRow = _clickRow;
         [self.slideMenuController changeRightViewController:v close:FALSE];
     }
     else{
         //其他单项设置
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         SysViewController *v = (SysViewController *)[storyboard  instantiateViewControllerWithIdentifier:@"SysViewController"];
-        UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-        v.oldValue = cell.detailTextLabel.text;
-        v.clickSection = _clickSection;
-        v.clickRow = _clickRow;
-        [self.slideMenuController changeRightViewController:v close:FALSE];
+        
+        if (indexPath.section == 1 && indexPath.row == 1){
+            v.SaveType = EM_SysSaveType_SvrAddr;
+            [self.slideMenuController changeRightViewController:v close:FALSE];
+        }
+        else if (indexPath.section == 1 && indexPath.row == 2){
+            v.SaveType = EM_SysSaveType_ThirdAddr;
+            [self.slideMenuController changeRightViewController:v close:FALSE];
+        }
     }
 }
 @end

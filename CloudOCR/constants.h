@@ -184,7 +184,8 @@
 //--------------------------------------------------------------------------
 #define KEYBOARDHEIGHT 216
 
-#define NOTIFY_OCRFRESH @"NOTIFY_OCRFRESH" //名片刷新
+#define NOTIFY_OCRFRESH @"NOTIFY_OCRFRESH"   //名片刷新
 #define NOTIFY_TYPEFRESH @"NOTIFY_TYPEFRESH" //类型刷新
+#define NOTIFY_USERCHANGE @"NOTIFY_USERCHANGE" //用户更改
 
 #endif /* __SIPHON_CONSTANTS_H__ */

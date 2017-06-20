@@ -48,23 +48,25 @@
 
 @interface OcrCard : NSObject <DBProtocol>//OcrType <DBProtocol>
 
-@property (nonatomic, assign) EMOcrClass OcrClass;//分类
+@property (nonatomic, strong) NSString*  OcrClass;//分类
 @property (nonatomic, strong) UIImage*   CardImg;//图片
 @property (nonatomic, assign) NSInteger  CardId; //卡片id
 @property (nonatomic, strong) NSString*  CardSvrId;//卡片服务器标记id
 @property (nonatomic, strong) NSString*  CardDocId;//卡片服务器文档标记id，CardSvrId+CardDocId唯一标记服务器的一个图片识别
+@property (nonatomic, strong) NSString*  CardFileName;//卡片文件名
 @property (nonatomic, strong) NSMutableDictionary* CardDetail;//识别的详细信息
 @property (nonatomic, strong) NSData* SvrDetail;//服务器识别的xml结果
 @property (nonatomic, strong) NSMutableDictionary* ModifyDetail;//被修改的数据
 
--(NSString*) GetFileName;
-+(NSString*) GetFileName:(int)cardId;
-
-+(NSMutableArray*)Load:(EMOcrClass)clas;
++(NSMutableArray*)Load:(NSString*)clas;
 +(OcrCard*)LoadOne:(int)cardId;
++(int)Count:(NSString*)clas;
+
+//分类型显示
 +(NSMutableDictionary*)TransHeadedDict:(NSMutableArray*)lst ForKey:(NSString*)key ResultHeadKeys:(NSMutableArray*)keyLst;
 +(NSString*)GetHeadKey:(NSString*)value;
 +(void)SortHeadKeys:(NSMutableArray*)keyLst;
+
 +(int)GetCardId:(NSString*)svrId DocId:(NSString*)docId;
 
 //获取xml文档某图片文件的识别Field节点的属性Name和属性FieldId对应关系

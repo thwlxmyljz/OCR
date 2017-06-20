@@ -31,7 +31,7 @@
 @synthesize Keys = _Keys;
 @synthesize KeyName = _KeyName;
 
--(void)BaseSetUp:(UITableView*) tableView WithClass:(EMOcrClass)clas
+-(void)BaseSetUp:(UITableView*) tableView WithClass:(NSString*)clas
 {
     [tableView registerCellNib:[DataTableViewCell class]];
     self.OcrClass = clas;
@@ -129,30 +129,15 @@
         }
     }
 }
--(void)FreshOcrCard:(int)cardId Operator:(int)op
-{
-    OcrCard* newCard = [OcrCard LoadOne:cardId];
-    if (!newCard){
-        NSLog(@"not load new card");
-        return;
-    }
-    if (op == 1){
-        [self InsertOcrCard:newCard];
-        return;
-    }
-    if (op == 2){
-        [self UpdateOcrCard:newCard];
-        return;
-    }
-}
 
 #pragma mark - Table view delegate
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
     if (self.ShowSection){
-        //不分组显示，不显示索引
+        //分组显示
         return  [NSArray arrayWithArray: self.Keys];
     }
+    //不分组显示
     return nil;
 }
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {

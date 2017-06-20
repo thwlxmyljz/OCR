@@ -9,23 +9,24 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-typedef int EMOcrClass;
-#define Class_Normal 0
-#define Class_Personal_IdCard 100
-#define Class_Personal_BankCard 101
+#define Class_Normal @"其他"
+#define Class_Personal_IdCard @"身份证"
+#define Class_Personal_BankCard @"银行卡"
+
 @interface OcrType : NSObject
 
-@property (nonatomic, assign) EMOcrClass OcrClass;//分类
 @property (nonatomic, strong) NSString*  TypeName;//类型名称
 
--(id)initWith:(EMOcrClass)ocrClass Name:(NSString*)typeName;
+-(id)initWith:(NSString*)typeName;
 -(BOOL)equalWith:(NSString*)name;
 //
 +(NSMutableDictionary*)Ocrs;
-+(EMOcrClass)GetClass:(NSString*)typeName;
-+(OcrType*)GetOcrType:(int)ocrClass;
++(OcrType*)GetOcrType:(NSString*)typeName;
+
+//插入一个类型
 +(void)insertType:(OcrType*)type;
 
+//同步用户类型
 +(void)syncSvrTypes;
 
 @end

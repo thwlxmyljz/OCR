@@ -54,8 +54,9 @@ static BooksOp* OneMe = nil;
     // Open the database. The database was prepared outside the application.
     if (sqlite3_open([path UTF8String], &database) == SQLITE_OK)
     {
+        //系统变量
         [self execsql:@"CREATE TABLE IF NOT EXISTS mb_sys(ID INTEGER PRIMARY KEY, VAR TEXT, VARVALUE INTEGER, CHARVALUE TEXT)"];
-        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (1,'CURCLASS',100,'')"];//当前识别类型,100默认身份证
+        [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (1,'CURCLASS',0,'身份证')"];//当前识别类型
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (2,'CARDID',1,'')"];//每次识别数据保存的本地唯一标示
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (3,'SVRSCAN',1,'')"];//同步本地识别到服务器
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (4,'SVR',0,'183.62.44.126:19000')"];//识别服务器
@@ -64,19 +65,18 @@ static BooksOp* OneMe = nil;
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (7,'USERNAME',0,'')"];//用户名
         [self execsql_noerror:@"INSERT INTO mb_sys (ID,VAR,VARVALUE,CHARVALUE) VALUES (8,'USERPWD',0,'')"];//用户密码
         
-        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS INTEGER, CARDID INTEGER,LINKID TEXT,DOCID TEXT,CARDIMG BLOB, CARDDETAIL BLOB,SVRDETAIL BLOB)"];//识别的card存储,LINKID,DOCID唯一标记一个图片识别
+        //识别卡数据
+        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_card(ID INTEGER PRIMARY KEY, USERID TEXT, USERNAME TEXT, CARDCLASS TEXT, CARDID INTEGER,LINKID TEXT,DOCID TEXT,FILENAME TEXT,CARDIMG BLOB, CARDDETAIL BLOB,SVRDETAIL BLOB)"];//识别的card存储,LINKID,DOCID唯一标记一个图片识别
         [self execsql_noerror:@"CREATE INDEX IF NOT EXISTS mb_card_type ON mb_card(CARDCLASS)"];//索引
         
-        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_class(ID INTEGER PRIMARY KEY, CLASS TEXT, CLASSSVRID TEXT)"];
-        //下面3项默认
-        [self execsql_noerror:@"INSERT INTO mb_class (ID,CLASS,CLASSSVRID) VALUES (100,'身份证','')"];
-        [self execsql_noerror:@"INSERT INTO mb_class (ID,CLASS,CLASSSVRID) VALUES (101,'银行卡','')"];
+        //识别类型
+        [self execsql:@"CREATE TABLE IF NOT EXISTS mb_class(USERID TEXT, CARDCLASS TEXT, SVRID TEXT)"];
         /*
          //升级语句
         */
         
         _CardID = [self GetSysVarInt:@"CARDID"];
-        _CurClass = [self GetSysVarInt:@"CURCLASS"];
+        _CurClass = [self GetSysVarChar:@"CURCLASS"];
         _SvrScan = [self GetSysVarInt:@"SVRSCAN"];
         _SvrAddr = [self GetSysVarChar:@"SVR"];
         _ThirdSvrAddr = [self GetSysVarChar:@"THIRDSVR"];
@@ -265,11 +265,11 @@ static BooksOp* OneMe = nil;
     NSLog(@"getCardId return %d",_CardID);
     return _CardID;
 }
--(void)setCurClass:(NSInteger)_clas
+-(void)setCurClass:(NSString*)_clas
 {
     _CurClass = _clas;
-    NSLog(@"setCurClass %d",_clas);
-    [self SetSysVarInt:@"CURCLASS" WithIValue:_CurClass];
+    NSLog(@"setCurClass %@",_clas);
+    [self SetSysVarChar:@"CURCLASS" WithIValue:_CurClass];
 }
 -(void)setSvrScan:(int)SvrScan
 {

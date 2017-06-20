@@ -16,4 +16,6 @@
 
 -(void)removeGestures;
 
+-(void)addGestures;
+
 @end

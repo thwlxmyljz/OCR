@@ -16,7 +16,7 @@
 }
 
 @property (nonatomic,assign,getter=getCardID) NSInteger CardID;
-@property (nonatomic,assign) NSInteger CurClass;
+@property (nonatomic,strong) NSString* CurClass;
 @property (nonatomic,strong) NSString* UserId;
 @property (nonatomic,strong) NSString* UserName;
 @property (nonatomic,strong) NSString* UserPwd;

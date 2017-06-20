@@ -31,4 +31,9 @@
     [self.slideMenuController removeLeftGestures];
     [self.slideMenuController removeRightGestures];
 }
+-(void)addGestures
+{
+    [self.slideMenuController addLeftGestures];
+    [self.slideMenuController addRightGestures];
+}
 @end
