@@ -31,7 +31,7 @@
     RightViewController *rightViewController = (RightViewController *)[storyboard instantiateViewControllerWithIdentifier:@"RightViewController"];
     
     UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:mainViewController];
-    [UINavigationBar appearance].tintColor = [UIColor colorFromHexString:@"689F38"];
+    [UINavigationBar appearance].tintColor = [UIColor darkGrayColor];//[UIColor colorFromHexString:@"689F38"];
     leftViewController.mainViewControler = nvc;
     leftViewController.delegate = mainViewController;
     

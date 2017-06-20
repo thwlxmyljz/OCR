@@ -26,7 +26,7 @@
 }
 -(BOOL)equalWith:(NSString*)name
 {
-    if ([name containsString:@"身份证"] && [self.TypeName containsString:@"身份证"])
+    if ([name containsString:Class_Personal_IdCard] && [self.TypeName containsString:Class_Personal_IdCard])
         return TRUE;
     return [self.TypeName isEqualToString:name];
 }
